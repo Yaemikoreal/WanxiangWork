@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import difflib
 import re
 from bs4 import BeautifulSoup
@@ -6,7 +7,7 @@ from botpy import logging
 from sqlalchemy import create_engine, text
 from 公司1 import PublicFunction
 import pandas as pd
-
+# from .writein import calculate
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教育委员会行政规范性文件
@@ -69,7 +70,10 @@ class EducationalDocuments:
         self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
         # # 类别
         # self.category = {"机关工作综合规定": "003;00301"}
-
+        # 指定起始页数
+        self.read_pages_start = kwargs.get('read_pages_start')
+        if not self.read_pages_start:
+            self.read_pages_start = 0
     def remove_outer_brackets(self, text_remove, end_phrase):
         """
         删除字符串开头和结尾的括号，并保留 发文字号,并删除发文日期
@@ -202,13 +206,15 @@ class EducationalDocuments:
             zhengwen_stat = zhengwen.find('div', class_=it)
             if zhengwen_stat is not None:
                 break
-        if '重庆市城市管理局关于印发重庆市城市生活垃圾经营性清扫、收集、运输、处置服务行政许可管理办法（试行）的通知' == title:
+        if '重庆市国土房管局重庆市房改办关于城镇住房制度改革工作若干问题的通知' == title:
             # 查找并删除具有特定样式的<span>标签
             for style in ["font-family:方正姚体; font-size:42pt; letter-spacing:-7pt",
                           "font-family:方正姚体; font-size:42pt; letter-spacing:-6.5pt",
                           "font-family:方正姚体; font-size:42pt; letter-spacing:-6pt"]:
-                for span in zhengwen_stat.find_all('span', style=style):
+                for span in zhengwen.find_all('span', style=style):
                     span.decompose()
+            ee = zhengwen.find_all('p',style='margin-top:0pt; margin-bottom:0pt; line-height:20pt')[0]
+            ee.decompose()
         # 对style标签值进行处理
         if zhengwen:
             soup_ture = self.pf.soup_cal(zhengwen)
@@ -366,6 +372,8 @@ class EducationalDocuments:
                     it["发布部门"] = bumen_real
                 # 类别
                 it["类别"] = catagroy
+                if not it['类别']:
+                    it['类别']='096;09601'
                 # 效力级别
                 it["效力级别"] = self.level_of_effectiveness['地方规范性文件']
                 # 时效性
@@ -378,11 +386,12 @@ class EducationalDocuments:
                 continue
         # 过滤列表中的字典
         filtered_list = [item for item in new_result_lt if len(item) > 3]
-        return filtered_list
+        states=True
+        return filtered_list,states
 
     def calculate(self):
         # 有几页就遍历几次
-        for i in range(self.num_pages):
+        for i in range(self.read_pages_start,self.num_pages):
             if i == 0:
                 new_url = self.start_url
             else:
@@ -397,12 +406,15 @@ class EducationalDocuments:
                 continue
             _log.info(f"第{i + 1}页    需要写入的文章有 {len(new_result_lt)} 篇！！！")
             # 统筹整理,写入数据
-            filtered_list = self.filter_all(new_result_lt)
-            if filtered_list:
+            filtered_list,states= self.filter_all(new_result_lt)
+            if filtered_list and states:
+                for filt in filtered_list:
+                    sql = rf"INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES ('{filt['唯一标志']}','{filt['法规标题']}','{filt['全文']}','{filt['发布部门']}','{filt['类别']}','{filt['发布日期']}','{filt['效力级别']}','{filt['实施日期']}','{filt['发文字号']}','{filt['时效性']}','{filt['来源']}','{self.shouludate}')"
+                    self.pf.save_sql_BidDocument(sql)
+            elif states==False:
                 df = pd.DataFrame(filtered_list)
                 self.pf.to_mysql(df, self.table_name)
-                _log.info(
-                    f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
+                _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
             else:
                 _log.info(f"第{i + 1}页:   内容已经存在！")
 
@@ -411,6 +423,7 @@ def main():
     data_dt = {
         "start_url": 'https://zfcxjw.cq.gov.cn/zwgk_166/zfxxgkmls/zcwj/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 8,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市住房城乡建委'  # 在函数返回为空的时候指定发布部门
@@ -420,6 +433,7 @@ def main():
     data_dt = {
         "start_url": 'https://cgj.cq.gov.cn/zwgk_173/zfxxgkml/zcfg/xzgfxwj_396426/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 7,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市城市管理局'  # 在函数返回为空的时候指定发布部门
@@ -429,6 +443,7 @@ def main():
     data_dt = {
         "start_url": 'https://jtj.cq.gov.cn/zwgk_240/zfxxgkml/zcwj/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 7,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市市交通运输委'  # 在函数返回为空的时候指定发布部门
@@ -439,6 +454,7 @@ def main():
     data_dt = {
         "start_url": 'https://slj.cq.gov.cn/zwgk_250/zfxxgkml/zcfg/gfxwj1/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 5,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市水利局'  # 在函数返回为空的时候指定发布部门
@@ -449,6 +465,7 @@ def main():
     data_dt = {
         "start_url": 'https://sww.cq.gov.cn/zwgk_247/zfxxgkmlrk/zcwj/xzffxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 5,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市商务委'  # 在函数返回为空的时候指定发布部门
@@ -459,6 +476,7 @@ def main():
     data_dt = {
         "start_url": 'https://whlyw.cq.gov.cn/zwgk_221/zfgkzcwj/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 4,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市文化旅游委'  # 在函数返回为空的时候指定发布部门
@@ -469,6 +487,7 @@ def main():
     data_dt = {
         "start_url": 'https://wsjkw.cq.gov.cn/zwgk_242/zfxxgkml/zcwj/xzgfxwj2/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 17,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市卫生健康委'  # 在函数返回为空的时候指定发布部门
@@ -479,6 +498,7 @@ def main():
     data_dt = {
         "start_url": 'https://tyjrswj.cq.gov.cn/zwgk_529/zfxxgkml/zcwj/gfxwj/tyjsswjzcwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 1,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '市退役军人事务局'  # 在函数返回为空的时候指定发布部门
@@ -489,6 +509,7 @@ def main():
     data_dt = {
         "start_url": 'https://yjj.cq.gov.cn/zwgk_230/zfxxgkml/zcwj/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 1,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市应急管理局'  # 在函数返回为空的时候指定发布部门
@@ -499,6 +520,7 @@ def main():
     data_dt = {
         "start_url": 'https://sjj.cq.gov.cn/zwgk/zcwj/ghxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 1,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市审计局'  # 在函数返回为空的时候指定发布部门
@@ -509,6 +531,7 @@ def main():
     data_dt = {
         "start_url": 'https://zfwb.cq.gov.cn/zwgk_162/fdzdgknr/zcwj2/xzxgfwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 1,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
         "lasy_department": '重庆市市政府外办'  # 在函数返回为空的时候指定发布部门

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import time
 import random
@@ -520,7 +521,7 @@ def set_right_alignment(html_content):
     keywords = ['海关', '局', '会']
     special_keywords = ['年', '月', '日']
     # 排除字符串列表
-    exclude_strings = ['条', '章', '解释', '指引', '服务', '通知', '违反', '布局','会议','开展','接受','内容','每年','成员','处长','副主任','登记','部长','各区']
+    exclude_strings = ['条', '章', '解释', '指引', '服务', '通知', '违反', '布局','会议','开展','接受','内容','每年','成员','处长','副主任','登记','部长','各区','填表','_日',' 日','队长']
 
     # 遍历所有 <p> 标签
     for tag in list(reversed(html_content.find_all('p')))[:-5]:
@@ -537,31 +538,25 @@ def set_right_alignment(html_content):
                     if 'text-align:center' not in tag.get('style', '') and 'text-align:right' not in tag.get('style', ''):
                         # 设置样式为靠右对齐
                         tag['style'] = tag.get('style', '') + 'text-align: right;'
-            # 检查文本是否包含特殊关键字
-            elif all(keyword in text for keyword in special_keywords):
-                # 检查文本是否包含排除字符串之一
+            if all(keyword in text for keyword in special_keywords):
                 if not any(exclude_string in text for exclude_string in exclude_strings):
                     # 检查标签是否已有居中对齐样式
                     if 'text-align:center' not in tag.get('style', '') and 'text-align:right' not in tag.get('style', ''):
                         # 设置样式为靠右对齐
                         tag['style'] = tag.get('style', '') + 'text-align: right;'
-    for tag in list(reversed(html_content.find_all('p')))[:10]:
+    for tag in list(reversed(html_content.find_all('p')))[:5]:
         # 获取标签的文本内容
         text = tag.get_text(strip=True)
         # 检查文本长度是否不超过 30 个字符
         if len(text) <= 30:
-            # 检查文本是否包含普通关键字之一
             if any(keyword in text for keyword in keywords):
                 # 检查文本是否包含排除字符串之一
                 if not any(exclude_string in text for exclude_string in exclude_strings):
-                    # 设置样式为靠右对齐
                     tag['style'] = tag.get('style', '') + 'text-align: right;'
-            # 检查文本是否包含特殊关键字
-            elif all(keyword in text for keyword in special_keywords):
-                # 检查文本是否包含排除字符串之一
+            if all(keyword in text for keyword in special_keywords):
                 if not any(exclude_string in text for exclude_string in exclude_strings):
-                    # 设置样式为靠右对齐
-                    tag['style'] = tag.get('style', '') + 'text-align: right;'
+                        tag['style'] = tag.get('style', '') + 'text-align: right;'
+
     # 返回修改后的 HTML 内容
     return html_content
 
@@ -623,6 +618,129 @@ def downfile_img(header, base_url, soup,content,):
         print(f"处理过程中出现错误: {e}")
 
     return content
+def soup_get_date(soup):
+    """
+    运用于其他文件,在文件的表格中获取发布日期以及发文字号
+    :param soup:
+    :return:
+    """
+    data_dt = {
+        "发文字号": None,
+        "发布日期": None
+    }
+    in_lt = ["成文日期", "发布日期"]
+    table_t = soup.find(['table', 'div'], class_=["zwxl-table", "a11"])
+    if table_t:
+        tr_all = table_t.find_all('tr')
+        if not tr_all:
+            tr_all = table_t.find_all('div')
+        for tag in tr_all:
+            tag_text = tag.get_text()
+            if any(key in tag_text for key in in_lt):
+                tag_text = tag_text.strip()
+                # 定义正则表达式模式，匹配包含“成文日期”的行
+                pattern = r'\[ 成文日期 \]\s*(\d{4}-\d{2}-\d{2})'
+                # 使用正则表达式搜索匹配项
+                match = re.search(pattern, tag_text)
+                if match:
+                    # 提取出日期字符串
+                    date_str = match.group(1)
+                    # 将日期格式化为 "YYYY.MM.DD" 格式
+                    formatted_date = date_str.replace('-', '.')
+                    data_dt["发布日期"] = formatted_date
+            if "发文字号" in tag_text:
+                # 定义正则表达式模式，匹配包含“发文字号”的行
+                pattern = r'\[ 发文字号 \]\s*(.*)'
+                match = re.search(pattern, tag_text)
+                if match:
+                    code = match.group(1).strip()
+                    # 检查是否为空
+                    if code:
+                        data_dt["发文字号"] = code
+    return data_dt
+def match_date(zhengwen, soup):
+    """
+    从正文中检索出发布日期
+    :param soup:
+    :param zhengwen: 正文字符串
+    :return:
+    """
+    # 关键词列表
+    data_dt = soup_get_date(soup)
+    tag_text = data_dt.get("发布日期")
+    if tag_text:
+        return tag_text
+    date_lt = ["年", "月", "日"]
+    soup = BeautifulSoup(zhengwen, 'html.parser')
+    soup_right_all = soup.find_all(style="text-align: right;")
+    for tag in soup_right_all:
+        tag_text = tag.get_text().strip()
+        if any(keyword in tag_text for keyword in date_lt):
+            # 返回包含日期关键字的文本
+            _log.info(f"从文中匹配到发布日期 {tag_text}")
+            tag_text = tag_text.replace("年", ".").replace("月", ".").replace("日", "")
+            tag_text = convert_chinese_date_to_numeric(tag_text)
+            return tag_text
+    return tag_text
+
+def convert_chinese_date_to_numeric(date_str):
+    """
+    将包含汉字数字的日期字符串转换为标准的“YYYY.MM.DD”格式。
+
+    :param date_str: 需要检测的发布日期字符串
+    :return: 转换后的日期字符串
+    """
+    # 汉字数字集合
+    chinese_numbers = set('〇零一二两三四五六七八九十年月日')
+    # 检查字符串中是否包含汉字数字
+    if not any(char in chinese_numbers for char in date_str):
+        return date_str
+
+    chinese_num_map = {
+        '零': '0', '〇': '0',
+        '一': '1', '二': '2', '两': '2', '三': '3', '四': '4', '五': '5',
+        '六': '6', '七': '7', '八': '8', '九': '9', '十': '10'
+    }
+
+    # 定义月份和日期的映射
+    month_day_map = {
+        '一': '01', '二': '02', '三': '03', '四': '04', '五': '05',
+        '六': '06', '七': '07', '八': '08', '九': '09', '十': '10',
+        '十一': '11', '十二': '12', '十三': '13', '十四': '14', '十五': '15',
+        '十六': '16', '十七': '17', '十八': '18', '十九': '19', '二十': '20',
+        '二十一': '21', '二十二': '22', '二十三': '23', '二十四': '24', '二十五': '25',
+        '二十六': '26', '二十七': '27', '二十八': '28', '二十九': '29', '三十': '30',
+        '三十一': '31'
+    }
+
+    parts = date_str.split('.')
+    converted_parts = []
+
+    # 转换年份
+    year = parts[0]
+    converted_year = ''.join(chinese_num_map[char] for char in year if char in chinese_num_map)
+    converted_parts.append(converted_year)
+
+    # 转换月份
+    month = parts[1]
+    if month in month_day_map:
+        converted_month = month_day_map[month]
+    else:
+        # 如果月份是单个汉字数字，将其转换为两位数
+        converted_month = month_day_map[chinese_num_map[month]]
+    converted_parts.append(converted_month)
+
+    # 转换日期
+    day = parts[2]
+    if day in month_day_map:
+        converted_day = month_day_map[day]
+    else:
+        # 如果日期是单个汉字数字，将其转换为两位数
+        converted_day = month_day_map[chinese_num_map[day]]
+    converted_parts.append(converted_day)
+
+    # 重新组合日期
+    return '.'.join(converted_parts)
 def main_test():
     # url = 'https://fzggw.cq.gov.cn/zwgk/zfxxgkml/zcwj/xzgfxwj/sfzggwxzgfxwj/'
     # headers = {
@@ -633,417 +751,11 @@ def main_test():
     # ddd = '''各县、自治县、区人民政府（管委会），市政府各工作部门、各直属事业单位，市属国有企业：现将《安顺市市级储备粮管理办法》印发给你们，请认真抓好贯彻落实。安顺市人民政府2023年9月5日（此件公开发布）安顺市市级储备粮管理办法第一章  总    则第一条  为加强市级储备粮管理，保障市级储备粮数量真实、质量良好和储存安全，有效发挥市级储备粮的宏观调控作用，维护安顺粮食市场稳定，依据《粮食流通管理条例》《贵州省粮食安全保障条例》《贵州省地方储备粮管理办法》《贵州省地方储备粮轮换管理办法（试行）》《贵州省政府储备粮食仓储管理办法（试行）》《贵州省粮食收购管理办法》等有关规定，结合安顺实际，制定本办法。第二条  本办法所称市级储备粮，是指市人民政府储备用于调节全市粮食供需平衡、稳定粮食市场以及应对重大自然灾害、重大卫生事件和其他突发事件等情况的原粮、成品粮、食用植物油和大豆等。第三条  本市行政区域内市级储备粮的计划、储存、轮换、动用和监督管理等活动，适用本办法。第四条  未经市人民政府批准，任何单位和个人不得擅自动用市级储备粮。第五条  市发展改革委（市粮食和物资储备局）负责市级储备粮行政管理，对市级储备粮的数量、质量和储存安全实施监督检查。第六条  市财政局会同市发展改革委（市粮食和物资储备局）负责安排并及时拨付市级储备粮的贷款利息、保管费用和轮换费（包括轮换过程中产生的费用和轮换价差）等财政补贴，对市级储备粮有关财务管理工作实施监督检查。第七条  农发行安顺分行及其分支机构按照国家有关规定，及时、足额发放市级储备粮所需贷款，贷款资金实行封闭运行，并对发放的贷款实施信贷监管。第八条  承储市级储备粮的企业应具有独立法人资格（以下简称承储企业），建立健全内控管理制度，按照“谁储粮、谁负责，谁坏粮、谁担责”的原则，做到储备与经营分开，规范管理，对市级储备粮的数量、质量和储存安全负责。第九条  建立安顺市粮食储备管理工作联席会议制度，联席会议由市发展改革委（市粮食和物资储备局）召集，市财政局、市市场监管局、农发行安顺分行为成员，负责研究市级储备粮管理中的重要事项。第二章  计    划第十条  按照省下达我市地方储备粮计划，根据全市粮食宏观调控需要，由市发展改革委（市粮食和物资储备局）会同市财政局、农发行安顺分行制定市级储备粮分解计划，报市人民政府批准后执行。第十一条  各县（区）人民政府（管委会）根据应急供应需要，建立一定规模的成品粮油储备。市人民政府所在地西秀区人民政府和安顺经开区管委会建立不低于城镇常住人口10天市场供应量的成品粮油储备，其他县（区）建立不低于城镇常住人口3天市场供应量的成品粮油储备。第三章  储    存第十二条  市级储备粮的储存品种应当按照省级安排，符合安顺消费需求，以稻谷、小麦、玉米、大豆、菜籽油等为主。其中，稻谷和小麦两大口粮品种储备比例应达储备规模的70%以上。市发展改革委（市粮食和物资储备局）、市财政局、农发行安顺分行应当根据市场消费需求，适时调整储备粮品种结构。第十三条  依据《贵州省政府储备粮食仓储管理办法（试行）》规定，承储库点应当具备以下条件：（一）仓房、油罐符合《粮油储藏技术规范》要求；（二）具有与粮油储存功能、仓（罐）型、进出库（罐）方式、粮油品种、储存周期等相适应的粮食装卸、输送、清理、计量、储藏、病虫害防治等设施设备；配备必要的防火、防盗、防洪、防雷、防冰雪等安全设施设备；支持控温储藏，有能力达到低温或者准低温储藏功效的可优先考虑；（三）具有符合国家标准的检测储备粮质量等级和储存品质必需的检测仪器设备和检化验室；具有检测粮油储存期间粮食温度、水分、害虫密度等条件；具有粮情测控系统、机械通风系统、环流熏蒸系统和适合当地气候环境条件的其他保粮技术；（四）具有与地方储备粮储存保管任务相适应，经过专业培训，掌握相应知识和技能并取得从业资格证书的仓储管理、质量检验等专业技术人员；（五）根据国家、省、市相关规定需要具备的其他条件。第十四条  承储企业应当加强仓储设施、质量检验保障能力建设和维护，推进仓储科技创新和使用，提高市级储备粮安全保障能力。使用政府性资金建设的地方储备粮仓储等设施，任何单位和个人不得擅自处置或者变更用途。第十五条  依据《贵州省地方储备粮管理办法》规定承储企业不得有下列行为：（一）擅自动用市级储备粮;（二）虚报、瞒报市级储备粮数量;（三）在市级储备粮中掺杂掺假、以次充好;（四）擅自串换品种、变更储存地点、仓号、油罐;（五）以市级储备粮和使用政府性资金建设的地方储备粮仓储等设施办理抵质押贷款、提供担保或者清偿债务，进行期货实物交割;（六）挤占、挪用、克扣财政补贴、信贷资金;（七）延误轮换或者管理不善造成市级储备粮霉坏变质;（八）以低价购进高价入账、高价售出低价入账，以旧粮顶替新粮、虚报损耗、虚列费用、虚增入库成本等手段套取差价，骗取市级储备粮的贷款和财政补贴;（九）法律法规规定的其他行为。第十六条  承储企业被依法撤销、解散或者宣告破产的，其储存的市级储备粮，由市发展改革委（市粮食和物资储备局）会同市财政局、农发行安顺分行按照本办法第十三条的要求调出另储。第十七条  承储企业应当建立市级储备粮质量安全档案，如实记录粮食质量安全情况。储存周期结束后，质量安全档案保存期不少于5年。第十八条  承储企业应当执行国家、省和市储备粮管理的有关规定，执行国家粮油质量标准和储藏技术规范。第十九条  承储企业储存市级储备粮应区分不同品种、不同收获年度、不同产地、不同性质，严格按照国家、省、市有关储备粮管理规定进行管理，做到实物、专卡、保管账“账实相符”、保管账、统计账、会计账“账账相符”；数量、品种、质量、地点“四落实”，实行专人保管、专仓储存、专账记载；确保市级储备粮数量真实、质量良好、储存安全、管理规范。储存周期结束后，保管总账、分仓保管账保存期不少于5年。第二十条  承储企业应当遵守安全生产相关法律法规和标准规范，严格执行《粮油储存安全责任暂行规定》和《粮油安全储存守则》《粮库安全生产守则》，落实安全生产责任制，制定安全生产事故防控方案或应急预案，配备必要的安全防护设施设备，建立健全储备粮防火、防盗、防汛等安全生产管理制度，定期组织开展安全生产检查，加强职工安全生产教育和培训，确保市级储备粮储存安全。承储企业在市级储备粮承储期间发生安全生产事故的，应当及时处置，并向市发展改革委（市粮食和物资储备局）、库点所在县（区）粮食行政管理部门和应急管理部门报告。第二十一条  市级储备粮储存期间，承储企业按照每季度检测1次的要求对质量指标和储存品质指标进行检验。市粮油质量检验中心每年对市级储备粮至少开展1次全面抽检。第四章  轮    换第二十二条  市级储备粮以储存粮食品质指标为依据，以储存年限为参考，原则上小麦每4年轮换一次，中晚籼稻谷每3年轮换一次，粳稻谷、玉米、食用植物油每2年轮换一次，大豆及杂粮每1年轮换一次。第二十三条  根据市级储备粮储存品质状况，结合储存年限，经市粮食储备管理工作联席会议审核或由市发展改革委（市粮食和物资储备局）、市财政局和农发行安顺分行联合发文，制定下一年度轮换计划。市级储备粮轮换工作由承储企业具体组织实施，并及时向有关部门报告轮换情况。第二十四条  市级储备粮轮换应当遵循公开、公平、公正、透明原则，原则上通过公益性专业交易平台进行公开竞价交易。必要时经市发展改革委（市粮食和物资储备局）会同市财政局和农发行安顺分行批准后，可采取直接收购、邀标竞价销售等方式进行。第二十五条  市级储备粮轮换架空期不得超过4个月。因客观原因需要延长架空期的，经市发展改革委（市粮食和物资储备局）、市财政局和农发行安顺分行联合批准，最多可延长2个月，延长期内承储企业不享受相应的保管费用补贴。第二十六条  为避免超架空期轮换，承储企业应当加强对市级储备粮轮换工作的调度，按月向市发展改革委（市粮食和物资储备局）、市财政局和农发行安顺分行报送轮换情况。承储企业要积极开展轮换工作，按时完成市级储备粮轮换计划。第二十七条  承储企业在执行轮换计划时，应加强粮油市场价格行情调研，选择最佳时机开展竞价销售和采购，最大限度减少轮换价差亏损。第二十八条  市级储备粮保管自然损耗定额为：原粮：储存6个月以内的，不超过0.1%；储存6个月以上12个月以内的，不超过0.15%；储存12个月以上的，累计不超过0.2%（不得按年叠加）;食用植物油：储存6个月以内的，不超过0.08%；储存6个月以上12个月以内的，不超过0.1%；储存12个月以上的，累计不超过0.12%（不得按年叠加）;油料：储存6个月以内的，不超过0.15%；储存6个月以上12个月以内的，不超过0.2%；储存12个月以上的，不超过0.23%（不得按年叠加）。第二十九条  市级储备粮轮换过程中，定额内损失损耗以及因自然灾害等不可抗力造成损失损耗由市发展改革委（市粮食和物资储备局）会同市财政局据实核销。超定额损耗或因经营管理不善造成损失由承储企业承担。第三十条  实行市级储备粮验收检验制度。承储企业采购储备粮，应当按国家标准和规定进行质量安全检验。储备粮采购入库平仓结束后，由市发展改革委（市粮食和物资储备局）委托有资质的粮食检验机构进行入库验收检验，验收检验包括常规质量指标、储存品质指标和食品安全指标，检验合格后方可作为市级储备粮进行验收。对不符合储备粮质量安全要求和有关规定，经整理后仍不达标的，不得入库。入库粮食水分应符合安全水分要求。第三十一条  实行市级储备粮轮换出库检验制度。市级储备粮出库承储企业委托有资质的粮食检验机构进行检验，检验结果作为出库质量依据。未经质量安全检验的粮食不得销售出库，出库粮食应附检验报告原件或复印件。出库检验项目应包括常规质量指标和食品安全指标。储存期间施用过储粮药剂且未满安全间隔期的，还应增加储粮药剂残留检验，检验结果超标的应暂缓出库。第五章  资    金第三十二条  任何单位和个人不得以任何理由及方式骗取、挤占、截留、挪用市级储备粮贷款及利息、保管费用和合理轮换费用等财政补贴。第三十三条  市级储备粮的入库成本由市财政局会同市发展改革委（市粮食和物资储备局）、农发行安顺分行进行核定，入库成本一经核定，不得擅自变更。第三十四条  市级储备粮的贷款利息实行据实结算，专户管理、专款专用，接受开户行的信贷监管，保证市级储备粮资金封闭运行。第三十五条  市级储备粮保管费、轮换费实行定额包干。其中，市级储备粮（原粮）保管费每年100元／吨，食用植物油保管费每年300元／吨；市级储备粮（原粮）轮换价差补贴标准为750元／吨，食用植物油轮换价差补贴标准为700元／吨。在市场粮油价格大幅上涨等特殊情况下，若定额包干补贴不足以弥补价差亏损时，采取“一事一议”的方式，通过提高轮换价差补贴标准或对轮换亏损进行据实补贴等办法加以解决。第三十六条  市级储备粮轮换贷款实行购贷销还，封闭运行。市级储备粮轮出销售款应当及时、全额偿还农业发展银行贷款。采取先购后销轮换方式，由农发行安顺分行及其分支机构先发放轮换贷款，待验收入库转为市级储备粮后，及时发放市级储备粮贷款，同时足额收回相应的轮换贷款；采取先销后购轮换方式，销售后收回贷款，轮入所需资金，由农发行安顺分行及其分支机构及时、足额发放市级储备粮贷款。对于轮换后成本调整的，按照重新核实的成本发放贷款。第六章  动    用第三十七条  市发展改革委（市粮食和物资储备局）要加强粮食市场动态监测，按照《安顺市粮食应急预案》要求，会同市财政局提出市级储备粮动用方案，报市人民政府批准，由市发展改革委（市粮食和物资储备局）会同市财政局组织实施。动用方案应当包括动用市级储备粮的品种、数量、质量、价格、使用安排、运输保障等内容。应急动用市级储备粮产生的价差收入扣除相关费用后应当上缴市财政局，产生的价差亏损和相关费用，由市财政局据实补贴。第三十八条  出现下列情况之一的，市人民政府可以批准动用市级储备粮：（一）全市或者部分县（区）粮食明显供不应求或者市场价格异常波动的；（二）发生重大自然灾害、重大公共卫生事件或者其他突发事件的；（三）市人民政府认为需要动用市级储备粮的其他情形。第三十九条  动用地方储备粮应当首先动用县级储备粮。县级储备粮不足时，由县级人民政府向市人民政府申请动用市级储备粮。市级储备粮不足的，由市人民政府向省人民政府申请动用省级储备粮。紧急情况下，市人民政府直接决定动用市级储备粮并下达动用命令。原则上，储备动用后在12个月内完成等量补库。第四十条  市人民政府有关部门和县（区）人民政府（管委会）对市级储备粮动用命令应当给予支持、配合。任何单位和个人不得拒绝执行或者擅自改变市级储备粮动用方案。第七章  监督检查第四十一条  按照《贵州省地方储备粮管理办法》规定，市发展改革委（市粮食和物资储备局）、市财政局等部门单位，按照各自职责，对执行本办法及国家和省储备粮管理规章制度进行监督检查，并行使下列职权：（一）进入承储企业检查市级储备粮的数量、质量和储存安全；（二）向有关单位和人员了解市级储备粮采购、销售、轮换计划、动用及有关财务执行等情况；（三）调阅、复印市级储备粮经营管理的有关账簿、原始凭证、电子数据等有关资料；（四）对承储企业的法定代表人、负责人或其他工作人员进行问询；（五）法律法规规定的其他职权。第四十二条  承储企业应当积极配合市发展改革委（市粮食和物资储备局）、市财政局等部门依法开展的监督检查工作。任何单位和个人不得拒绝、阻挠、干涉市发展改革委（市粮食和物资储备局）、市财政局等监督检查人员履行监督检查职责。第四十三条  市发展改革委（市粮食和物资储备局）、市财政局等相关部门在监督检查中，一旦发现市级储备粮数量、质量、储存安全等方面存在问题，依法依规进行处理。第四十四条  承储企业应当建立健全内部控制和合规管理制度，加强对市级储备粮的管理，有效防范和控制粮食储备运营风险。对危及市级储备粮储存安全的重大问题，应当立即采取有效措施妥善处理，并及时报告市发展改革委（市粮食和物资储备局）、市财政局及农发行安顺分行。第四十五条  承储企业违反《粮食流通管理条例》《贵州省地方储备粮管理办法》《贵州省粮食收购管理办法》等规定的，由市发展改革委（市粮食和物资储备局）、市财政局按照各自职责依法依规查处。第八章  附    则第四十六条  本办法自印发之日起施行。'''
     # catagroy_select(ddd, aaa)
 
-    dd = '''<p style="text-align:center">
-    重庆市粮食局 重庆市财政局
-</p>
-<p style="text-align:center">
-    关于印发《重庆市政策性粮食购销违法违规
-</p>
-<p style="text-align:center">
-    行为举报奖励实施细则（试行）》的通知
-</p>
-<p style="text-align:center">
-    渝粮规范〔2023〕2号
-</p>
-<p>
-    各区县（自治县）发展改革委、财政局，两江新区经济运行局、财政局，西部科学城重庆高新区改革发展局、财政局，万盛经开区发展改革局、财政局：
-</p>
-<p>
-    为动员社会力量参与政策性粮食购销领域监督，鼓励举报政策性粮食购销违法违规行为，根据《粮食流通管理条例》《中央储备粮管理条例》《重庆市地方粮食储备管理办法》等法律法规，依据国家粮食和物资储备局《政策性粮食购销违法违规行为举报奖励办法（试行）》（国粮执法规〔2023〕144号），结合我市实际，制定《重庆市政策性粮食购销违法违规行为举报奖励实施细则（试行）》，现印发给你们，请认真遵照执行。
-</p>
-<p style="text-align:right">
-    重庆市粮食局 重庆市财政局
-</p>
-<p style="text-align:right">
-    2023年12月31日
-</p>
-<p style="text-align:center">
-    重庆市政策性粮食购销违法违规行为
-</p>
-<p style="text-align:center">
-    举报奖励实施细则（试行）
-</p>
-<p>
-    第一条 为动员社会力量参与政策性粮食购销领域监管，鼓励社会公众积极举报政策性粮食购销违法违规行为，根据《粮食流通管理条例》《中央储备粮管理条例》《重庆市地方粮食储备管理办法》等法律法规，依据《政策性粮食购销违法违规行为举报奖励办法（试行）》（国粮执法规〔2023〕144号），结合我市实际，制定本实施细则。
-</p>
-<p>
-    第二条 自然人（以下称举报人）可通过12325等热线电话、政府网站、信函以及其他渠道，向各级粮食行政管理部门举报。
-</p>
-<p>
-    12325热线电话举报线索的接收受理、办理等事项，按《12325全国粮食和物资储备监管热线举报处理规定》（国家粮食和物资储备局公告2021年第5号）等规定处理。
-</p>
-<p>
-    重庆市各级粮食行政管理部门负责本行政区域内政策性粮食购销违法违规行为举报奖励工作。举报奖励工作依法保护举报人合法权益，实行自愿领取、奖励适当的原则。
-</p>
-<p>
-    第三条 举报人向粮食行政管理部门反映从事政策性粮食购销经营活动涉嫌违反《粮食流通管理条例》《中央储备粮管理条例》《重庆市地方粮食储备管理办法》等规定的行为，以及竞买政策性粮食时恶意违约等违反合同规定的行为，且属于重庆市各级粮食行政部门管辖范围，经查证属实应予奖励的，适用本实施细则。
-</p>
-<p>
-    第四条 奖励举报人须同时符合下列条件：
-</p>
-<p>
-    （一）有明确的被举报对象和具体违法违规线索，并提供了有效证据；
-</p>
-<p>
-    （二）举报事项事先未被重庆市各级粮食行政管理部门掌握，或者虽有所掌握，但举报人提供的情况更为具体详实；
-</p>
-<p>
-    （三）举报事项经查证属实；
-</p>
-<p>
-    （四）举报人愿意得到举报奖励，并提供可供核查且真实有效的身份信息、联系方式等；
-</p>
-<p>
-    （五）其他依法依规应予奖励的必备条件。
-</p>
-<p>
-    第五条 有下列情形之一的，不予奖励或者不予重复奖励：
-</p>
-<p>
-    （一）举报人为重庆市各级粮食行政管理部门、国家粮食和物资储备局垂直管理局工作人员或者其他具有法定职责人员的；
-</p>
-<p>
-    （二）在收到举报前，政策性粮食违法违规行为人已主动供述本人及其同案人员的违法违规事实，或者在被调查处理期间检举揭发其他违法违规行为的；
-</p>
-<p>
-    （三）粮食行政管理部门对举报事项作出处理决定前，举报人主动撤回举报的；
-</p>
-<p>
-    （四）举报线索移送其他部门处理的；
-</p>
-<p>
-    （五）举报人就同一违法违规行为多处、多次举报的，不予重复奖励；
-</p>
-<p>
-    （六）举报人身份无法确认或者无法与举报人取得联系的；
-</p>
-<p>
-    （七）举报前，相关政策性粮食违法违规行为已进入诉讼等法定程序的；
-</p>
-<p>
-    （八）其他依法依规不予奖励的情形。
-</p>
-<p>
-    第六条 举报奖励发放规则：
-</p>
-<p>
-    （一）同一违法违规行为由两个及两个以上举报人分别举报的，奖励最先举报人，举报次序以粮食行政管理部门受理举报的登记时间为准；
-</p>
-<p>
-    （二）两个及两个以上举报人联名举报同一违法违规行为的，按照同一举报给予奖励，奖励资金由举报人自行协商分配；
-</p>
-<p>
-    （三）在举报线索调查中发现新的违法违规行为线索的，不对新的违法违规行为线索给予奖励；
-</p>
-<p>
-    （四）国家粮食和储备行政管理部门规定的其他奖励规则。
-</p>
-<p>
-    第七条 举报奖励由查处举报案件的粮食行政管理部门负责，对符合奖励条件的举报人，综合考虑查实违法违规行为的危害程度、对国家造成的经济损失、线索质量以及行政处罚罚款金额等因素，按照以下标准给予一次性资金奖励：
-</p>
-<p>
-    （一）罚款金额在15万元以下的，按1500元奖励；
-</p>
-<p>
-    （二）罚款金额在15万元以上的，50万元以下的，按罚款金额的1%奖励；
-</p>
-<p>
-    （三）罚款金额在50万元以上的，200万元以下的，按罚款金额的2%奖励；
-</p>
-<p>
-    （四）罚款金额在200万元以上的，500万元以下的，按罚款金额的3%奖励；
-</p>
-<p>
-    （五）罚款金额在500万元以上的，按150000元奖励。
-</p>
-<p>
-    对于同一举报涉及两个及两个以上的粮食行政管理部门管辖、分别由两个及两个以上的粮食行政管理部门调查处理的，由查处举报案件的粮食行政管理部门分别根据本部门的举报线索查实处理情况进行奖励。
-</p>
-<p>
-    第八条 举报奖励资金按程序纳入重庆市各级粮食行政管理部门年度预算。举报奖励资金应当使用非现金的方式兑付，按国库集中支付规定办理。同时，接受纪检、审计和财会等相关部门监督。
-</p>
-<p>
-    第九条 对政策性粮食购销违法违规行为作出处理决定后30个工作日内，由查处举报案件的粮食行政管理部门启动奖励程序，并在作出奖励决定之日起10个工作日内以书面、邮件、电话等方式告知举报人。
-</p>
-<p>
-    举报人放弃奖励的，终止奖励程序。
-</p>
-<p>
-    第十条 举报人应当在收到领取奖励通知之日起30个工作日内，凭本人有效身份证明领取奖励。委托他人代领的，受托人须同时持有举报人授权委托书、举报人和受托人的有效身份证明。举报人逾期未领取奖励的，视为主动放弃。联名举报的举报人应当推举一名代表领取奖励。
-</p>
-<p>
-    第十一条 重庆市各级粮食行政管理部门在办理举报奖励资金发放时，应当严格审核。举报奖励资金发放后，发现存在伪造材料、隐瞒事实等情况骗取举报奖励的，或者存在其他不符合领取奖励的情形，发放奖励的粮食行政管理部门查实后有权收回举报奖励资金，并依法依规依职责追究当事人相应责任，涉嫌犯罪的，移送司法机关。
-</p>
-<p>
-    第十二条 举报人应当对举报内容及其提供材料的真实性负责，捏造、歪曲事实或者诬告陷害他人的，应当依法承担相关法律责任。
-</p>
-<p>
-    第十三条 重庆市各级粮食行政管理部门应当严格为举报人保密，不得以任何方式泄露举报人身份等相关信息。粮食行政管理部门相关工作人员泄露举报人信息的，依规依纪依法给予严肃处理。
-</p>
-<p>
-    第十四条 本实施办法中涉及的“以上”包含本数，“以下”不包含本数。
-</p>
-<p>
-    第十五条 本实施细则自发布之日起施行，有效期5年。
-</p>
-<p>
-    附件：1．重庆市政策性粮食购销违法违规行为举报奖励审批表
-</p>
-<p>
-    2．重庆市政策性粮食购销违法违规行为举报奖励通知书
-</p>
-<p>
-    3．重庆市放弃政策性粮食购销违法违规行为举报奖励资金声明书
-</p>
-<p>
-    4．重庆市领取政策性粮食购销违法违规行为举报奖励资金授权委托书
-</p>
-<p>
-    附件1
-</p>
-<p style="text-align:center">
-    重庆市政策性粮食购销违法违规行为举报奖励审批表
-</p>
-<p>
-    审批表编号： &nbsp;审批单位：
-</p>
-<table align="center" border="1" cellspacing="0" class="Table">
-    <tbody>
-        <tr class="firstRow">
-            <td>
-                <p style="text-align:center">
-                    举报人姓名
-                </p>
-            </td>
-            <td></td>
-            <td>
-                <p style="text-align:center">
-                    身份证号码或
-                </p>
-                <p style="text-align:center">
-                    其他身份识别信息
-                </p>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    受举报时间
-                </p>
-            </td>
-            <td></td>
-            <td>
-                <p style="text-align:center">
-                    举报人联系方式
-                </p>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    举报内容
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    查办结果
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    核查部门
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    行政处罚金额
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    奖励金额
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    承办部门和人员
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    承办部门
-                </p>
-                <p style="text-align:center">
-                    负责人意见
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    财务部门
-                </p>
-                <p style="text-align:center">
-                    负责人意见
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    承办部门
-                </p>
-                <p style="text-align:center">
-                    分管局领导意见
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    局主要负责
-                </p>
-                <p style="text-align:center">
-                    领导意见
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="text-align:center">
-                    备 注
-                </p>
-            </td>
-            <td colspan="3"></td>
-        </tr>
-    </tbody>
-</table>
-<p>
-    注：该表一式3份，由粮食行政管理部门填写，财务、存档各1份。
-</p>
-<p>
-    附件2
-</p>
-<p style="text-align:center">
-    重庆市政策性粮食购销违法违规行为
-</p>
-<p style="text-align:center">
-    举报奖励通知书
-</p>
-<p style="text-align:right">
-    <span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>举报奖字〔 〕<span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>号
-</p>
-<p>
-    <span style="text-decoration:underline;"> </span>：
-</p>
-<p>
-    根据《重庆市政策性粮食购销违法违规行为举报奖励实施细则（试行）》（渝粮规范〔2023〕2号）文件，决定对<span style="text-decoration:underline;"> </span>你举报的<span style="text-decoration:underline;"> </span>案件（案件编号：<span style="text-decoration:underline;"> </span>）给予奖励资金<span style="text-decoration:underline;"> </span>元（大写：<span style="text-decoration:underline;"> </span>）。
-</p>
-<p>
-    请在接到本通知书后的30个工作日内，提供有效身份证明、银行账户信息（开户银行名称及账号）等。如果委托他人代领的，受托人还应当同时持有举报人授权委托书、举报人和受托人的有效身份证明。联名举报的举报人应当推举一名代表，此代表需持所有举报人授权的授权委托书。
-</p>
-<p>
-    逾期未办理身份确认手续的，视为自动放弃。
-</p>
-<p>
-    联系人： 联系电话：
-</p>
-<p>
-    （盖章）
-</p>
-<p>
-    <span style="text-decoration:underline;"> </span>年<span style="text-decoration:underline;"> </span>月<span style="text-decoration:underline;"> </span>日
-</p>
-<p>
-    注：此文书一式3份，举报人、财务、存档各1份。
-</p>
-<p>
-    附件3
-</p>
-<p style="text-align:center">
-    重庆市放弃政策性粮食购销违法违规行为
-</p>
-<p style="text-align:center">
-    举报奖励资金声明书
-</p>
-<p>
-    本人<span style="text-decoration:underline;"> </span>，身份证号：<span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>，于<span style="text-decoration:underline;"> </span>年<span style="text-decoration:underline;"> </span>月<span style="text-decoration:underline;"> </span>日举报的<span style="text-decoration:underline;"> </span>案件（案件编号：<span style="text-decoration:underline;"> </span>），<span style="text-decoration:underline;"> </span>根据《重庆市政策性粮食购销违法违规行为举报奖励实施细则（试行）》（渝粮规范〔2023〕2号）文件，已通知给予我本人举报奖励的资金<span style="text-decoration:underline;"> </span>元（大写：<span style="text-decoration:underline;"> </span>），本人郑重申明放弃。
-</p>
-<p>
-    申明人（签字并盖手印）：
-</p>
-<p>
-    联系电话：
-</p>
-<p>
-    年月日
-</p>
-<p>
-    注：此文书一式3份，举报人、财务、存档各1份。此文书空白处由举报人手工填写。
-</p>
-<p>
-    附件4
-</p>
-<p style="text-align:center">
-    重庆市领取政策性粮食购销违法违规行为
-</p>
-<p style="text-align:center">
-    举报奖励资金授权委托书
-</p>
-<p>
-    本人<span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>，身份证号：<span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>，于<span style="text-decoration:underline;"> </span>年<span style="text-decoration:underline;"> </span>月<span style="text-decoration:underline;"> </span>日举报的<span style="text-decoration:underline;"> </span>案件（案件编号： <span style="text-decoration:underline;"> </span>），经<span style="text-decoration:underline;"> </span>根据《重庆市政策性粮食购销违法违规行为举报奖励实施细则（试行）》（渝粮规范〔2023〕2号）文件，已通知给予我本人举报奖励资金<span style="text-decoration:underline;"> </span>元（大写： <span style="text-decoration:underline;"> </span>）。本人因故无法亲自办理奖励资金领取，现委托<span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>，身份证号：<span style="text-decoration:underline;"> </span>为我办理有关奖励资金领取手续。
-</p>
-<p>
-    委托人（签字并盖手印）：
-</p>
-<p>
-    联系电话：
-</p>
-<p>
-    受托人（签字并盖手印）：
-</p>
-<p>
-    联系电话：
-</p>
-<p>
-    <span style="text-decoration:underline;"> </span><span style="text-decoration:underline;"> </span>年<span style="text-decoration:underline;"> </span>月<span style="text-decoration:underline;"> </span>日
-</p>
-<p>
-    注：此文书一式4份，委托人、受托人、财务、存档各1份。此文书空白处由委托人手工填写。
-</p>'''
-    aa = '关于民用建筑实行建筑节能信息公示的通知'
-    cc = department(dd, aa, '831')
+    dd ='<div class="zcwjk-xlcon"><div></div><p style="text-align:center"> </p><p style="text-align:center"> </p><p style="text-align:center"><span>重庆市建设委员会</span></p><p style="text-align:center"><span>重庆市国土资源和房屋管理局</span></p><p style="text-align:center"><span>关于民用建筑实行建筑节能信息公示的通知</span></p><p style="text-align:center">渝建发〔2008〕197号</p><p style="text-align:center"> </p><p>各区县（自治县）建委、国土房管局、开发办，各有关单位：</p><p><span>为贯彻落实《民用建筑节能条例》、《重庆市建筑节能条例》和住房和城乡建设部《关于印发〈民用建筑节能信息公示办法〉的通知》（建科〔2008〕116号）等文件精神，充分调动和发挥社会公众监督作用，加强民用建筑节能监督管理，进一步推动我市民用建筑节能工作深入开展，决定对我市民用建筑实行建筑节能信息公示。现将有关事项通知如下： </span></p><p><span>一、凡在本市行政区域内新建（改、扩建）和进行节能改造的建筑应当进行建筑节能信息公示。建设单位应当在房屋施工现场主要出入口和销售现场显著位置，根据审核通过的施工图设计文件，将民用建筑的节能性能、措施及要求等情况进行公示。在商品房买卖合同、</span>住宅质量保证书和使用说明书中应当载明建筑节能相关内容。</p><p><span>二、建设单位在取得施工许可证后，应当在施工现场按要求公示建筑节能信息。内容</span>包括<span>：执行的建筑节能设计标准；经施工图审查机构审查合格的施工图中建筑节能的主要内容及节能措施，</span>详<span>见附件一。施工现场建筑节能信息公示时间为主体结构工程开始实施至工程竣工验收合格。</span></p><p><span>三、建设单位在取得房屋销售许可证后，应当在销售现场按要求公示建筑</span>节能信息。内容包括<span>：房屋能效水平，节能措施，以及保护要求、节能工程质量保修期等，</span>详<span>见附件二。销售场所建筑节能信息公示为销售之日起至销售结束。</span></p><p><span>四、</span>住宅质量保证书和使用说明书中应当载明建筑节能信息。内容包括：围护结构保温（隔热）、遮阳设施，供热采暖、空调、通风、照明系统及<span>其</span>节能设施，可再生能源利用，建筑能耗与能源利用效率等。详见<span>附件三。</span></p><p><span>五、建筑工程施工过程中，如发生涉及建筑节能主要内容或节能措施变更的，建设单位应当办理设计变更手续，并按《市建委关于加强建筑节能工程施工图设计文件审查合格后的重大变更管理的通知》（渝建发〔2008〕39号）等规定进行审查，并在审查同意变更后15日内重新公示建筑节能信息。</span></p><p><span>六、相关主管部门按照职能对施工阶段、销售阶段的民用建筑节能信息公示进行监督管理。</span>住宅质量保证书和使用说明书的监督管理由市开发办负责<span>。市管项目施工阶段的建筑节能信息公示由市建设工程质量监督总站负责。 </span></p><p><span>七、建设单位应当严格按照本通知规定进行公示，内容必须客观真实，不得弄虚作假，公示的信息应当经工程设计单位及施工图审查机构确认。建设单位未按规定公示建筑节能信息的，由监督管理部门责令改正、给予批评教育、通报，违反法律法规的依法予以处罚。</span></p><p><span>八、本通知自二〇〇九年一月一日起执行。</span></p><p> </p><p>附件：1．重庆市民用建筑施工现场建筑节能信息公示牌</p><p>  2．重庆市民用建筑销售现场建筑节能信息公示牌</p><p>  3．住宅质量保证书和使用说明书中载明的建筑节能信息</p><p> </p><p> </p><div style="text-align:right">二○○八年十二月十一日</div><p> </p><p> </p><p> </p><p>附件一：</p><p style="text-align:center">重庆市民用建筑施工现场节能信息公示牌</p><table cellspacing="0"><tbody><tr><td colspan="2"><p style="text-align:center">项目名称</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">幢号</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">建设单位</p></td><td colspan="6"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center">地址及</p><p style="text-align:center">联系电话</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">设计单位</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">施工单位</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">施工图</p><p style="text-align:center">审查机构</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">监理单位</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="4"><p style="text-align:center">执行的建筑节能标准</p></td><td colspan="10"><p style="text-align:center"> </p></td></tr><tr><td rowspan="8"><p style="text-align:center">建</p><p style="text-align:center">筑</p></td><td rowspan="2"><p style="text-align:center">屋面</p><p style="text-align:center">保温</p></td><td colspan="2"><p style="text-align:center">保温材料种类</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td rowspan="5"><p style="text-align:center">外墙</p></td><td colspan="2"><p style="text-align:center">主墙体材料</p><p style="text-align:center">/材料厚度（mm）</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td colspan="2" rowspan="2"><p style="text-align:center">保温型式</p><p style="text-align:center">/保温材料种类</p></td><td><p style="text-align:center">北</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">东</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">西</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td colspan="2" rowspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td><p style="text-align:center">北</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">东</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">西</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">楼</p><p style="text-align:center">地面</p></td><td colspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td colspan="10"><p style="text-align:center"> </p></td></tr><tr><td rowspan="5"><p> </p></td><td rowspan="5"><p style="text-align:center">外窗</p></td><td><p style="text-align:center">分项</p><p>朝向</p></td><td colspan="7"><p style="text-align:center">窗型/窗玻/传热系数（w/m<span>2</span>.k）</p></td><td colspan="4"><p style="text-align:center">遮阳措施/遮阳系数</p></td></tr><tr><td><p style="text-align:center">北</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">东</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">西</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">空调</p></td><td colspan="2"><p style="text-align:center">空调系统形式</p><p style="text-align:center">/机组类型</p></td><td colspan="11"><p style="text-align:center"></p></td></tr><tr><td><p style="text-align:center">热水</p></td><td colspan="2"><p style="text-align:center">供应方式/用能类型</p></td><td colspan="11"><p style="text-align:center"> </p></td></tr><tr><td rowspan="3"><p style="text-align:center">照明</p></td><td colspan="2"><p>主要功能房间</p><p>分项指标</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">照度标准（lx）</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">功率密度（w/m<span>2</span>）</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"> </p></td></tr><tr><td colspan="3"><p style="text-align:center">其它节能措施</p></td><td colspan="11"><p style="text-align:center"></p></td></tr><tr><td colspan="3"><p style="text-align:center">建筑能源利用效率</p></td><td colspan="9"><p>本建筑的节能率与建筑节能标准比较情况</p></td><td colspan="2"><p> </p></td></tr></tbody></table><p> </p><p> </p><p>附件二：</p><p style="text-align:center">重庆市民用建筑销售现场节能信息公示牌</p><table cellspacing="0"><tbody><tr><td colspan="2"><p style="text-align:center">项目名称</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">幢号</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">建设单位</p></td><td colspan="6"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center">地址及</p><p style="text-align:center">联系电话</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">设计单位</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">施工单位</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="2"><p style="text-align:center">施工图审查机构</p></td><td colspan="5"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center">监理单位</p></td><td colspan="3"><p style="text-align:center"> </p></td></tr><tr><td colspan="7"><p style="text-align:center">本建筑的节能率与建筑节能标准比较情况</p></td><td colspan="7"><p style="text-align:center"> </p></td></tr><tr><td rowspan="8"><p style="text-align:center">建</p><p style="text-align:center">筑</p></td><td rowspan="2"><p style="text-align:center">屋面</p><p style="text-align:center">保温</p></td><td colspan="2"><p style="text-align:center">保温材料种类</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td rowspan="5"><p style="text-align:center">外墙</p></td><td colspan="2"><p style="text-align:center">主墙体材料</p><p style="text-align:center">/材料厚度（mm）</p></td><td colspan="10"><p style="text-align:center"></p></td></tr><tr><td colspan="2" rowspan="2"><p style="text-align:center">保温型式</p><p style="text-align:center">/保温材料种类</p></td><td><p style="text-align:center">北</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">东</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">西</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td colspan="2" rowspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td><p style="text-align:center">北</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">东</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="6"><p style="text-align:center"> </p></td><td><p style="text-align:center">西</p></td><td colspan="2"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">楼</p><p style="text-align:center">地面</p></td><td colspan="2"><p style="text-align:center">传热系数（w/m<span>2</span>.k）</p><p style="text-align:center">/保温层厚度（mm）</p></td><td colspan="10"><p style="text-align:center"> </p></td></tr><tr><td rowspan="5"><p> </p></td><td rowspan="5"><p style="text-align:center">外窗</p></td><td><p style="text-align:center">分项</p><p>朝向</p></td><td colspan="7"><p style="text-align:center">窗型/窗玻/传热系数（w/m<span>2</span>.k）</p></td><td colspan="4"><p style="text-align:center">遮阳措施/遮阳系数</p></td></tr><tr><td><p style="text-align:center">北</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">东</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">南</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">西</p></td><td colspan="7"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td></tr><tr><td><p style="text-align:center">空调</p></td><td colspan="2"><p style="text-align:center">空调系统形式</p><p style="text-align:center">/机组类型</p></td><td colspan="11"><p style="text-align:center"></p></td></tr><tr><td><p style="text-align:center">热水</p></td><td colspan="2"><p style="text-align:center">供应方式/用能类型</p></td><td colspan="11"><p style="text-align:center"> </p></td></tr><tr><td rowspan="3"><p style="text-align:center">照明</p></td><td colspan="2"><p>主要功能房间</p><p>分项指标</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">照度标准（lx）</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"></p></td></tr><tr><td colspan="2"><p style="text-align:center">功率密度（w/m<span>2</span>）</p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="3"><p style="text-align:center"> </p></td><td colspan="4"><p style="text-align:center"> </p></td><td><p style="text-align:center"> </p></td></tr><tr><td colspan="3"><p style="text-align:center">其它节能措施</p></td><td colspan="11"><p style="text-align:center"></p></td></tr><tr><td colspan="3"><p style="text-align:center">节能工程质量保修期</p></td><td colspan="11"><p style="text-align:center"> </p></td></tr></tbody></table><p> </p><p> </p><p> </p><p>附件三：</p><p style="text-align:center"> </p><p style="text-align:center">住宅质量保证书和使用说明书中载明的</p><p style="text-align:center">建筑节能信息</p><p style="text-align:center"> </p><p><strong>一、围护结构保温（隔热）、遮阳设施</strong></p><p>（一）墙体</p><p>1、保温（隔热）形式： ；2、保温材料名称： ；</p><p>3、保温材料性能。密度: kg/m<span>3</span>，燃烧性能: h，导热系数: W/m ·K，保温材料层厚度: mm；</p><p>4、墙体材料： ；5、墙体传热系数： W /m<span>2</span>·K 。</p><p>（二）屋面</p><p>1、保温（隔热）形式： ；2、保温材料名称： ；</p><p>3、保温材料性能。密度: kg/m<span>3</span>，导热系数: W/m .K，吸水率: %，保温材料层厚度: mm；4、屋顶传热系数： 。</p><p>(三)地面（楼面）</p><p>1、保温材料名称： ；2、传热系数： W /m<span>2</span>·K；</p><p>3、保温材料性能。密度： kg/m<span>3</span>，导热系数： W/m ·K，保温材料层厚度: mm。</p><p>（四）外门窗（幕墙）</p><p>1、门窗类型 ： ；2、外遮阳形式： ；3、内遮阳材料： ；</p><p>4、门窗性能。传热系数： W /m<span>2</span>·K，遮阳系数： %，可见光透射比： ，气密性能： 。</p><p><strong>二、供热采暖系统及其节能设施</strong></p><p> </p><p>。</p><p><strong>三、空调、通风、照明系统及其节能设施（公共建筑）</strong></p><p> </p><p>。</p><p><strong>四、可再生能源利用</strong></p><p> </p><p>。</p><p><strong>五、建筑能耗与能源利用效率</strong></p><p>（一）当地节能建筑单位建筑面积年度能源消耗量指标： W/m<span>2</span>·a，</p><p>（二) 本建筑单位建筑面积年度能源消耗量指标: W/m<span>2</span>·a；</p><p>（三）本建筑建筑物用能系统效率：热（冷）源效率 %、管网输送效率： %；</p><p>（四）本建筑与建筑节能标准比较： 。</p><p style="text-align:center"> </p><p style="text-align:center"> </p><p style="text-align:center">填写说明</p><p style="text-align:center"> </p><p>一、本表所填内容应与建筑节能报审表、经审查合格的建筑节能设计文件一致。</p><p>二、幢号可按不同建筑类型成组填写。</p><p>三、外墙保温形式是指：外保温、内保温、夹芯保温、自保温、内外复合保温、其他。</p><p>四、外窗窗型包括窗框、玻璃材料和玻璃窗（透明幕墙）中空层等。</p><p>五、外门窗玻璃材料是指：单框单玻、单框中空、普通玻璃、Low-E玻璃，玻璃应注明厚度（mm），中空玻璃应注明中空厚度（mm）。</p><p>六、遮阳措施是指：外遮阳、玻璃遮阳、综合遮阳、无。</p><p>七、本建筑的节能率与建筑节能标准比较情况：优于标准规定、满足标准规定、不符合标准规定。</p><p>八、供热采暖系统及其节能设施</p><p>1、供热方式：城市热力集中供热、区域锅炉房集中供热、分户独立热源供热、热电厂余热供热、无；</p><p>2、室内采暖方式：散热器供暖、地面辐射供暖、其他、无；</p><p>3、系统调节装置：静态水力平衡阀、自力式流量控制阀、自力式压差控制阀、散热器恒温阀、其他、无；</p><p>4、热量分摊（计量）方法:户用热计量表法、热分配计法、温度法、楼栋热量表法、其他、无。</p><p>九、空调、通风、照明系统及其节能设施（公共建筑）</p><p>1、空调风系统形式：定风量全空气系统、变风量全空气系统、风机盘管加新风系统、其他；</p><p>2、有无新风热回收装置：有、无；</p><p>3、空调水系统制式：一次泵系统、二次泵系统、一次泵变流量系统、其他；</p><p>4、空调冷热源类型及供冷方式：压缩式冷水（热泵）机组、吸收式冷水机组、分体式房间空调器、多联机、其他、区域集中供冷、独立冷热源集中供冷；</p><p>5、送、排风系统形式：自然通风系统、机械送排风系统、机械排风自然进风系统、设有排风余热回收装置的机械送排风系统、其他；</p><p>6、照明系统性能：照度值、功率密度值；</p><p>7、节能灯具类型：普通荧光灯、T8级、T5级、LED、其他；</p><p>8、照明系统有无分组控制控制方式：有、无；</p><p>9、生活热水系统的形式和热源：集中式、分散式、电、蒸汽、燃气、太阳能、其他。</p><p>十、其它节能措施</p><p>1、可再生能源应用：太阳能生活热水供应、太阳能采暖、太阳能空调制冷、太阳能光伏发电、土壤源热泵、浅层地下水源热泵、地表水源热泵、污水水源热泵、风能发电、其他、无；</p><p>2、余热利用：利用余热制备生活热水采暖、利用余热制备采暖热水、利用余热制备空调热水、利用余热加热（冷却）新风、无；</p><p>3、其它新材料、新技术、新设备的应用。</p><p> </p><p> </p><p>主题词：<span>城乡建设 建筑节能 信息公示 通知</span></p><p>重庆市建委办公室 2008年12月11日印发</p></div>'
+    dd =BeautifulSoup(dd,'html.parser')
+    print(set_right_alignment(dd))
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
-    }
-    annex_get('https://fzggw.cq.gov.cn/zwgk/zfxxgkml/zcwj/qtwj/202408/W020240827391403402403.docx',
-              '关于印发《重庆市深入推进快递包装绿色转型实施方案》的通知.docx', headers=headers)
-    pass
+
 
 
 if __name__ == '__main__':

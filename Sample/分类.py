@@ -43,7 +43,7 @@ def get_data_from_api(*args):
     return response.json()
 
 
-stopwords_path = r"C:\Users\admin\PycharmProjects\pythonProject\Sample\呆萌的停用词表.txt"
+stopwords_path = r"D:\pystore\Gitstore\公司1\呆萌的停用词表.txt"
 stopwords = [line.strip() for line in open(stopwords_path, 'r', encoding='utf-8').readlines()]
 
 def keyjieba(text):
