@@ -132,9 +132,10 @@ def query(list_name, ddd1, ddd2):
     return [query1, query2]
 
 
-def main_panduan(title_a, fm='831', ddd='重庆' ,issued_number=None, issued_date=None):
+def main_panduan(title_a, fm='831', ddd='重庆', issued_number=None, issued_date=None):
     """
     判断es数据库中是否已经有这个文章内容
+    :param issued_date: 发布日期
     :param ddd:
     :param title_a:  标题
     :param fm: 文章来源地区编号（例如重庆市：831）

@@ -12,11 +12,9 @@ import pyodbc
 import requests
 from datetime import datetime
 from pyquery.pyquery import PyQuery as pq
+import jieba
 
 _log = logging.getLogger(__name__)
-
-
-
 
 
 def annex_get(url, save_path, headers, save_path_real='重庆市其他文件'):
@@ -155,18 +153,19 @@ def filter(result_lt):
     for result in result_lt:
         title = result.get('法规标题')
         issued_date = result.get('发布日期')
-        if issued_date:
-            if main_panduan(title_a=title, fm='831', issued_date=issued_date):
-                _log.info(f"法器地方法规有这条数据： {title}")
-                # 为Ture则说明该文章已经存在
-                continue
-            new_result_lt.append(result)
-        else:
-            if main_panduan(title_a=title, fm='831'):
-                _log.info(f"法器地方法规有这条数据： {title}")
-                # 为Ture则说明该文章已经存在
-                continue
-            new_result_lt.append(result)
+        if not issued_date:
+            issued_date = None
+        try:
+            # 尝试重试三次
+            for attempt in range(3):
+                if main_panduan(title_a=title, fm='831', issued_date=issued_date):
+                    _log.info(f"法器地方法规有这条数据： {title}")
+                    break  # 成功匹配，跳出循环
+                else:
+                    new_result_lt.append(result)
+                    break  # 法规不存在，跳出循环
+        except Exception as e:
+            _log.error(f"判断法规存在性： {title} 时发生错误: {str(e)}")
     return new_result_lt
 
 
@@ -192,6 +191,8 @@ def fetch_url(url, headers):
                 soup = BeautifulSoup(response.content, 'html.parser')
                 return soup
         except pyodbc.OperationalError as e:
+            # TODO 重庆市民政局暂用
+            url = url.replace('zcwj_166256/qtwj_166259/', '')
             _log.info(f"出错！      {e}")
             sleep = random.uniform(2, 4)
             _log.info(f"休眠{sleep}秒")
@@ -200,6 +201,7 @@ def fetch_url(url, headers):
             if it == cl_num - 1:
                 _log.info("该网站内容无法获取")
                 _log.info(f"网站url:  {url}")
+            continue
     return soup
 
 
@@ -291,10 +293,10 @@ def soup_cal(soup_ture):
                 del tag_s['style']
 
     for tag in soup_ture.find_all(True):
-        attrs_to_remove = ['data-index', 'id', 'class', 'align', 'type']
-
+        attrs_to_remove = ['data-index', 'id', 'class', 'align', 'type', 'new', 'times', 'lang', 'clear', 'content',
+                           'http-equiv', 'name', 'rel']
         for attr in attrs_to_remove:
-            # tag.attrs 是一个字典，包含了标签的所有属性
+            # tag.attrs 包含了标签的所有属性
             if attr in tag.attrs:
                 del tag[attr]
         process_style(tag)
@@ -326,7 +328,6 @@ def department(Description, title, area_num):
     :param area_num: 地区编号
     :param Description: 全文
     :param title:  标题
-    :param bumenall: 数据库中指定的部门编号
     :return:
     """
     bumenall = get_sql_menus(area_num, 'lfbj_fdep_id')
@@ -426,14 +427,17 @@ def soup_get_date(soup):
     """
     data_dt = {
         "发文字号": None,
-        "发布日期": None
+        "发布日期": None,
+        "发布部门": None
     }
     in_lt = ["成文日期", "发布日期"]
-    table_t = soup.find(['table', 'div'], class_=["zwxl-table", "a11"])
+    table_t = soup.find(['table', 'div', 'ul'], class_=["zwxl-table", "a11", "zw-table clearfix"])
     if table_t:
         tr_all = table_t.find_all('tr')
         if not tr_all:
             tr_all = table_t.find_all('div')
+        if not tr_all:
+            tr_all = table_t.find_all('li')
         for tag in tr_all:
             tag_text = tag.get_text()
             if any(key in tag_text for key in in_lt):
@@ -457,6 +461,14 @@ def soup_get_date(soup):
                     # 检查是否为空
                     if code:
                         data_dt["发文字号"] = code
+            if "发布机构" in tag_text:
+                pattern = r'\[ 发布机构 \]\s*(.*)'
+                match = re.search(pattern, tag_text)
+                if match:
+                    code = match.group(1).strip()
+                    # 检查是否为空
+                    if code:
+                        data_dt["发布部门"] = code
     return data_dt
 
 
@@ -474,15 +486,24 @@ def match_date(zhengwen, soup):
         return tag_text
     date_lt = ["年", "月", "日"]
     soup = BeautifulSoup(zhengwen, 'html.parser')
-    soup_right_all = soup.find_all(style="text-align: right;")
+    soup_right_all = soup.find_all(style=True)
     for tag in soup_right_all:
         tag_text = tag.get_text().strip()
         if any(keyword in tag_text for keyword in date_lt):
             # 返回包含日期关键字的文本
             _log.info(f"从文中匹配到发布日期 {tag_text}")
+            if "之日" in tag_text or len(tag_text) > 20 or len(tag_text) < 10:
+                continue
             tag_text = tag_text.replace("年", ".").replace("月", ".").replace("日", "")
             tag_text = convert_chinese_date_to_numeric(tag_text)
-            return tag_text
+            if any('\u4e00' <= char <= '\u9fff' for char in tag_text):
+                # 检查字符串中是否还有汉字
+                continue
+            # 将输入的字符串转换为日期对象
+            date_obj = datetime.strptime(tag_text, "%Y.%m.%d")
+            # 格式化日期对象为所需的字符串格式
+            formatted_date = date_obj.strftime("%Y.%m.%d")
+            return formatted_date
     return tag_text
 
 
@@ -512,23 +533,21 @@ def remove_nbsp(soup, is_add_right=True):
             tag.string.replace_with(new_string)
     a = re.compile(r'\n|&nbsp|&nbsp;|\xa0|\\xa0|\u3000|\\u3000|\\u0020|\t|\r|\f|&ensp;|&emsp;|&emsp|&ensp|\?|？| ')
     soup = BeautifulSoup(a.sub('', str(soup)), "html.parser")
-    # 遍历所有的<span>标签
-    for span in soup.find_all('span'):
-        # 如果span标签的文本为空，则移除它
-        if not span.get_text().strip():
-            span.decompose()
-    # for p in soup.find_all('p'):
-    #     if not p.get_text().strip():
-    #         p.decompose()
-    # 删除所有的video标签
-    for a in soup.find_all('video'):
-        if not a.get_text().strip():
-            a.decompose()
-    # 删除所有的<img>标签
-    for img in soup.find_all('img'):
-        img.decompose()
-    for st in soup.find_all('script'):
-        st.decompose()
+
+    remove_text_lt = ['span', 'video', 'p']
+    for it_t in remove_text_lt:
+        # 遍历所有的对应标签
+        for span in soup.find_all(it_t):
+            # 如果对应标签的文本为空，则移除它
+            if not span.get_text().strip():
+                span.decompose()
+
+    remove_all_lt = ['img', 'script']
+    for it_a in remove_all_lt:
+        # 删除所有的对应标签
+        for img in soup.find_all(it_a):
+            img.decompose()
+
     # 如果有抄送，删除抄送
     for it in soup.find_all('p'):
         tag_text = it.get_text()
@@ -540,10 +559,10 @@ def remove_nbsp(soup, is_add_right=True):
     html_str_without_comments = re.sub(r'<!--(.*?)-->', '', html_str, flags=re.DOTALL)
     # 重新解析成一个新的 soup 对象
     soup = BeautifulSoup(html_str_without_comments, 'html.parser')
-    # if is_add_right:
-    #     # 为最终落款格式未靠右的文章添加靠右
-    #     soup = add_right(soup, ['局', '会'])
-    #     soup = add_right(soup, ['年', '月', '日'])
+    if is_add_right:
+        # 为最终落款格式未靠右的文章添加靠右
+        soup = add_right(soup, ['局', '会'])
+        soup = add_right(soup, ['年', '月', '日'])
     return soup
 
 

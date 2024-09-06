@@ -6,7 +6,7 @@ from botpy import logging
 from sqlalchemy import create_engine, text
 from query import PublicFunction
 import pandas as pd
-
+from query.SecondSearchJudgment import main as main_cal
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教委会其他文件
@@ -62,6 +62,8 @@ class GetOtherFile:
         self.read_pages_start = kwargs.get('read_pages_start')
         if not self.read_pages_start:
             self.read_pages_start = 0
+        # 传递发布日期，发布部门以及发文字号的字典
+        self.data_dt = None
 
     def remove_outer_brackets(self, text_remove, end_phrase):
         """
@@ -107,11 +109,13 @@ class GetOtherFile:
         用于获取到总页面内容，获取到该页的 标题，发文字号，成文日期
         :return:result_lt：列表套字典，字典装有信息
         """
-        class_lt = ['row', 'item clearfix', 'zcwjk-list-c clearfix', 'zcwjk-list-c clearfix cur', 'information-l-content', 'clearfix']
+        class_lt = ['row', 'item clearfix', 'zcwjk-list-c clearfix', 'zcwjk-list-c clearfix cur',
+                    'information-l-content', 'clearfix', 'infos-box']
         result_lt = []
         # 获取到总网页内容
         soup_title = self.pf.fetch_url(url=url, headers=self.headers)
-        soup_title_all = soup_title.find(["table", "div", 'ul'], class_=["leadership-right rt mt20 overview", "p-rt rt"])
+        soup_title_all = soup_title.find(["table", "div", 'ul'],
+                                         class_=["leadership-right rt mt20 overview", "p-rt rt"])
         if soup_title_all:
             soup_title_all = soup_title_all.find_all(['tr', 'div', "li"], class_=class_lt)
             for tag in soup_title_all:
@@ -126,12 +130,17 @@ class GetOtherFile:
                 }
                 result_lt.append(data_dt)
         else:
-            soup_title_all = soup_title.find('div', class_="li-4")
+            soup_title_all = soup_title.find(['div', 'ul'],
+                                             class_=["li-4", "right-list mz-right-list", "list", "infos-box"])
             soup_title_all = soup_title_all.find_all('a', href=True)
             for tag in soup_title_all:
                 # 标题
                 p_tag = tag.find('p')
-                title = p_tag.get_text()
+                if not p_tag:
+                    p_tag = tag
+                title = p_tag.get('title')
+                if not title:
+                    title = p_tag.get_text()
                 # url 未拼接
                 title_url = tag.get('href')
                 data_dt = {
@@ -146,7 +155,6 @@ class GetOtherFile:
         class_lt = ['trs_editor_view TRS_UEDITOR trs_paper_default trs_word trs_web',
                     'trs_editor_view TRS_UEDITOR trs_paper_default trs_word',
                     'view TRS_UEDITOR trs_paper_default trs_word',
-                    'view TRS_UEDITOR trs_paper_default trs_word',
                     'view TRS_UEDITOR trs_paper_default trs_word trs_web',
                     'view TRS_UEDITOR trs_paper_default trs_default trs_word trs_web',
                     'trs_editor_view TRS_UEDITOR trs_paper_default trs_external',
@@ -154,36 +162,47 @@ class GetOtherFile:
                     'view TRS_UEDITOR trs_paper_default trs_word trs_key4format trs_web',
                     'view TRS_UEDITOR trs_paper_default trs_web trs_key4format',
                     'zwxl-article',
-                    'trs_editor_view TRS_UEDITOR trs_paper_default trs_web'
+                    'trs_editor_view TRS_UEDITOR trs_paper_default trs_web',
+                    'det',
+                    'Section1',
+                    'zwxl-article pages_content',
+                    'detail-container',
+                    'Content'
                     ]
-        zhengwen = soup.find('div', class_=['zcwjk-xlcon', 'gfxwj-content', 'zcwjk-con', 'zwxl-main', 'zwxl-article','lef border'])
+        zhengwen = soup.find('div', class_=['zcwjk-xlcon', 'gfxwj-content', 'zcwjk-con', 'zwxl-main', 'zwxl-article',
+                                            'lef border'])
         zhengwen_stat = None
-        for it in class_lt:
-            zhengwen_stat = soup.find('div', class_=it)
-            if zhengwen_stat is not None:
-                break
-        # 对style标签值进行处理
-        if zhengwen_stat:
-            soup_ture = self.pf.soup_cal(zhengwen_stat)
-            soup_ture = self.pf.remove_nbsp(soup_ture)
-            # 去除最后部分的扫一扫和分享标签
-            soup_ture = self.remove_specific_tags(soup_ture)
-        elif zhengwen:
-            soup_ture = self.pf.soup_cal(zhengwen)
-            soup_ture = self.pf.remove_nbsp(soup_ture)
-            # 去除最后部分的扫一扫和分享标签
-            soup_ture = self.remove_specific_tags(soup_ture)
-        else:
-            _log.error("未找到文章的正文部分！！！！")
-            soup_ture = None
-        # 处理文中靠右属性
-        soup_ture = self.pf.set_right_alignment(soup_ture)
-        soup_ture = str(soup_ture)
-        return soup_ture
+        try:
+            for it in class_lt:
+                zhengwen_stat = soup.find('div', class_=it)
+                if zhengwen_stat is not None:
+                    if zhengwen_stat.get_text():
+                        break
+            # 对style标签值进行处理
+            if zhengwen_stat:
+                soup_ture = self.pf.soup_cal(zhengwen_stat)
+                soup_ture = self.pf.remove_nbsp(soup_ture)
+                # 去除最后部分的扫一扫和分享标签
+                soup_ture = self.remove_specific_tags(soup_ture)
+            elif zhengwen:
+                soup_ture = self.pf.soup_cal(zhengwen)
+                soup_ture = self.pf.remove_nbsp(soup_ture)
+                # 去除最后部分的扫一扫和分享标签
+                soup_ture = self.remove_specific_tags(soup_ture)
+            else:
+                _log.error("未找到文章的正文部分！！！！")
+                soup_ture = None
+            # 处理文中靠右属性
+            # soup_ture = self.pf.set_right_alignment(soup_ture)
+            soup_ture = str(soup_ture)
+            return soup_ture
+        except Exception as e:
+            _log.info(f"zhengwen_get发生错误:{e}")
+
 
     def remove_specific_tags(self, soup):
         # 找到并删除包含特定文本的 <div>
-        div_to_remove = soup.find('div', text='扫一扫在手机打开当前页')
+        div_to_remove = soup.find(['div', 'p'], text='扫一扫在手机打开当前页')
         if div_to_remove:
             div_to_remove.decompose()
         # 删除所有其他的指定标签
@@ -194,16 +213,26 @@ class GetOtherFile:
         return soup
 
     def bumen_get(self, soup):
+
         bumen_soup = soup.find('table', class_='zwxl-table')
-        if not bumen_soup:
-            return ';;'
-        bumen_soup_all = bumen_soup.find_all('tr')
-        for tag in bumen_soup_all:
-            biaot = tag.find('td', class_='t1')
-            if "发布机构" in biaot.get_text():
-                bumen = tag.find('td', class_='t2').get_text()
-                if bumen == '市发展改革委':
-                    bumen = '重庆市发展和改革委员会'
+        if bumen_soup:
+            bumen_soup_all = bumen_soup.find_all('tr')
+            for tag in bumen_soup_all:
+                biaot = tag.find('td', class_='t1')
+                if "发布机构" in biaot.get_text():
+                    bumen = tag.find('td', class_='t2').get_text()
+                    if bumen == '市发展改革委':
+                        bumen = '重庆市发展和改革委员会'
+                    bumenall = self.pf.get_sql_menus('831', 'lfbj_fdep_id')
+                    # 使用difflib找到最接近的匹配项
+                    closest_match = difflib.get_close_matches(bumen, bumenall.keys(), n=1, cutoff=0.6)
+                    if closest_match:
+                        values = bumenall.get(closest_match[0])
+                        fabubumen = self.format_values(values)
+                        return fabubumen
+        else:
+            bumen = self.data_dt.get("发布部门")
+            if bumen:
                 bumenall = self.pf.get_sql_menus('831', 'lfbj_fdep_id')
                 # 使用difflib找到最接近的匹配项
                 closest_match = difflib.get_close_matches(bumen, bumenall.keys(), n=1, cutoff=0.6)
@@ -211,6 +240,7 @@ class GetOtherFile:
                     values = bumenall.get(closest_match[0])
                     fabubumen = self.format_values(values)
                     return fabubumen
+                return closest_match
         return ';;'
 
     def format_values(self, values):
@@ -286,14 +316,30 @@ class GetOtherFile:
             for key, value in download_dt.items():
                 if not issued_date:
                     continue
-                issued_date_real = issued_date.replace('.', '')
-                issued_date_real = issued_date_real[:-2]
-                url_real = self.start_url + issued_date_real + value.lstrip('.')
-                self.pf.annex_get(url=url_real, save_path=key, headers=self.headers, save_path_real=self.save_path_real)
-                _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                try:
+                    issued_date_real = issued_date.replace('.', '')
+                    issued_date_real = issued_date_real[:-2]
+                    url_real = self.start_url + issued_date_real + value.lstrip('.')
+                    self.pf.annex_get(url=url_real, save_path=key, headers=self.headers, save_path_real=self.save_path_real)
+                    _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                except Exception as e:
+                    _log.info(f"annex_get_all发生错误：{e}")
         else:
             _log.info(f"没有附件内容需要写入！！！")
 
+    def a_href_calculate(self, soup, quanwen, title_any):
+        download_dt = {}
+        download = soup.find('div', class_="zwxl-article")
+        if not download:
+            return quanwen
+        # 查找所有带有href属性的标签
+        links = download.find_all(href=True)
+        for link in links:
+            if '#' in link.get('href'):
+                continue
+            if title_any in link.get_text():
+                continue
+            download_dt[link.get_text()] = link.get('href')
         quanwen = str(quanwen)
         zhengwen_div_all = download.find_all('div')
         for tag in zhengwen_div_all:
@@ -331,11 +377,16 @@ class GetOtherFile:
         :param soup:
         :return:
         """
-        # 发布日期
-        if not it.get('发布日期'):
-            it['发布日期'] = self.pf.match_date(it['全文'], soup)
-        # 发文字号
-        data_dt = self.pf.soup_get_date(soup)
+        data_dt = {}
+        try:
+            # 发布日期
+            if not it.get('发布日期'):
+                it['发布日期'] = self.pf.match_date(it['全文'], soup)
+            # 发文字号
+            data_dt = self.pf.soup_get_date(soup)
+            self.data_dt = data_dt
+        except Exception as e:
+            _log.info(f"date_and_wordsize出错:{e}")
 
         tag_text = data_dt.get("发文字号")
         if tag_text:
@@ -357,21 +408,39 @@ class GetOtherFile:
             md5_str = it.get('法规标题') + it.get('发布日期')
             it["唯一标志"] = self.pf.get_md5(md5_str)
         else:
-            it["唯一标志"] = None
+            it["唯一标志"] = self.pf.get_md5(it.get('法规标题'))
         # 来源
         it["来源"] = new_get_url
         # 发布部门
-        catagroy, bumen = self.calculate_category(it)
-        bumen1 = self.bumen_get(soup)
-        bumen_real = self.process_strings(bumen, bumen1)
-        bumen_real = self.normalize_sequence(bumen_real)
-        if bumen_real == ';;':
-            it["发布部门"] = self.lasy_department
-        else:
-            it["发布部门"] = bumen_real
-        # 类别
-        it["类别"] = catagroy
+        try:
+            catagroy, bumen = self.calculate_category(it)
+            bumen1 = self.bumen_get(soup)
+            bumen_real = self.normalize_sequence(self.process_strings(bumen, bumen1))
+            if bumen_real == ';;':
+                it["发布部门"] = self.lasy_department
+            else:
+                it["发布部门"] = bumen_real
+            # 类别
+            it["类别"] = catagroy
+        except Exception as e:
+            _log.info(f"identification_and_source发生错误:{e}")
         return it
+
+    def url_calculate(self, path):
+        """
+        匹配正确的url内容
+        :param path:
+        :return:
+        """
+        # 匹配日期部分及之后的内容
+        pattern = r'(\d{6})(.*)'
+        match = re.search(pattern, path)
+
+        if match:
+            date_part, rest = match.groups()
+            return f'{date_part}{rest}'
+        else:
+            return path
 
     def filter_all(self, new_result_lt):
         for it in new_result_lt:
@@ -381,28 +450,26 @@ class GetOtherFile:
                 _log.info(f"{it.get('法规标题')} 文件已经存在！！！")
                 continue
             _log.info(f"需要写入的文章:{it.get('法规标题')}")
-            try:
-                # soup
-                soup = self.pf.fetch_url(new_get_url, headers=self.headers)
-                # 正文
-                it['全文'] = self.zhengwen_get(soup)
-                # 处理发布日期和发文字号
-                it = self.date_and_wordsize(it, soup)
-                # 处理唯一标志和来源
-                it = self.identification_and_source(it, new_get_url, soup)
-                # 效力级别
-                it["效力级别"] = self.level_of_effectiveness_real
-                # 时效性
-                it["时效性"] = "01"
-                it["实施日期"] = it.get('发布日期')
-                # 附件处理
-                it['全文'] = self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
-                it['收录来源个人'] = self.myself_mark
-            except Exception as e:
-                _log.info(f"filter_all发生错误:{e}")
-                continue
+            # 个人收录来源标记
+            it['收录来源个人'] = self.myself_mark
+            # soup
+            soup = self.pf.fetch_url(new_get_url, headers=self.headers)
+            # 正文
+            it['全文'] = self.zhengwen_get(soup)
+            # 处理发布日期和发文字号
+            it = self.date_and_wordsize(it, soup)
+            # 处理唯一标志和来源
+            it = self.identification_and_source(it, new_get_url, soup)
+            # 效力级别
+            it["效力级别"] = self.level_of_effectiveness_real
+            # 时效性
+            it["时效性"] = "01"
+            it["实施日期"] = it.get('发布日期')
+            # 附件处理
+            it['全文'] = self.a_href_calculate(soup, it['全文'], it['法规标题'])
+            self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
         # 过滤列表中的字典
-        filtered_list = [item for item in new_result_lt if len(item) > 4]
+        filtered_list = [item for item in new_result_lt if len(item) > 5]
         return filtered_list
 
     def calculate(self):
@@ -425,6 +492,7 @@ class GetOtherFile:
             filtered_list = self.filter_all(new_result_lt)
             if filtered_list:
                 df = pd.DataFrame(filtered_list)
+                df = main_cal(data_df=df)
                 self.pf.to_mysql(df, self.table_name)
                 _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
             else:
