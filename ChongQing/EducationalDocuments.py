@@ -6,7 +6,7 @@ from botpy import logging
 from sqlalchemy import create_engine, text
 from query import PublicFunction
 import pandas as pd
-
+from query.SecondSearchJudgment import main as main_cal
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教育委员会行政规范性文件
@@ -54,6 +54,14 @@ class EducationalDocuments:
         }
         # 在函数返回为空的时候指定发布部门
         self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
+        # 收录来源个人
+        self.myself_mark = kwargs.get("lasy_department")
+        # 部门
+        self.level_of_effectiveness_real = self.level_of_effectiveness.get(kwargs.get("level_of_effectiveness"))
+        # 指定起始页数
+        self.read_pages_start = kwargs.get('read_pages_start')
+        if not self.read_pages_start:
+            self.read_pages_start = 0
         # # 类别
         # self.category = {"机关工作综合规定": "003;00301"}
 
@@ -292,14 +300,95 @@ class EducationalDocuments:
             download_dt[link.get_text()] = link.get('href')
         if download_dt:
             for key, value in download_dt.items():
-                issued_date_real = issued_date.replace('.', '')
-                issued_date_real = issued_date_real[:-2]
-                url_real = self.start_url + issued_date_real + value.lstrip('.')
-                self.pf.annex_get(url=url_real, save_path=key, headers=self.headers, save_path_real=self.save_path_real)
-                _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                if not issued_date:
+                    continue
+                try:
+                    issued_date_real = issued_date.replace('.', '')
+                    issued_date_real = issued_date_real[:-2]
+                    url_real = self.start_url + issued_date_real + value.lstrip('.')
+                    self.pf.annex_get(url=url_real, save_path=key, headers=self.headers,
+                                      save_path_real=self.save_path_real)
+                    _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                except Exception as e:
+                    _log.info(f"annex_get_all发生错误：{e}")
         else:
             _log.info(f"没有附件内容需要写入！！！")
 
+    def normalize_sequence(self, sequence_str):
+        if "8;8;8;8;" in sequence_str:
+            sequence_str = sequence_str.lstrip("8;8;8;")
+            sequence_str = sequence_str.lstrip("31;")
+        return sequence_str
+
+    def date_and_wordsize(self, it, soup):
+        """
+        处理发布日期和发文字号
+        :param it:
+        :param soup:
+        :return:
+        """
+        data_dt = {}
+        try:
+            # 发布日期
+            if not it.get('发布日期'):
+                it['发布日期'] = self.pf.match_date(it['全文'], soup)
+            # 发文字号
+            data_dt = self.pf.soup_get_date(soup)
+            self.data_dt = data_dt
+        except Exception as e:
+            _log.info(f"date_and_wordsize出错:{e}")
+
+        tag_text = data_dt.get("发文字号")
+        if tag_text:
+            it["发文字号"] = tag_text
+        else:
+            it["发文字号"] = None
+        return it
+
+    def identification_and_source(self, it, new_get_url, soup):
+        """
+        处理唯一标识,来源,类别以及发布部门
+        :param soup:
+        :param it:
+        :param new_get_url:
+        :return:
+        """
+        if it.get('发布日期'):
+            # 唯一标志
+            md5_str = it.get('法规标题') + it.get('发布日期')
+            it["唯一标志"] = self.pf.get_md5(md5_str)
+        else:
+            it["唯一标志"] = self.pf.get_md5(it.get('法规标题'))
+        # 来源
+        it["来源"] = new_get_url
+        # 发布部门
+        try:
+            catagroy, bumen = self.calculate_category(it)
+            bumen1 = self.bumen_get(soup)
+            bumen_real = self.normalize_sequence(self.process_strings(bumen, bumen1))
+            if bumen_real == ';;':
+                it["发布部门"] = self.lasy_department
+            else:
+                it["发布部门"] = bumen_real
+            # 类别
+            it["类别"] = catagroy
+        except Exception as e:
+            _log.info(f"identification_and_source发生错误:{e}")
+        return it
+
+    def a_href_calculate(self, soup, quanwen, title_any):
+        download_dt = {}
+        download = soup.find('div', class_="zwxl-article")
+        if not download:
+            return quanwen
+        # 查找所有带有href属性的标签
+        links = download.find_all(href=True)
+        for link in links:
+            if '#' in link.get('href'):
+                continue
+            if title_any in link.get_text():
+                continue
+            download_dt[link.get_text()] = link.get('href')
         quanwen = str(quanwen)
         zhengwen_div_all = download.find_all('div')
         for tag in zhengwen_div_all:
@@ -312,12 +401,6 @@ class EducationalDocuments:
                         quanwen += "<br>"
         return quanwen
 
-    def normalize_sequence(self, sequence_str):
-        if "8;8;8;8;" in sequence_str:
-            sequence_str = sequence_str.lstrip("8;8;8;")
-            sequence_str = sequence_str.lstrip("31;")
-        return sequence_str
-
     def filter_all(self, new_result_lt):
         for it in new_result_lt:
             new_get_url = self.start_url.rstrip('index.html') + it.get('法规url').lstrip('./')
@@ -326,43 +409,31 @@ class EducationalDocuments:
                 _log.info(f"{it.get('法规标题')} 文件已经存在！！！")
                 continue
             _log.info(f"需要写入的文章:{it.get('法规标题')}")
-            try:
-                # soup
-                soup = self.pf.fetch_url(new_get_url, headers=self.headers)
-                # 正文
-                it['全文'] = self.zhengwen_get(soup)
-                # 唯一标志
-                md5_str = it.get('法规标题') + it.get('发布日期')
-                it["唯一标志"] = self.pf.get_md5(md5_str)
-                # 来源
-                it["来源"] = new_get_url
-                # 发布部门
-                catagroy, bumen = self.calculate_category(it)
-                bumen1 = self.bumen_get(soup)
-                bumen_real = self.process_strings(bumen, bumen1)
-                bumen_real = self.normalize_sequence(bumen_real)
-                if bumen_real == ';;':
-                    it["发布部门"] = self.lasy_department
-                else:
-                    it["发布部门"] = bumen_real
-                # 类别
-                it["类别"] = catagroy
-                # 效力级别
-                it["效力级别"] = self.level_of_effectiveness['地方规范性文件']
-                # 时效性
-                it["时效性"] = "01"
-                it["实施日期"] = it.get('发布日期')
-                it['全文'] = self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
-            except Exception as e:
-                _log.info(f"filter_all发生错误:{e}")
-                continue
+            # 个人收录来源标记
+            it['收录来源个人'] = self.myself_mark
+            # soup
+            soup = self.pf.fetch_url(new_get_url, headers=self.headers)
+            # 正文
+            it['全文'] = self.zhengwen_get(soup)
+            # 处理发布日期和发文字号
+            it = self.date_and_wordsize(it, soup)
+            # 处理唯一标志和来源
+            it = self.identification_and_source(it, new_get_url, soup)
+            # 效力级别
+            it["效力级别"] = self.level_of_effectiveness_real
+            # 时效性
+            it["时效性"] = "01"
+            it["实施日期"] = it.get('发布日期')
+            # 附件处理
+            it['全文'] = self.a_href_calculate(soup, it['全文'], it['法规标题'])
+            self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
         # 过滤列表中的字典
-        filtered_list = [item for item in new_result_lt if len(item) > 3]
+        filtered_list = [item for item in new_result_lt if len(item) > 5]
         return filtered_list
 
     def calculate(self):
         # 有几页就遍历几次
-        for i in range(self.num_pages):
+        for i in range(self.read_pages_start,self.num_pages):
             if i == 0:
                 new_url = self.start_url
             else:
@@ -380,9 +451,9 @@ class EducationalDocuments:
             filtered_list = self.filter_all(new_result_lt)
             if filtered_list:
                 df = pd.DataFrame(filtered_list)
+                df = main_cal(data_df=df)
                 self.pf.to_mysql(df, self.table_name)
-                _log.info(
-                    f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
+                _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
             else:
                 _log.info(f"第{i + 1}页:   内容已经存在！")
 
@@ -391,9 +462,11 @@ def main():
     data_dt = {
         "start_url": 'https://jw.cq.gov.cn/zwgk/zfxxgkml/zcwj/gfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 13,  # 读取页码总数
         "save_path_real": '行政规范性文件',  # 附件存放路径,
-        "lasy_department": '重庆市教育委员会'  # 在函数返回为空的时候指定发布部门
+        "lasy_department": '重庆市教育委员会',  # 在函数返回为空的时候指定发布部门
+        "level_of_effectiveness": '地方工作文件',  # 指定效力级别,如果不填，则默认为地方规范性文件
     }
     obj = EducationalDocuments(**data_dt)
     obj.calculate()
