@@ -231,8 +231,7 @@ def to_mysql(df, table_name):
 def save_sql_BidDocument(sql):
     '''
     用于插入数据库
-    :param k:
-    :param all_result:
+    :param sql
     :return:
     '''
     connect = pyodbc.connect(
@@ -431,13 +430,15 @@ def soup_get_date(soup):
         "发布部门": None
     }
     in_lt = ["成文日期", "发布日期"]
-    table_t = soup.find(['table', 'div', 'ul'], class_=["zwxl-table", "a11", "zw-table clearfix"])
+    table_t = soup.find(['table', 'div', 'ul'], class_=["zwxl-table", "a11", "zw-table clearfix", "zwxl-head"])
     if table_t:
         tr_all = table_t.find_all('tr')
         if not tr_all:
             tr_all = table_t.find_all('div')
         if not tr_all:
             tr_all = table_t.find_all('li')
+        if not tr_all:
+            tr_all = table_t.find_all('span')
         for tag in tr_all:
             tag_text = tag.get_text()
             if any(key in tag_text for key in in_lt):
@@ -469,6 +470,22 @@ def soup_get_date(soup):
                     # 检查是否为空
                     if code:
                         data_dt["发布部门"] = code
+        if data_dt.get('发文字号') is None or data_dt.get('发布日期') is None:
+            tr_text = ''
+            for tag in tr_all:
+                tr_text_any = tag.get_text()
+                tr_text += tr_text_any
+            patterns = {
+                '发文字号': r'\[ 发文字号 \]([^\[\]]+)',
+                '成文日期': r'\[ 成文日期 \]\s*(\d{4}-\d{2}-\d{2})'
+            }
+
+            # 提取信息
+            data_dt = {}
+            for key, pattern in patterns.items():
+                match = re.search(pattern, tr_text)
+                if match:
+                    data_dt[key] = match.group(1).strip()
     return data_dt
 
 
@@ -487,24 +504,42 @@ def match_date(zhengwen, soup):
     date_lt = ["年", "月", "日"]
     soup = BeautifulSoup(zhengwen, 'html.parser')
     soup_right_all = soup.find_all(style=True)
+
+    # 拼接日期
+    date_text = ''
     for tag in soup_right_all:
         tag_text = tag.get_text().strip()
         if any(keyword in tag_text for keyword in date_lt):
             # 返回包含日期关键字的文本
             _log.info(f"从文中匹配到发布日期 {tag_text}")
-            if "之日" in tag_text or len(tag_text) > 20 or len(tag_text) < 10:
+            found_components = [component for component in date_lt if component in tag_text]
+            if len(found_components) == len(date_lt):
+                tag_text = tag_text.replace("年", ".").replace("月", ".").replace("日", "")
+                tag_text = convert_chinese_date_to_numeric(tag_text)
+            elif len(found_components) > 0:
+                date_text += tag_text
                 continue
-            tag_text = tag_text.replace("年", ".").replace("月", ".").replace("日", "")
-            tag_text = convert_chinese_date_to_numeric(tag_text)
+            else:
+                continue
+            # 如果直接是完整日期则完整输出
             if any('\u4e00' <= char <= '\u9fff' for char in tag_text):
                 # 检查字符串中是否还有汉字
                 continue
             # 将输入的字符串转换为日期对象
             date_obj = datetime.strptime(tag_text, "%Y.%m.%d")
             # 格式化日期对象为所需的字符串格式
-            formatted_date = date_obj.strftime("%Y.%m.%d")
-            return formatted_date
-    return tag_text
+            tag_date = date_obj.strftime("%Y.%m.%d")
+            return tag_date
+
+    found_components = [component for component in date_lt if component in date_text]
+    if len(found_components) == len(date_lt):
+        date_text = date_text.replace("年", ".").replace("月", ".").replace("日", "")
+        date_text = convert_chinese_date_to_numeric(date_text)
+        # 将输入的字符串转换为日期对象
+        date_obj = datetime.strptime(date_text, "%Y.%m.%d")
+        # 格式化日期对象为所需的字符串格式
+        tag_date = date_obj.strftime("%Y.%m.%d")
+        return tag_date
 
 
 def remove_nbsp(soup, is_add_right=True):

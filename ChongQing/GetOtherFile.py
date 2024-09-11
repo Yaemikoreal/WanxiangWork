@@ -6,7 +6,8 @@ from botpy import logging
 from sqlalchemy import create_engine, text
 from query import PublicFunction
 import pandas as pd
-from query.SecondSearchJudgment import main as main_cal
+from retrying import retry
+from query.QueryTitle import main_panduan
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教委会其他文件
@@ -64,6 +65,8 @@ class GetOtherFile:
             self.read_pages_start = 0
         # 传递发布日期，发布部门以及发文字号的字典
         self.data_dt = None
+        # 附件下载路径字典
+        self.download_dt = {}
 
     def remove_outer_brackets(self, text_remove, end_phrase):
         """
@@ -131,7 +134,7 @@ class GetOtherFile:
                 result_lt.append(data_dt)
         else:
             soup_title_all = soup_title.find(['div', 'ul'],
-                                             class_=["li-4", "right-list mz-right-list", "list", "infos-box"])
+                                             class_=["li-4", "right-list mz-right-list", "list", "infos-box","hdjl-table","rsj-list1","right-list"])
             soup_title_all = soup_title_all.find_all('a', href=True)
             for tag in soup_title_all:
                 # 标题
@@ -141,13 +144,20 @@ class GetOtherFile:
                 title = p_tag.get('title')
                 if not title:
                     title = p_tag.get_text()
+                    # 匹配日期格式
+                    pattern = r'(20\d{2}-\d{2}-\d{2})$'
+                    match = re.search(pattern, title)
+                    if match:
+                        # 如果找到日期，则移除它
+                        title = title[:match.start()].strip()
                 # url 未拼接
                 title_url = tag.get('href')
                 data_dt = {
                     "法规标题": title,
                     "法规url": title_url
                 }
-                result_lt.append(data_dt)
+                if data_dt.get("法规标题"):
+                    result_lt.append(data_dt)
         return result_lt
 
     def zhengwen_get(self, soup):
@@ -170,7 +180,7 @@ class GetOtherFile:
                     'Content'
                     ]
         zhengwen = soup.find('div', class_=['zcwjk-xlcon', 'gfxwj-content', 'zcwjk-con', 'zwxl-main', 'zwxl-article',
-                                            'lef border'])
+                                            'lef border', 'xl-con clearfix'])
         zhengwen_stat = None
         try:
             for it in class_lt:
@@ -291,37 +301,29 @@ class GetOtherFile:
         bumen = self.pf.department(Description=full_text_only, title=title, area_num='831')  # 831:重庆地区
         return catagroy, bumen
 
-    def annex_get_all(self, soup, title_any, quanwen, issued_date):
+    def annex_get_all(self,issued_date, new_get_url):
         """
         附件下载函数
         :param issued_date: 发布日期
-        :param quanwen: 全文
-        :param title_any: 匹配内容的标题
-        :param soup: 文章页面soup
         :return:
         """
-        download_dt = {}
-        download = soup.find('div', class_="zwxl-article")
-        if not download:
-            return quanwen
-        # 查找所有带有href属性的标签
-        links = download.find_all(href=True)
-        for link in links:
-            if '#' in link.get('href'):
-                continue
-            if title_any in link.get_text():
-                continue
-            download_dt[link.get_text()] = link.get('href')
+        download_dt = self.download_dt
+        # 使用正则表达式匹配直到最后一个斜杠之前的路径
+        pattern = r'^(https?://[^/]+/[^/]+)$'
+        match = re.match(pattern, new_get_url)
+        if match:
+            # 如果匹配成功，返回匹配的部分
+            new_get_url = match.group(0)
         if download_dt:
             for key, value in download_dt.items():
                 if not issued_date:
                     continue
                 try:
-                    issued_date_real = issued_date.replace('.', '')
-                    issued_date_real = issued_date_real[:-2]
-                    url_real = self.start_url + issued_date_real + value.lstrip('.')
-                    self.pf.annex_get(url=url_real, save_path=key, headers=self.headers, save_path_real=self.save_path_real)
-                    _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                    # issued_date_real = issued_date.replace('.', '')
+                    # issued_date_real = issued_date_real[:-2]
+                    # url_real = self.start_url + issued_date_real + value.lstrip('.')
+                    self.pf.annex_get(url=new_get_url, save_path=key, headers=self.headers, save_path_real=self.save_path_real)
+                    _log.info(f"写入附件，标题为：{key} ,url为:{new_get_url}!!!")
                 except Exception as e:
                     _log.info(f"annex_get_all发生错误：{e}")
         else:
@@ -341,6 +343,7 @@ class GetOtherFile:
                 continue
             download_dt[link.get_text()] = link.get('href')
         quanwen = str(quanwen)
+        self.download_dt = download_dt
         zhengwen_div_all = download.find_all('div')
         for tag in zhengwen_div_all:
             if "下载" in tag.get_text():
@@ -442,9 +445,23 @@ class GetOtherFile:
         else:
             return path
 
+    @retry(stop_max_attempt_number=3)
+    def process_row(self, it):
+        any_title = it.get('法规标题')
+        any_issued_number = it.get('发文字号')
+        any_issued_date = it.get('发布日期')
+        if main_panduan(any_title, issued_number=any_issued_number, issued_date=any_issued_date):
+            _log.info(f"法器地方法规已有这条数据： {any_title}")
+            return False
+        _log.info(f"法器地方法规没有这条数据： {any_title}")
+        return True
+
     def filter_all(self, new_result_lt):
+        filtered_list = []
         for it in new_result_lt:
             new_get_url = self.start_url.rstrip('index.html') + it.get('法规url').lstrip('./')
+            # new_get_url = 'https://rlsbj.cq.gov.cn/' + it.get('法规url').lstrip('./')
+            # new_get_url = new_get_url.replace('zfxxgkml/zcwj_145360/qtwj/', '')
             del it['法规url']
             if self.panduan_title(it.get('法规标题'), self.table_name):
                 _log.info(f"{it.get('法规标题')} 文件已经存在！！！")
@@ -467,9 +484,13 @@ class GetOtherFile:
             it["实施日期"] = it.get('发布日期')
             # 附件处理
             it['全文'] = self.a_href_calculate(soup, it['全文'], it['法规标题'])
-            self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
+            # process_row用于二次检索该文章是否需要
+            if self.process_row(it):
+                filtered_list.append(it)
+                self.annex_get_all(it.get('发布日期'), new_get_url)
+            _log.info('=========================================')
         # 过滤列表中的字典
-        filtered_list = [item for item in new_result_lt if len(item) > 5]
+        filtered_list = [item for item in filtered_list if len(item) > 5]
         return filtered_list
 
     def calculate(self):
@@ -491,10 +512,13 @@ class GetOtherFile:
             # 统筹整理,写入数据
             filtered_list = self.filter_all(new_result_lt)
             if filtered_list:
-                df = pd.DataFrame(filtered_list)
-                df = main_cal(data_df=df)
-                self.pf.to_mysql(df, self.table_name)
-                _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
+                _log.info(f"第{i + 1}页    实际需要写入的文章有 {len(filtered_list)} 篇！！！")
+                data_df = pd.DataFrame(filtered_list)
+                if not data_df.empty:
+                    self.pf.to_mysql(data_df, self.table_name)
+                    _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
+                else:
+                    _log.info(f"第{i + 1}页:   内容已经存在！")
             else:
                 _log.info(f"第{i + 1}页:   内容已经存在！")
 
