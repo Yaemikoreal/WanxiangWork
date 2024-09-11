@@ -4,6 +4,15 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from query import PublicFunction
 import pandas as pd
+import logging
+
+# 配置基本的日志设置
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
+# 创建一个日志记录器
+logger = logging.getLogger('my_logger')
 
 
 class test2:
@@ -40,7 +49,7 @@ class test2:
 
     def write_df_to_sql(self, df, table_name):
         """
-        将 DataFrame 写入 SQL Server 数据库中的指定表
+        将 DataFrame 分批次写入 SQL Server 数据库中的指定表
         :param df: DataFrame
         :param table_name: 表名
         :return: None
@@ -66,7 +75,7 @@ class test2:
         try:
             conn = pyodbc.connect(connection_string)
         except pyodbc.Error as e:
-            print(f"Connection error: {e}")
+            logger.error(f"Connection error: {e}")
             return
             # 将 DataFrame 写入数据库
         try:
@@ -77,16 +86,17 @@ class test2:
             insert_sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
 
             for index, row in df.iterrows():
-                print(row)
+                logger.info(f"{row.get('法规标题')} 正在写入！！")
                 cursor.execute(insert_sql, list(row))
 
             conn.commit()
-            print(f"DataFrame has been successfully written to {table_name}.")
+            logger.error(f"DataFrame has been successfully written to {table_name}.")
         except pyodbc.Error as e:
-            print(f"Error writing DataFrame to {table_name}: {e}")
+            logger.error(f"Error writing DataFrame to {table_name}: {e}")
             conn.rollback()
-        # 关闭连接
-        conn.close()
+        finally:
+            # 关闭连接
+            conn.close()
 
     def replace_something(self, data_df, content):
         # 定义要替换的HTML标签字符串
@@ -95,7 +105,6 @@ class test2:
         data_df[content] = data_df[content].str.replace(html_tags, '', regex=True)
         # 应用函数
         data_df[content] = data_df[content].apply(self.calculate_right)
-
         return data_df
 
     def calculate_right(self, str_text):
@@ -109,22 +118,37 @@ class test2:
         text_return = str(soup)
         return text_return
 
+    def write_to_oa(self, it):
+        sql = rf"INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES ('{it['唯一标志']}','{it.get('法规标题')}','{it['全文']}','{it['发布部门']}','{it['类别']}','{it.get('发布日期')}','{it['效力级别']}','{it['实施日期']}','{it['发文字号']}','{it['时效性']}','{it['来源']}','{it['收录时间']}')"
+        self.pf.save_sql_BidDocument(sql)
+        logger.info(f"{sql}")
+
     def calculate(self):
         data_df = self.from_mysql(self.table_name)
         data_df = data_df.drop(columns=['ID'])
+        data_df = data_df[data_df['收录来源个人'] == '重庆市生态环境局']
+        data_df = data_df.drop(columns=['收录来源个人'])
+        # 将 '发文字号' 列的数据类型转换为字符串类型
+        data_df['发文字号'] = data_df['发文字号'].astype(str)
         # 删除所有值为空的列
         data_df = data_df.dropna(axis=1, how='all')
         shoulu_date = "JX" + str(datetime.now().strftime("%Y.%m.%d"))
         data_df['收录时间'] = shoulu_date
-        data_df = self.replace_something(data_df, '全文')
-        self.write_df_to_sql(data_df, "专项补充收录")
-        # self.pf.to_mysql(data_df, '发改委其他文件_copy1')
-        print("写入成功！！！")
+
+        try:
+            # self.write_df_to_sql(data_df, "专项补充收录")
+            data_df.apply(self.write_to_oa, axis=1)
+            logger.info("写入成功！！！")
+        except Exception as e:
+            logger.error(f"df写入错误： {e}")
+
+
+
 
 
 def main():
     data_dt = {
-        "table_name": '行政规范性文件',
+        "table_name": '重庆市其他文件_new',
     }
     obj = test2(**data_dt)
     obj.calculate()
