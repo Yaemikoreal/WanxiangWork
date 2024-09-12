@@ -23,17 +23,28 @@ https://rlsbj.cq.gov.cn/zwgk_182/zfxxgkml/zcwj_145360/qtwj/
 https://ghzrzyj.cq.gov.cn/zwgk_186/zcwj/qtwj/
 重庆市生态环境局
 https://sthjj.cq.gov.cn/zwgk_249/zfxxgkml/zcwj/qtwj/
+重庆市体育局
+https://tyj.cq.gov.cn/zwgk_253/zcwj/qtwj/
+重庆市统计局
+https://tjj.cq.gov.cn/zwgk_233/zcwj/qtwj/
+重庆市医疗保障局(无)
+https://ylbzj.cq.gov.cn/zwgk_535/zfxxgkml/zcwj_291934/qtwj222/
+重庆市大数据应用发展管理局
+https://dsjj.cq.gov.cn/zwgk_533/zcwj/zcqtwj/
+重庆市人民政府口岸和物流办公室
+https://zfkawlb.cq.gov.cn/zwgk/zcwj/qtwj_345067/
+
 """
 
 
 def main_test():
     data_dt = {
-        "start_url": 'https://sthjj.cq.gov.cn/zwgk_249/zfxxgkml/zcwj/qtwj/',  # 访问路径
+        "start_url": 'https://zfkawlb.cq.gov.cn/zwgk/zcwj/qtwj_345067/',  # 访问路径
         "write_table_name": '重庆市其他文件',  # 写入表名
         'read_pages_start': 0,  # 读取页码起始数(调试用)
-        "read_pages_num": 34,  # 读取页码总数
+        "read_pages_num": 2,  # 读取页码总数
         "save_path_real": '重庆市其他文件',  # 附件存放路径,
-        "lasy_department": '重庆市生态环境局',  # 在函数返回为空的时候指定发布部门
+        "lasy_department": '重庆市人民政府口岸和物流办公室',  # 在函数返回为空的时候指定发布部门
         "level_of_effectiveness": '地方工作文件',  # 指定效力级别,如果不填，则默认为地方规范性文件
     }
     obj = GetOtherFile(**data_dt)
