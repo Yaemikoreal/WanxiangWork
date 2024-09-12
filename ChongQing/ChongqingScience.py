@@ -23,16 +23,45 @@ https://rlsbj.cq.gov.cn/zwgk_182/zfxxgkml/zcwj_145360/jfxzgfxwj/
 https://ghzrzyj.cq.gov.cn/zwgk_186/zcwj/xzgfxwj/
 重庆市生态环境局行政规范性文件
 https://sthjj.cq.gov.cn/zwgk_249/zfxxgkml/zcwj/xzgfxwj/
+重庆市体育局行政规范性文件
+https://tyj.cq.gov.cn/zwgk_253/zcwj/xzgfxwj/
+重庆市统计局行政规范性文件
+https://tjj.cq.gov.cn/zwgk_233/zcwj/xzgfxwj/
+重庆市医疗保障局行政规范性文件
+https://ylbzj.cq.gov.cn/zwgk_535/zfxxgkml/zcwj_291934/gfxwj/
+重庆市大数据应用发展管理局行政规范性文件
+https://dsjj.cq.gov.cn/zwgk_533/zcwj/zcxzgfxwj/
+重庆市人民政府口岸和物流办公室行政规范性文件
+https://zfkawlb.cq.gov.cn/zwgk/zcwj/xzgfxwj_345066/
+重庆市国防动员办公室行政规范性文件
+https://rmfkb.cq.gov.cn/zwgk_246/zfxxgkml/fztd/gfxwj/
+重庆市公共资源交易监督管理局行政规范性文件
+https://fzggw.cq.gov.cn/zwgk/zfxxgkml/zcwj/xzgfxwj/sggzyjyjgjxzgfxwj/
+重庆市林业局行政规范性文件
+https://lyj.cq.gov.cn/zwgk_237/zfxxgjml/zcwj/xzgfxwj/
+重庆市药品监督管理局行政规范性文件
+https://yaojianju.cq.gov.cn/zwgk_n2104/zfxxgkml/zcwjn2104/gfxwj/
+重庆市知识产权局行政规范性文件
+https://zscqj.cq.gov.cn/zwgk_232/zcwj/gfxwj/
+重庆两江新区管理委员会行政规范性文件
+https://ljxq.cq.gov.cn/zwgk_199/zfxxgkml/xqgw/xzgfxwj/
+重庆高新技术产业开发区管理委员会行政规范性文件
+https://gxq.cq.gov.cn/zwgk_202/zfxxgkml/zcwj/xzgfxwj/
+重庆市万盛经济技术开发区管理委员会行政规范性文件
+https://ws.cq.gov.cn/cqws_zwxxgkml/zcwjjjdkcs/zcwj_zfxxgkml/xzgfxwj/
+
 """
 
 
 def main():
     data_dt = {
-        "start_url": 'https://sthjj.cq.gov.cn/zwgk_249/zfxxgkml/zcwj/xzgfxwj/',  # 访问路径
+        "start_url": 'https://ws.cq.gov.cn/cqws_zwxxgkml/zcwjjjdkcs/zcwj_zfxxgkml/xzgfxwj/',  # 访问路径
         "write_table_name": '行政规范性文件',  # 写入表名
-        "read_pages_num": 7,  # 读取页码总数
-        "save_path_real": '行政规范性文件',  # 附件存放路径
-        "lasy_department": '重庆市生态环境局'  # 在函数返回为空的时候指定发布部门
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
+        "read_pages_num": 5,  # 读取页码总数
+        "save_path_real": '行政规范性文件',  # 附件存放路径,
+        "lasy_department": '重庆市万盛经济技术开发区管理委员会',  # 在函数返回为空的时候指定发布部门
+        "level_of_effectiveness": '地方规范性文件',  # 指定效力级别,如果不填，则默认为地方规范性文件
     }
     obj = EducationalDocuments(**data_dt)
     obj.calculate()

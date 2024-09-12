@@ -65,22 +65,24 @@ def select(list_name, titl, chean_text, quer, fm):
 
 
 def check_existence(input_data, title, column, quer, fm):
-    '''
+    """
     该函数用于判断新收录文件标题是否存在法器当中
     :param input_data: 新收录文件标题
-    '''
-    title = re.sub(r'[^\u4e00-\u9fa5A-Za-z0-9]', '', title)
-    if '转发' not in title:
-        chean_text = re.sub(r'[^\u4e00-\u9fa5A-Za-z0-9]', '', title)  #.split('关于')[-1]
-    else:
-        chean_text = title
-    a = select(column, title, chean_text, quer, fm)
-    if a:
-        # print(rf'{input_data}存在于法器中')
-        return True
-    else:
-        # print(rf'{input_data}不存在于法器中')
-        return False
+    """
+    if title:
+        title = str(title)  # 如果title不是字符串，请先转换成字符串
+        title = re.sub(r'[^\u4e00-\u9fa5A-Za-z0-9]', '', title)
+        if '转发' not in title:
+            chean_text = re.sub(r'[^\u4e00-\u9fa5A-Za-z0-9]', '', title)  #.split('关于')[-1]
+        else:
+            chean_text = title
+        a = select(column, title, chean_text, quer, fm)
+        if a:
+            # print(rf'{input_data}存在于法器中')
+            return True
+        else:
+            # print(rf'{input_data}不存在于法器中')
+            return False
 
 
 def lar_esquc(title, column, issued_date=None):

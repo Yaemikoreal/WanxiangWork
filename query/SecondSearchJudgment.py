@@ -70,10 +70,14 @@ class Judgment:
     @retry(stop_max_attempt_number=3)
     def process_row(self, row):
         any_title = row['法规标题']
-        any_issued_number = row['发文字号']
-        any_issued_date = row['发布日期']
-        if not any_issued_date:
-            any_w = row['全文']
+        any_issued_number = row.get('发文字号')
+        any_issued_date = row.get('发布日期')
+        if pd.isna(any_issued_number):
+            if main_panduan(any_title, issued_date=any_issued_date):
+                # _log.info(f"法器地方法规有这条数据： {any_title}")
+                return False
+            _log.info(f"法器地方法规没有这条数据： {any_title}")
+            return True
         if main_panduan(any_title, issued_number=any_issued_number, issued_date=any_issued_date):
             # _log.info(f"法器地方法规有这条数据： {any_title}")
             return False
@@ -93,14 +97,24 @@ class Judgment:
         filtered_df = data_df[data_df.apply(self.process_row, axis=1)]
         return filtered_df
 
-    def title_calculate(self, title_s):
+    def title_calculate(self, row):
         """
-        对每一行的标题进行异常值处理
-        :param title_s:
+        对每一行的标题进行异常值处理，并针对处理发文字号
+        :param row:
         :return:
         """
+        title_s = row.get("法规标题")
         title_s = title_s.replace('?', '')
-        return title_s
+        issued_number_yuan = row.get("发文字号")
+        if not issued_number_yuan:
+            # 正则表达式匹配发文字号
+            pattern = r'\（([^）]+)号\）$'
+            match = re.search(pattern, title_s)
+            if match:
+                issued_number = match.group(1) + '号'
+                row['发文字号'] = issued_number
+        row['法规标题'] = title_s
+        return row
 
     def date_calculate(self, row, soup):
         """
@@ -189,9 +203,9 @@ class Judgment:
         # 处理“时效性”列中的空值,填充为默认 01
         filtered_df['时效性'] = filtered_df['时效性'].fillna('01')
         # 删除ID列
-        filtered_df = filtered_df.drop(columns=['ID'])
+        # filtered_df = filtered_df.drop(columns=['ID'])
         # 处理法规标题的异常值
-        filtered_df['法规标题'] = filtered_df['法规标题'].apply(lambda x: self.title_calculate(x))
+        filtered_df = filtered_df.apply(self.title_calculate, axis=1)
         # 针对法规标题进行去重处理
         filtered_df = filtered_df.drop_duplicates(subset='法规标题', keep='first')
         # 针对正文内容进行标签值的最终处理
@@ -204,27 +218,25 @@ class Judgment:
 
     def calculate(self):
         # 过滤系统是否有该一系列文件
-        self.data_df = self.from_mysql('重庆市其他文件')
+        # self.data_df = self.from_mysql('重庆市其他文件')
         # self.data_df = self.data_df[self.data_df['收录来源个人'] == '重庆市生态环境局']
         # 对df的内容进行最后清洗
         filtered_df = self.clean_dataframe()
         filtered_df = self.article_cleaning(filtered_df)
-
         # 获取行数
         num_rows = filtered_df.shape[0]
         _log.info(f"  文件二次过滤完毕,需要写入  {num_rows}条!!!")
-
-        self.pf.to_mysql(filtered_df, self.write_table)
-        _log.info(f"写入{self.write_table}完毕!!!")
         return filtered_df
 
 
-def main(data_df=None):
+def main(data_df=None, write_table=None):
     data_dt = {
-        "write_table": '重庆市其他文件_new',
+        "write_table": write_table,
+        'data_df': data_df
     }
     obj = Judgment(**data_dt)
     filtered_df = obj.calculate()
+    return filtered_df
 
 
 if __name__ == '__main__':

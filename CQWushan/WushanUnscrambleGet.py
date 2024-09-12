@@ -9,8 +9,6 @@ import hashlib
 import pandas as pd
 from sqlalchemy import create_engine, text
 import pyodbc
-from soup_cal import _remove_attrs
-
 
 """
 本方法用于获取重庆市巫山县人民政府的政策解读文件

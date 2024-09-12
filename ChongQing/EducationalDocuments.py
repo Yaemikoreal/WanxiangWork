@@ -6,7 +6,9 @@ from botpy import logging
 from sqlalchemy import create_engine, text
 from query import PublicFunction
 import pandas as pd
-from query.SecondSearchJudgment import main as main_cal
+from query.SecondSearchJudgment import main as main_df_cal
+from retrying import retry
+from query.QueryTitle import main_panduan
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教育委员会行政规范性文件
@@ -50,7 +52,15 @@ class EducationalDocuments:
             "重庆市人力资源和社会保障局": "8;831;83103;831030011",
             "重庆市规划和自然资源局": "8;831;83103;831030469",
             "重庆市生态环境局": "8;831;83103;831030034",
-            "重庆市科学技术局": "8;831;83103;831030005"
+            "重庆市科学技术局": "8;831;83103;831030005",
+            "重庆市国防动员办公室": "8;831;83103;831030221",
+            "重庆市公共资源交易监督管理局": "8;831;83103",
+            "重庆市林业局": "8;831;83103;831030192",
+            "重庆市药品监督管理局": "8;831;83103;831030337",
+            "重庆市知识产权局": "8;831;83103;831030306",
+            "重庆两江新区管理委员会": "8;831;83103;831030313",
+            "重庆高新技术产业开发区管理委员会": "8;831;83102",
+            "重庆市万盛经济技术开发区管理委员会": "8;831;83102"
         }
         # 在函数返回为空的时候指定发布部门
         self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
@@ -62,6 +72,8 @@ class EducationalDocuments:
         self.read_pages_start = kwargs.get('read_pages_start')
         if not self.read_pages_start:
             self.read_pages_start = 0
+        # 附件下载路径字典
+        self.download_dt = {}
         # # 类别
         # self.category = {"机关工作综合规定": "003;00301"}
 
@@ -277,38 +289,30 @@ class EducationalDocuments:
         bumen = self.pf.department(Description=full_text_only, title=title, area_num='831')  # 831:重庆地区
         return catagroy, bumen
 
-    def annex_get_all(self, soup, title_any, quanwen, issued_date):
+    def annex_get_all(self, issued_date, new_get_url):
         """
         附件下载函数
         :param issued_date: 发布日期
-        :param quanwen: 全文
-        :param title_any: 匹配内容的标题
-        :param soup: 文章页面soup
         :return:
         """
-        download_dt = {}
-        download = soup.find('div', class_="zwxl-article")
-        if not download:
-            return quanwen
-        # 查找所有带有href属性的标签
-        links = download.find_all(href=True)
-        for link in links:
-            if '#' in link.get('href'):
-                continue
-            if title_any in link.get_text():
-                continue
-            download_dt[link.get_text()] = link.get('href')
+        download_dt = self.download_dt
+        # 使用正则表达式匹配直到最后一个斜杠之前的路径
+        pattern = r'^(https?://[^/]+/[^/]+)$'
+        match = re.match(pattern, new_get_url)
+        if match:
+            # 如果匹配成功，返回匹配的部分
+            new_get_url = match.group(0)
         if download_dt:
             for key, value in download_dt.items():
                 if not issued_date:
                     continue
                 try:
-                    issued_date_real = issued_date.replace('.', '')
-                    issued_date_real = issued_date_real[:-2]
-                    url_real = self.start_url + issued_date_real + value.lstrip('.')
-                    self.pf.annex_get(url=url_real, save_path=key, headers=self.headers,
+                    # issued_date_real = issued_date.replace('.', '')
+                    # issued_date_real = issued_date_real[:-2]
+                    # url_real = self.start_url + issued_date_real + value.lstrip('.')
+                    self.pf.annex_get(url=new_get_url, save_path=key, headers=self.headers,
                                       save_path_real=self.save_path_real)
-                    _log.info(f"写入附件，标题为：{key} ,url为:{url_real}!!!")
+                    _log.info(f"写入附件，标题为：{key} ,url为:{new_get_url}!!!")
                 except Exception as e:
                     _log.info(f"annex_get_all发生错误：{e}")
         else:
@@ -341,8 +345,6 @@ class EducationalDocuments:
         tag_text = data_dt.get("发文字号")
         if tag_text:
             it["发文字号"] = tag_text
-        else:
-            it["发文字号"] = None
         return it
 
     def identification_and_source(self, it, new_get_url, soup):
@@ -390,6 +392,7 @@ class EducationalDocuments:
                 continue
             download_dt[link.get_text()] = link.get('href')
         quanwen = str(quanwen)
+        self.download_dt = download_dt
         zhengwen_div_all = download.find_all('div')
         for tag in zhengwen_div_all:
             if "下载" in tag.get_text():
@@ -401,7 +404,19 @@ class EducationalDocuments:
                         quanwen += "<br>"
         return quanwen
 
+    @retry(stop_max_attempt_number=3)
+    def process_row(self, it):
+        any_title = it.get('法规标题')
+        any_issued_number = it.get('发文字号')
+        any_issued_date = it.get('发布日期')
+        if main_panduan(any_title, issued_number=any_issued_number, issued_date=any_issued_date):
+            _log.info(f"法器地方法规已有这条数据： {any_title}")
+            return False
+        _log.info(f"法器地方法规没有这条数据： {any_title}")
+        return True
+
     def filter_all(self, new_result_lt):
+        filtered_list = []
         for it in new_result_lt:
             new_get_url = self.start_url.rstrip('index.html') + it.get('法规url').lstrip('./')
             del it['法规url']
@@ -426,14 +441,18 @@ class EducationalDocuments:
             it["实施日期"] = it.get('发布日期')
             # 附件处理
             it['全文'] = self.a_href_calculate(soup, it['全文'], it['法规标题'])
-            self.annex_get_all(soup, it['法规标题'], it['全文'], it.get('发布日期'))
+            # process_row用于二次检索该文章是否需要
+            if self.process_row(it):
+                filtered_list.append(it)
+                self.annex_get_all(it.get('发布日期'), new_get_url)
+            _log.info('=========================================')
         # 过滤列表中的字典
-        filtered_list = [item for item in new_result_lt if len(item) > 5]
+        filtered_list = [item for item in filtered_list if len(item) > 5]
         return filtered_list
 
     def calculate(self):
         # 有几页就遍历几次
-        for i in range(self.read_pages_start,self.num_pages):
+        for i in range(self.read_pages_start, self.num_pages):
             if i == 0:
                 new_url = self.start_url
             else:
@@ -450,12 +469,14 @@ class EducationalDocuments:
             # 统筹整理,写入数据
             filtered_list = self.filter_all(new_result_lt)
             if filtered_list:
-                df = pd.DataFrame(filtered_list)
-                df = main_cal(data_df=df)
-                self.pf.to_mysql(df, self.table_name)
-                _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
-            else:
-                _log.info(f"第{i + 1}页:   内容已经存在！")
+                _log.info(f"第{i + 1}页    实际需要写入的文章有 {len(filtered_list)} 篇！！！")
+                data_df = pd.DataFrame(filtered_list)
+                if not data_df.empty:
+                    data_df = main_df_cal(data_df=data_df, write_table='行政规范性文件_new')
+                    self.pf.to_mysql(data_df, self.table_name)
+                    _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
+                else:
+                    _log.info(f"第{i + 1}页:   内容已经存在！")
 
 
 def main():
