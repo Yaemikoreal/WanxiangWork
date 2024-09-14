@@ -9,6 +9,8 @@ import pandas as pd
 from botpy import logging
 from bs4 import BeautifulSoup
 
+from query.decorators import timer
+
 """
 行政规范性文件
 本方法用于将库中内容读出，根据信息再次确定系统是否缺失该条数据
@@ -280,7 +282,6 @@ class Judgment:
         return filtered_df
 
 
-def main(data_df=None, write_table=None):
 @timer
 def main(data_df=pd.DataFrame(), write_table=None):
     """
