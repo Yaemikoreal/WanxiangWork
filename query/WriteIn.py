@@ -6,6 +6,8 @@ from query import PublicFunction
 import pandas as pd
 import logging
 
+from query.decorators import timer
+
 # 配置基本的日志设置
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -90,7 +92,7 @@ class test2:
                 cursor.execute(insert_sql, list(row))
 
             conn.commit()
-            logger.error(f"DataFrame has been successfully written to {table_name}.")
+            # logger.error(f"DataFrame has been successfully written to {table_name}.")
         except pyodbc.Error as e:
             logger.error(f"Error writing DataFrame to {table_name}: {e}")
             conn.rollback()
@@ -121,12 +123,13 @@ class test2:
     def write_to_oa(self, it):
         sql = rf"INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES ('{it['唯一标志']}','{it.get('法规标题')}','{it['全文']}','{it['发布部门']}','{it['类别']}','{it.get('发布日期')}','{it['效力级别']}','{it['实施日期']}','{it['发文字号']}','{it['时效性']}','{it['来源']}','{it['收录时间']}')"
         self.pf.save_sql_BidDocument(sql)
+        print(f"写入成功: {it.get('法规标题')}")
         logger.info(f"{sql}")
 
+    @timer
     def calculate(self):
         data_df = self.from_mysql(self.table_name)
         data_df = data_df.drop(columns=['ID'])
-        data_df = data_df[data_df['收录来源个人'] == '重庆市生态环境局']
         data_df = data_df.drop(columns=['收录来源个人'])
         # 将 '发文字号' 列的数据类型转换为字符串类型
         data_df['发文字号'] = data_df['发文字号'].astype(str)
@@ -141,9 +144,6 @@ class test2:
             logger.info("写入成功！！！")
         except Exception as e:
             logger.error(f"df写入错误： {e}")
-
-
-
 
 
 def main():

@@ -66,7 +66,7 @@ class GetOtherFile:
             "重庆两江新区管理委员会": "8;831;83103;831030313",
             "重庆高新技术产业开发区管理委员会": "8;831;83102",
             "重庆市万盛经济技术开发区管理委员会": "8;831;83102",
-            "重庆市人民政府口岸和物流办公室": "8;831;83103"
+            "重庆市人民政府口岸和物流办公室": "8;831;83103",
         }
         # 在函数返回为空的时候指定发布部门
         self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
@@ -129,7 +129,8 @@ class GetOtherFile:
         # 获取到总网页内容
         soup_title = self.pf.fetch_url(url=url, headers=self.headers)
         soup_title_all = soup_title.find(["table", "div", 'ul'],
-                                         class_=["leadership-right rt mt20 overview", "p-rt rt"])
+                                         class_=["leadership-right rt mt20 overview", "p-rt rt", "fr-main",
+                                                 "zcwjjjd-zcwj-box2"])
         if soup_title_all:
             soup_title_all = soup_title_all.find_all(['tr', 'div', "li"], class_=class_lt)
             for tag in soup_title_all:
@@ -146,10 +147,13 @@ class GetOtherFile:
                 }
                 result_lt.append(data_dt)
         else:
-            soup_title_all = soup_title.find(['div', 'ul'],
-                                             class_=["li-4", "right-list mz-right-list", "list", "infos-box",
-                                                     "hdjl-table", "rsj-list1", "right-list", "tjh-c-body"])
-            soup_title_all = soup_title_all.find_all('a', href=True)
+            class_other_lt = ["li-4", "right-list mz-right-list", "list", "infos-box",
+                              "hdjl-table", "rsj-list1", "right-list", "tjh-c-body", "zsj-fr-main",
+                              "inter-list leader-info-list ml-list", "rightcon"]
+            soup_title_all = soup_title.find(['div', 'ul'], class_=class_other_lt)
+            soup_title_all = soup_title_all.find_all('a', href=True, title=True)
+            if not soup_title_all:
+                soup_title_all = soup_title_all.find_all('a', href=True)
             for tag in soup_title_all:
                 # 标题
                 p_tag = tag.find('p')
