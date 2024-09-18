@@ -44,11 +44,6 @@ class clear_spider:
         return script_html
 
 
-
-
-
-
-
     #处理表格部分
     def table_clear_content(self,cleaned_html):
         pegex = re.findall(r'(<table.*?</table>)', cleaned_html, re.DOTALL)
