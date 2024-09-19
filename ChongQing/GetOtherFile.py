@@ -510,6 +510,32 @@ class GetOtherFile:
         filtered_list = [item for item in filtered_list if len(item) > 5]
         return filtered_list
 
+    def any_url_calculate(self, new_result_lt):
+        for it in new_result_lt:
+            # 根据需要启用或禁用此行
+            url = it.get('法规url')
+            url = url.replace('zcwj_166256/qtwj_166259/', '')
+            url = url.replace('zcwj/zcqtwj/', '')
+            url = url.replace('zcwj/qtwj_345067/', '')
+            url = url.replace('zfxxgkml/xqgw/qtwj/', '')
+            url = url.replace('qtgw/gxq.cq.gov.cn/zwgk_202/zfxxgkml/zcwj/', '')
+            url = url.replace('//gxq.cq.gov.cn/zwgk_202/zfxxgkml/zcwj/qtgw/', '')
+            it['法规url'] = url
+        return new_result_lt
+
+    def clean_title(self, result_lt):
+        """
+        清洗文章类型
+        :param result_lt:
+        :return:
+        """
+        new_result_lt = []
+        for it in result_lt:
+            title = it.get('法规标题')
+            if self.pf.process_row_clean(title):
+                new_result_lt.append(it)
+        return new_result_lt
+
     def calculate(self):
         # 有几页就遍历几次
         for i in range(self.read_pages_start, self.num_pages):
@@ -520,8 +546,12 @@ class GetOtherFile:
             # 获取该页内容信息
             result_lt = self.title_data_get(url=new_url)
             _log.info(f"第{i + 1}页    获取到{len(result_lt)} 篇内容！！！")
+            # 过滤文章类型
+            new_result_lt = self.clean_title(result_lt)
             # 过滤已有的文章
-            new_result_lt = self.pf.filter(result_lt)
+            new_result_lt = self.pf.filter(new_result_lt)
+            # 过滤url
+            new_result_lt = self.any_url_calculate(new_result_lt)
             if not new_result_lt:
                 _log.info(f"第{i + 1}页    无内容需要写入！！！")
                 continue
