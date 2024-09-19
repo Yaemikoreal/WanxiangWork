@@ -73,6 +73,7 @@ class MainCal:
         self.pf = PublicFunction
         self.download_dt = {}
         self.shixiaoxing=kwargs.get("shixiaoxing")
+        self.area_num=kwargs.get("area_num")
 
     #得到主页面的所有href
     def main(self,new_result_lt):
@@ -101,7 +102,7 @@ class MainCal:
 
 
 
-    #清洗开头，从<p标签开始之后都拿到
+    #清洗开头，从<p标签开始之后都拿到，如果没有找到<p>标签，返回原字符串或空字符串
     def space_clear(self,space_clear_html):
             # 查找第一个<p>标签的位置，并保留其后面的所有内容
             match = re.search(r'<p', space_clear_html)
@@ -111,6 +112,7 @@ class MainCal:
                 return cleared_data
             else:
                 # 如果没有找到<p>标签，返回原字符串或空字符串
+                _log.info("拿到正文后，但第一个p标签没找到，返回空字符串")
                 return ""
 
 
@@ -136,7 +138,7 @@ class MainCal:
     #处理实施日期，如果“起施行”前含有年月日，则取出年月日，如果“起施行”中不含有日期，则返回成文/发布日期
     def  shixing_date(self,html,faburiqi):
         if "起施行" not in html:
-            print(" 没有找到包含“起施行”,因此，发文/成文日期为施行日期")
+            _log.info(" 没有找到包含“起施行”,因此，发文/成文日期为施行日期")
             return faburiqi
 
         # 定义“起施行”模式
@@ -150,21 +152,17 @@ class MainCal:
                 match = effective_pattern.search(line)
                 if match:
                     date = match.group(1)
-                    print("文中含有新的实施日期:", date)
+                    _log.info("文中含有新的实施日期:", date)
                     return  date
                 else:
                     # 行中有“起施行”但没有日期
-                    print("文中无新的实施日期，因此，发文/成文日期为施行日期")
+                    _log.info("文中无新的实施日期，因此，发文/成文日期为施行日期")
                     return faburiqi
 
     #处理效力级别
     def level(self,name,title,clear_html,fazihao):
-        level_of_effectiveness = {
-            "地方规范性文件": "XP08",
-            "地方工作文件": "XP10"
-        }
-        if name in level_of_effectiveness.keys():
-            return level_of_effectiveness[name]
+        if name in self.level_of_effectiveness.keys():
+            return self.level_of_effectiveness[name]
 
         clean = re.compile('<.*?>')
         clean_tab_text = re.sub(clean, '', clear_html)
@@ -180,6 +178,7 @@ class MainCal:
         m.update(string.encode('utf-8'))
         return m.hexdigest()
 
+    #别人代码
     def a_href_calculate(self, soup, quanwen, title_any):
         """
 
@@ -213,7 +212,7 @@ class MainCal:
                         quanwen += "<br>"
         return quanwen
 
-
+    #别人代码
     def query(self,list_name, ddd1, ddd2):
         query1 = {
             "query": {"bool": {
@@ -222,6 +221,7 @@ class MainCal:
         query2 = {"query": {"match": {list_name: ddd2}}}
         return [query1, query2]
 
+    #别人代码
     def select(self,list_name, titl, chean_text, quer, fm):
         resp = es.search(index=['lar', 'chl'], body=quer)
         hits_total = resp["hits"]["hits"]
@@ -271,7 +271,7 @@ class MainCal:
             else:
                 return False
 
-
+    #别人代码，用于判断新收录文件标题是否存在法器当中
     def check_existence(self,input_data, title, column, quer, fm):
         '''
         该函数用于判断新收录文件标题是否存在法器当中
@@ -367,11 +367,13 @@ class MainCal:
         any_issued_number = fazihao
         any_issued_date =faburiqi
         if self.main_panduan(any_title, issued_number=any_issued_number, issued_date=any_issued_date):   #查找es库中是否有这个数据
-            _log.info(f"法器地方法规已有这条数据： {any_title}")
+            _log.info(f"法器地方法规已有这条数据,无需抓取： {any_title}")
             return False
         _log.info(f"法器地方法规没有这条数据： {any_title}")
         return True
 
+
+    #别人代码，附件下载函数
     def annex_get_all(self, issued_date, new_get_url):
         """
         附件下载函数
@@ -398,7 +400,7 @@ class MainCal:
         else:
             _log.info(f"没有附件内容需要写入！！！")
 
-    #清洗拿到去除格式的正文
+    #清洗拿到去除格式的正文，以及获取到其他字段
     def parile_content(self,url,title,fazihao,chengwen_time):
             response = requests.get(url, headers=self.headers)
             response.encoding = "utf-8"
@@ -407,7 +409,7 @@ class MainCal:
             }
             space_clear_html = main_clean_cal(data_dt=data_dt)
 
-            #已经清洗后的正文
+            #已经清洗后的正文,去除开头一些标签
             clear_html=self.space_clear(str(space_clear_html))
 
             #处理成文/发布日期
@@ -424,7 +426,7 @@ class MainCal:
             md5_text=self.md5_num(title,faburiqi)
 
             #发布部门
-            fabubumen=self.pf.department(clear_html,title,area_num='831')  # 831:重庆地区
+            fabubumen=self.pf.department(clear_html,title,area_num=self.area_num)  # 831:重庆地区
 
             #类别
             leibie=self.pf.catagroy_select(clear_html,title)
@@ -477,31 +479,6 @@ class MainCal:
         # 返回 "发文字号：" 和 "成文日期" 之间的文本
         result = text_remove[start_index:end_phrase_start]
         return result
-
-    def remove_outer_brackets(self, text_remove, end_phrase):
-        """
-        删除字符串开头和结尾的括号，并保留 发文字号,并删除发文日期
-        :param text_remove:
-        :param end_phrase:
-        :return: 发文字号
-        """
-        # 移除开头的括号
-        if text_remove.startswith('('):
-            text_remove = text_remove[1:]
-        # 移除结尾的括号
-        if text_remove.endswith(')'):
-            text_remove = text_remove[:-1]
-        # 找到 "发文字号：" 的结束位置
-        start_phrase_end = text_remove.find("：", text_remove.find("发文字号"))
-        start_index = start_phrase_end + 1
-        # 找到 "成文日期" 的开始位置
-        end_phrase_start = text_remove.find(end_phrase)
-        if end_phrase_start == -1:
-            return text_remove  # 如果没有找到结束短语，则返回原字符串
-        # 返回 "发文字号：" 和 "成文日期" 之间的文本
-        result = text_remove[start_index:end_phrase_start]
-        return result
-
 
 
     def title_data_get(self, url):
@@ -585,10 +562,12 @@ class MainCal:
                 new_url = self.start_url
             else:
                 new_url = self.start_url + f"index_{i}.html"
-            # 获取该页内容信息
+
+            #别人代码， 获取该页内容信息，就是主页面的一些信息，主页面的标题，发文字号，成文日期
             result_lt = self.title_data_get(url=new_url)
             _log.info(f"第{i + 1}页    获取到{len(result_lt)} 篇内容！！！")
-            # 过滤已有的文章
+
+            # 别人代码， 过滤已有的文章，判断es数据库中是否已经有这个文章内容
             new_result_lt = self.pf.filter(result_lt)
             if not new_result_lt:
                 _log.info(f"第{i + 1}页    无内容需要写入！！！")
@@ -611,12 +590,13 @@ def main_test():
     data_dt = {
         "start_url": 'https://zfcxjw.cq.gov.cn/zwgk_166/zfxxgkmls/zcwj/xzgfxwj/',  # 访问路径
         "write_table_name": '专项补充收录',  # 写入数据库表名
-        'read_pages_start': 7,  # 读取页码起始数(调试用)
+        'read_pages_start': 0,  # 读取页码起始数(调试用)
         "read_pages_num": 8,  # 读取页码总数
-        "save_path_real": '重庆市行政规范文件',  # 附件存放路径,
+        "save_path_real": '重庆市行政规范文件',  # 附件存放路径的文件名
         "lasy_department": '重庆市住房和城乡建设委员会',  # 在函数返回为空的时候指定发布部门
         "level_of_effectiveness": '地方工作文件',  # 指定效力级别,如果不填，则默认为地方规范性文件
-        "shixiaoxing":"01"
+        "shixiaoxing":"01",
+        "area_num":831    # 831:重庆地区
     }
     obj = MainCal(**data_dt)
     obj.calcluate()
