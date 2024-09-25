@@ -12,8 +12,7 @@ from bs4 import BeautifulSoup
 from query.decorators import timer
 
 """
-行政规范性文件
-本方法用于将库中内容读出，根据信息再次确定系统是否缺失该条数据
+二次清洗,针对所有数据行进行再次清洗和标题和发文字号确认。
 """
 _log = logging.get_logger()
 

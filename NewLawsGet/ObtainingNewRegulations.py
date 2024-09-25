@@ -5,15 +5,19 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 import os
 from urllib3 import disable_warnings
-import 全文格式化
-from 预处理 import iscuncunzaif
-from 编号处理 import *
+from NewLawsGet.ProcessingMethod import FullFormattingProcess
+from NewLawsGet.ProcessingMethod.预处理 import iscuncunzaif
+from NewLawsGet.ProcessingMethod.编号处理 import *
 import pyodbc
 import xml.etree.ElementTree as ET
 import random
 from elasticsearch import Elasticsearch
 from query.PublicFunction import load_config
 
+"""
+该方法用于获取并处理新法速递文章内容并入库
+该方法依赖于“附件"文件夹下的xls或者手动获取数据 excel表格
+"""
 app_config = load_config(os.getenv('FLASK_ENV', 'test'))
 ES_HOSTS = app_config.get('es_hosts')
 ES_HTTP_AUTH = tuple(app_config.get('es_http_auth').split(':'))
@@ -201,7 +205,7 @@ class GetDataFa():
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
                 if '百度搜索' in str(soup):
                     print('cookie已失效，请重新获取。')
-                    return None, None, None
+                    continue
 
                 else:
                     ul = soup.find('div', class_='fields').find('ul')
@@ -267,6 +271,7 @@ class GetDataFa():
 
                 img.attrs = {'src': ysrca}
 
+        #  正文处理
         if len(fujian) != 0:
             full = replaced_full
         full = str(full).replace("附法律依据", '')
@@ -281,17 +286,14 @@ class GetDataFa():
             r'<br/>1</div>|<br/>2</div>|<br/>3</div>|<br/>4</div>|<br/>5</div>|法信超链|法宝|</button>|</small>|dbsText|http://129.0.0.24:9000')
         ists2 = tszd2.search(full)
         if ists2:
-
-            full = 全文格式化.deal_full(data=full)
-            full = 全文格式化.remove_font_styles(data=full)
+            full = FullFormattingProcess.full_calculate(full)
             data_dt['全文'] = full
         else:
             fuu = re.compile("法宝联想")
             full = fuu.sub('智能关联', full)
             tihuan = re.compile('\'')
             fujian = tihuan.sub('"', str(fujian))
-            full = 全文格式化.deal_full(data=full)
-            full = 全文格式化.remove_font_styles(data=full)
+            full = FullFormattingProcess.full_calculate(full)
             data_dt['附件'] = fujian
             data_dt['全文'] = full
         timemc = str(time.strftime('%Y%m%d', time.localtime(time.time())))
@@ -434,7 +436,7 @@ class GetDataFa():
                 发布日期 = ?  
             """
             params = (data_dt.get("法规标题"), data_dt.get('发文字号'), data_dt.get('公布日期'))
-        else:
+        elif data_dt.get('公布日期'):
             query_sql = """
                         SELECT 
                             法规标题, 
@@ -455,6 +457,26 @@ class GetDataFa():
                             发布日期 = ?  
                         """
             params = (data_dt.get("法规标题"), data_dt.get('公布日期'))
+        else:
+            query_sql = """
+                        SELECT 
+                            法规标题, 
+                            发文字号, 
+                            类别, 
+                            发布日期, 
+                            实施日期, 
+                            发布部门, 
+                            时效性, 
+                            效力级别, 
+                            法宝引证码, 
+                            唯一标志, 
+                            收录日期 
+                        FROM 
+                            fb_新版中央法规_chl 
+                        WHERE 
+                            法规标题 = ? 
+                        """
+            params = (data_dt.get("法规标题"))
         # 执行查询
         self.cursor.execute(query_sql, params)
         # 获取查询结果
@@ -468,12 +490,32 @@ class GetDataFa():
 
     def write_to_sql(self, data_dt):
         try:
-            insesql = "INSERT INTO fb_新版中央法规_chl (法规标题, 发文字号, 类别, 发布日期, 实施日期, 发布部门, 时效性, 效力级别, 法宝引证码, 全文, url, 唯一标志, 附件, 收录日期) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            self.cursor.execute(insesql, (
-                data_dt.get('法规标题'), data_dt.get('发文字号'), data_dt.get('法规类别'), data_dt.get('公布日期'),
-                data_dt.get('施行日期'), data_dt.get('制定机关'), data_dt.get('时效性'),
-                data_dt.get('效力位阶'), data_dt.get('唯一标志'), data_dt.get('全文'), data_dt.get('url'),
-                data_dt.get('唯一标志'), data_dt.get('附件'), data_dt.get('收录日期')))
+            insesql = """
+                INSERT INTO fb_新版中央法规_chl (
+                    法规标题,
+                    发文字号,
+                    类别,
+                    发布日期,
+                    实施日期,
+                    发布部门,
+                    时效性,
+                    效力级别,
+                    法宝引证码,
+                    全文,
+                    url,
+                    唯一标志,
+                    附件,
+                    收录日期
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                );"""
+            params_lt = (
+            data_dt.get('法规标题'), data_dt.get('发文字号'), data_dt.get('法规类别'), data_dt.get('公布日期'),
+            data_dt.get('施行日期'), data_dt.get('制定机关'), data_dt.get('时效性'),
+            data_dt.get('效力位阶'), data_dt.get('唯一标志'), data_dt.get('全文'), data_dt.get('url'),
+            data_dt.get('唯一标志'), data_dt.get('附件'), data_dt.get('收录日期'))
+            self.cursor.execute(insesql, params_lt)
             self.cursor.commit()
             print(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
             print("=" * 20)
@@ -488,7 +530,10 @@ class GetDataFa():
         :param link: 文章url
         :return:
         """
-        data_dt = {}
+        data_dt = {'法规标题': titles}
+        # 检查该条数据是否已经存在于数据库
+        if self.select_sql(data_dt):
+            return
 
         time.sleep(random.uniform(2, 4))
 
@@ -498,7 +543,7 @@ class GetDataFa():
         data_dt['url'] = urla
         title = soup.find('h2', class_='title').text.rstrip(' ').lstrip(' ').strip()
         date_li = ul.find_all('li')
-        data_dt['法规标题'] = titles
+
         # 对单篇文章进行处理
         for search_date in date_li:
             search_date_text = str(search_date)
@@ -545,8 +590,20 @@ class GetDataFa():
         if issql:
             # 附件处理
             data_dt = self.attachment_processing(soup, title, urla, data_dt)
+            data_dt = self.full_formatting(data_dt)
             if not self.select_sql(data_dt):
                 self.write_to_sql(data_dt)
+
+    def full_formatting(self, data_dt):
+        """
+        正文格式二次处理
+        :param data_dt:
+        :return:
+        """
+        full = data_dt.get('全文')
+        full = FullFormattingProcess.new_full_calculate(full)
+        data_dt['全文'] = full
+        return data_dt
 
     def calculate(self, choose=False):
         """
@@ -557,27 +614,27 @@ class GetDataFa():
 
         if not self.cursor:
             raise Exception('数据库连接失败！')
-        else:
-            print('数据库链接成功!')
 
         # 读取Excel文件
         if choose:
-            df = pd.read_excel('chl.xlsx')
+            df = pd.read_excel('附件/chl.xlsx')
         else:
-            df = pd.read_excel('手动获取的文章.xlsx')
+            df = pd.read_excel('附件/手动获取的文章.xlsx')
 
+        count = 0
         # 打印所有标题和链接
         for index, row in df.iterrows():
+            count += 1
             titles = row['标题']
             link = row['链接']
-            print(f'标题   {titles}  url为{link}')
+            print(f'[{count}] 标题   {titles}  url为{link}')
             self.process_soup(link, titles)
         print("全部获取完毕！！！")
 
 
 def main_test():
     obj = GetDataFa()
-    obj.calculate()
+    obj.calculate(choose=True)
 
 
 if __name__ == '__main__':

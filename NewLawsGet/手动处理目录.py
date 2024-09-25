@@ -59,48 +59,55 @@ def filter(content):
        Returns:
        dict: 包含标题作为键，URL作为值的字典。
        """
-    title_url_all = content.find_all("div", class_="item")
-    #
-    titles_urls = {}
-    for tag in title_url_all:
-        title_a = tag.find('a', logfunc='文章点击', target='_blank', flink='true')
-        if not title_a:
-            continue
-        title = title_a.get_text()
-        url = title_a.get('href')
+    need_get_soup = content.find("div", class_="accompanying-wrap")
+    title_a_all = need_get_soup.find_all('a', logfunc='文章点击', target='_blank', flink='true')
 
-        # 创建字典来存储标题和URL
-        titles_urls[title] = url
-    return titles_urls
+    title_url_lt = []
+
+    for tag in title_a_all:
+        titles_urls = {}
+        title = tag.get_text()
+        url = tag.get('href')
+        # print(f"标题: {title}")
+        titles_urls['标题'] = title
+        titles_urls['链接'] = url
+        title_url_lt.append(titles_urls)
+
+    return title_url_lt
 
 
-def not_need_tittle_del(titles_urls):
-    li_need_dt = {}
+def not_need_tittle_del(title_url_lt):
+    new_title_url_lt = []
     # 删除不需要的文章
-    for title, url in titles_urls.items():
-        status = elasticsearch_is_exist(title,'lar')
+    for it in title_url_lt:
+        li_need_dt = {}
+        title = it.get('标题')
+        # status = elasticsearch_is_exist(title, 'lar')
         status_s = elasticsearch_is_exist(title, 'chl')
-        if status is True or status_s is True:
-            li_need_dt[title] = url
-    return li_need_dt
+        if status_s is True:
+            li_need_dt['标题'] = title
+            li_need_dt['链接'] = it.get('链接')
+            new_title_url_lt.append(li_need_dt)
+    return new_title_url_lt
 
 
 def calculate():
     # 读取html.text以获取页面所有文章的标题和url
-    with open('html.text', 'r', encoding='utf-8') as file:
+    with open('附件/html.text', 'r', encoding='utf-8') as file:
         h5 = str(file.read())
     h5 = BeautifulSoup(h5, 'html.parser')
-    need_get_soup = h5.find("div", class_="accompanying-wrap")
 
     # 拿到所有标题与url的函数
-    titles_urls = filter(need_get_soup)
-    li_need_dt = not_need_tittle_del(titles_urls)
+    title_url_lt = filter(h5)
+    new_title_url_lt = not_need_tittle_del(title_url_lt)
 
     # 创建DataFrame
-    df = pd.DataFrame.from_dict(li_need_dt, orient='index', columns=['链接'])
-    df.index.name = '标题'
+    df = pd.DataFrame(new_title_url_lt)
+    num_rows = df.shape[0]
+    print(f"获取到 {num_rows}条需要Get的文章")
+    df.index.name = '编号'
     # 保存到Excel文件
-    output_file = '手动获取的文章.xlsx'
+    output_file = '附件/手动获取的文章.xlsx'
     with pd.ExcelWriter(output_file) as writer:
         df.to_excel(writer, startrow=0, startcol=0)
 

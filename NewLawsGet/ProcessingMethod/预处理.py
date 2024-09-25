@@ -1,10 +1,9 @@
 import re
 import time
 
-import requests
 from bs4 import BeautifulSoup, Comment
 
-from 链接数据库 import sql_server_info, get_connect_cursor, query, insert_, query_1, query_del
+from NewLawsGet.ProcessingMethod.链接数据库 import sql_server_info, get_connect_cursor, query, insert_, query_1, query_del
 
 
 def _remove_attrs(soup):
