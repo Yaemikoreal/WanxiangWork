@@ -1,10 +1,9 @@
-import os
-import random
-import time
-
 from bs4 import BeautifulSoup, NavigableString
 import re
-from query import PublicFunction
+
+"""
+新法速递全文格式化处理方法
+"""
 
 
 def deal_full(data_str):

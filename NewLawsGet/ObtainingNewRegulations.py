@@ -26,7 +26,7 @@ ES_HTTP_AUTH = tuple(app_config.get('es_http_auth').split(':'))
 es = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
 
 
-class GetDataFa():
+class GetDataFa:
     def __init__(self):
         # 设置需要使用的关键字
         kms = ['chl', '新版中央法规', 'chl']
@@ -609,7 +609,7 @@ class GetDataFa():
         """
         总流程
         :param choose: True为自动收录，False为手动收录
-        :return:
+        :return: 在 47数据库，FB6.0库 fb_新版中央法规_chl表 中查询插入数据结果
         """
 
         if not self.cursor:

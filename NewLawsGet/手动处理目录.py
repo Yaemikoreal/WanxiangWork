@@ -1,34 +1,43 @@
 import os
-import re
 import pandas as pd
 from elasticsearch import Elasticsearch
 import logging
 from bs4 import BeautifulSoup
 from query.PublicFunction import load_config
 
-app_config = load_config(os.getenv('FLASK_ENV', 'test'))
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('my_logger')
+
+# 加载配置
+env = os.getenv('FLASK_ENV', 'test')
+app_config = load_config(env)
 ES_HOSTS = app_config.get('es_hosts')
 ES_HTTP_AUTH = tuple(app_config.get('es_http_auth').split(':'))
-logger = logging.getLogger('my_logger')
+
 # 创建Elasticsearch客户端
-es = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
+es_client = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
 
 
-def elasticsearch_is_exist(tittle, index_s='lar'):
+def check_article_exists(title, index_name='lar'):
     """
+    检查 Elasticsearch 中是否存在给定标题的文章。
 
-    :param tittle: 标题
-    :param index_s: 'lar','chl'
-    :return: 布尔值，判断是否有该文章
+    参数:
+    title (str): 文章标题。
+    index_name (str): Elasticsearch 索引名称，默认为 'lar'。
+
+    返回:
+    bool: 如果文章不存在返回 True，否则返回 False。
     """
-    body = {
+    query_body = {
         "query": {
             "bool": {
                 "must": [
                     {
                         "match_phrase": {
                             "标题": {
-                                "query": tittle,
+                                "query": title,
                                 "slop": 0,
                                 "zero_terms_query": "NONE",
                                 "boost": 1.0
@@ -37,82 +46,76 @@ def elasticsearch_is_exist(tittle, index_s='lar'):
                     }
                 ]
             }
-        }, "from": 0,
+        },
+        "from": 0,
         "size": 10
     }
-    resp = es.search(index=index_s, body=body)  # 查询的库名
-    if int(resp['hits']['total']) == 0:
-        # print(f'{index_s} 不存在该文章!!  {tittle}')
+    response = es_client.search(index=index_name, body=query_body)
+    if int(response['hits']['total']['value']) == 0:
+        logger.info(f'{index_name} 不存在该文章!!  {title}')
         return True
     else:
-        print(f'{index_s} 已经存在该文章!!  {tittle}')
+        logger.info(f'{index_name} 已经存在该文章!!  {title}')
         return False
 
 
-def filter(content):
+def extract_titles_and_urls(html_content):
     """
-       提取content中的所有标题和URL，并返回一个字典。
+    从 HTML 内容中提取所有标题和 URL，并返回一个字典列表。
 
-       Args:
-       content (str): 包含HTML内容的字符串。
+    参数:
+    html_content (str): 包含 HTML 内容的字符串。
 
-       Returns:
-       dict: 包含标题作为键，URL作为值的字典。
-       """
-    need_get_soup = content.find("div", class_="accompanying-wrap")
-    title_a_all = need_get_soup.find_all('a', logfunc='文章点击', target='_blank', flink='true')
+    返回:
+    list of dict: 包含标题和 URL 的字典列表。
+    """
+    soup = BeautifulSoup(html_content, 'html.parser')
+    container = soup.find("div", class_="accompanying-wrap")
+    links = container.find_all('a', attrs={'logfunc': '文章点击', 'target': '_blank', 'flink': 'true'})
 
-    title_url_lt = []
-
-    for tag in title_a_all:
-        titles_urls = {}
-        title = tag.get_text()
-        url = tag.get('href')
-        # print(f"标题: {title}")
-        titles_urls['标题'] = title
-        titles_urls['链接'] = url
-        title_url_lt.append(titles_urls)
-
-    return title_url_lt
+    titles_and_urls = [{'标题': link.get_text(), '链接': link.get('href')} for link in links]
+    return titles_and_urls
 
 
-def not_need_tittle_del(title_url_lt):
-    new_title_url_lt = []
-    # 删除不需要的文章
-    for it in title_url_lt:
-        li_need_dt = {}
-        title = it.get('标题')
-        # status = elasticsearch_is_exist(title, 'lar')
-        status_s = elasticsearch_is_exist(title, 'chl')
-        if status_s is True:
-            li_need_dt['标题'] = title
-            li_need_dt['链接'] = it.get('链接')
-            new_title_url_lt.append(li_need_dt)
-    return new_title_url_lt
+def filter_unwanted_titles(titles_and_urls):
+    """
+    过滤掉不需要的文章标题。
+
+    参数:
+    titles_and_urls (list of dict): 包含标题和 URL 的字典列表。
+
+    返回:
+    list of dict: 过滤后的标题和 URL 字典列表。
+    """
+    filtered_titles_and_urls = []
+    for item in titles_and_urls:
+        if check_article_exists(item['标题'], 'chl'):
+            filtered_titles_and_urls.append(item)
+    return filtered_titles_and_urls
 
 
-def calculate():
-    # 读取html.text以获取页面所有文章的标题和url
-    with open('附件/html.text', 'r', encoding='utf-8') as file:
-        h5 = str(file.read())
-    h5 = BeautifulSoup(h5, 'html.parser')
+def process_html_and_save_to_excel():
+    """
+    读取 HTML 文件，提取标题和 URL，过滤后保存到 Excel 文件。
+    """
+    input_file_path = '附件/html.text'
+    output_file_path = '附件/手动获取的文章.xlsx'
 
-    # 拿到所有标题与url的函数
-    title_url_lt = filter(h5)
-    new_title_url_lt = not_need_tittle_del(title_url_lt)
+    with open(input_file_path, 'r', encoding='utf-8') as file:
+        html_content = file.read()
 
-    # 创建DataFrame
-    df = pd.DataFrame(new_title_url_lt)
+    titles_and_urls = extract_titles_and_urls(html_content)
+    filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
+
+    df = pd.DataFrame(filtered_titles_and_urls)
     num_rows = df.shape[0]
-    print(f"获取到 {num_rows}条需要Get的文章")
-    df.index.name = '编号'
-    # 保存到Excel文件
-    output_file = '附件/手动获取的文章.xlsx'
-    with pd.ExcelWriter(output_file) as writer:
-        df.to_excel(writer, startrow=0, startcol=0)
+    logger.info(f"获取到 {num_rows} 条需要获取的文章")
 
-    print(f"数据已成功保存到 {output_file}")
+    df.index.name = '编号'
+    df.to_excel(output_file_path, startrow=0, startcol=0)
+
+    logger.info(f"数据已成功保存到 {output_file_path}")
 
 
 if __name__ == '__main__':
-    calculate()
+    process_html_and_save_to_excel()

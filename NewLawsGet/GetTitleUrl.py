@@ -9,6 +9,8 @@ import pandas as pd
 该方法用于自动获取法宝新法速递标题和url信息
 
 注意:运行该方法前，先启动NewInterface脚本！！！
+
+输出内容存在于:附件/chl.xlsx中.
 """
 
 # 代理配置
@@ -215,7 +217,7 @@ def remove_unwanted_titles(titles_and_urls):
 
 
 # 主程序
-def main():
+def calculate():
     # 页数
     page_index = 0
     # 收录内容
