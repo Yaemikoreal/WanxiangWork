@@ -1,125 +1,91 @@
+import datetime
 import random
-from selenium.webdriver.common.keys import Keys
-from selenium import webdriver
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
+from DrissionPage import ChromiumPage, ChromiumOptions
 import json
 
-# 设置 chromedriver 的路径
-chromedriver_path = r'E:\JXdata\chromedriver-win64\chromedriver-win64\chromedriver.exe'  # Windows 示例
-# 初始化 WebDriver 并设置无头模式
-chrome_options = Options()
-chrome_options.add_argument('--headless')  # 启用无头模式
-chrome_options.add_argument('--disable-gpu')  # 禁用 GPU 加速
-chrome_options.add_argument("--no-sandbox")  # 解决DevToolsActivePort文件不存在的报错
-chrome_options.add_argument("--window-size=1920x1080")  # 设置窗口大小
-# 设置 ChromeDriver 服务
-service = Service(executable_path=chromedriver_path)
-# 初始化 WebDriver
-browser = webdriver.Chrome(service=service, options=chrome_options)
+co = ChromiumOptions().set_paths()
+# 1、设置无头模式：
+co.headless(True)
+# 2、设置无痕模式：co.incognito(True)
+# 3、设置访客模式：co.set_argument('--guest')
+# 4、设置请求头user-agent：co.set_user_agent()
+# 5、设置指定端口号：co.set_local_port(7890)
+# 6、设置代理：co.set_proxy('http://localhost:1080')
+page = ChromiumPage(co)
 
 
 def logining():
     # 访问网站
     url = "http://520mybook.com/account/Login"
-    browser.get(url)
+    page.get(url)
     time.sleep(random.uniform(0, 3))
 
     # 输入用户名和密码
     username = "falv1"
     password = "fl123456"
 
-    # 等待用户名输入框出现
-    username_input_id = 'login_username'
-    try:
-        username_input = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.ID, username_input_id))
-        )
-        username_input.send_keys(username)
-    except Exception as e:
-        print(f"Username 超时或者出错: {e}")
-    else:
-        print("用户名 输入完毕!!!")
+    # 输入
+    page.ele('xpath://input[@id="login_username"]').input(username)
+    time.sleep(random.uniform(0, 1))
+    page.ele('xpath://input[@name="Password"]').input(password)
+    time.sleep(random.uniform(0, 1))
 
-    # 等待密码输入框出现
-    password_input_id = 'Password'
-    try:
-        password_input = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.NAME, password_input_id))
-        )
-        password_input.send_keys(password)
-    except Exception as e:
-        print(f"Password 超时或者出错: {e}")
-    else:
-        print("密码 输入完毕!!!")
+    # 点击登录
+    page.ele('xpath://button[@class="btn btn-block btn-success btn_login"]').click()
+    time.sleep(random.uniform(0, 1))
 
-    # 等待登录按钮出现
-    login_button_xpath = '//button[@class="btn btn-block btn-success btn_login"]'
-    try:
-        login_button = WebDriverWait(browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, login_button_xpath))
-        )
-        login_button.click()
-    except Exception as e:
-        print(f"Login button 超时或者出错: {e}")
-    else:
-        print("登录按钮已经按下!!!")
+    # 点击法律数据库
+    page.ele('xpath://a[@href="/db/category/3"]').click()
+    time.sleep(random.uniform(0, 1))
 
-    # 等待登录完成
-    try:
-        WebDriverWait(browser, 20).until(
-            EC.url_changes(url)
-        )
-    except Exception as e:
-        print(f"Login 超时或者出错: {e}")
-    else:
-        print("登录成功!!!")
+    # 点击 法宝
+    page.ele('xpath://a[@href="/db/entrance/?catId=167"]').click()
+    time.sleep(random.uniform(0, 1))
 
-    # 等待“法律数据库”链接出现
-    legal_db_link_xpath = '//a[@href="/db/category/3"]'
-    try:
-        legal_db_link = WebDriverWait(browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, legal_db_link_xpath))
-        )
-        legal_db_link.click()
-    except Exception as e:
-        print(f"Legal database 超时或者出错: {e}")
-    else:
-        print("法律数据库 按钮已点击!!!")
+    # 点击指定元素
+    page.ele('xpath://div[@class="quick-actions_homepage"]//a[text()="(4)  ZC入口"]').click()
+    print("正在等待法宝页面加载完毕(这个过程大概需要15-20秒)!!!")
+    # 切换到最新标签页
+    tab = page.latest_tab
+    time.sleep(random.uniform(15, 20))
+    return tab
 
-    # 等待“F宝数据库”链接出现
-    legal_db_link_xpath = '//a[@href="/db/entrance/?catId=167"]'
-    try:
-        legal_db_link = WebDriverWait(browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, legal_db_link_xpath))
-        )
-        legal_db_link.click()
-    except Exception as e:
-        print(f"F宝数据库 超时或者出错: {e}")
-    else:
-        print("F宝数据库 按钮已点击!!!")
 
-    time.sleep(random.uniform(0, 2))
-    try:
-        # 等待指定元素出现
-        element = WebDriverWait(browser, 20).until(
-            EC.presence_of_element_located((By.XPATH, '//div[@class="quick-actions_homepage"]//a[text()="(4)  ZC入口"]'))
-        )
-        # 点击元素
-        element.click()
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    else:
-        print("正在跳转到北大法宝，准备获取token!!!")
+def get_cookie(tab):
+    while True:
+        # 刷新
+        print("刷新一次")
+        tab.refresh()
+        time.sleep(3)
+        # 获取浏览器cookies并存至文本中
+        cookies = tab.cookies()
+        if cookies:
+            return cookies
 
+
+def calculate():
+    tab = logining()
+    cookie = get_cookie(tab)
+    x_vpn_token_str = ''
+    refresh_str = ''
+    # 关闭浏览器
+    page.quit()
+    print("浏览器已关闭!!")
+    for it in cookie:
+        name = it.get('name')
+        if name == 'refresh':
+            refresh = it.get('value')
+            refresh_str = f"refresh={refresh}"
+        if name == 'x_vpn_token':
+            x_vpn_token = it.get('value')
+            x_vpn_token_str = f"x_vpn_token={x_vpn_token};"
+    cookie_str = f"{x_vpn_token_str}{refresh_str}"
+
+    with open('cookie.txt', 'w', encoding='utf-8') as file:
+        file.write(json.dumps(cookie_str))
+    print("token获取完毕！！！")
 
 
 if __name__ == '__main__':
-    logining()
-    # 关闭浏览器
-    browser.quit()
+    calculate()

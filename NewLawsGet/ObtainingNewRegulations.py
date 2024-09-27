@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 import random
 from elasticsearch import Elasticsearch
 from query.PublicFunction import load_config
+import GetUserToken
 
 """
 该方法用于获取并处理新法速递文章内容并入库
@@ -59,6 +60,22 @@ class GetDataFa:
             '部分修订': '03'
         }
 
+    def get_x_token(self):
+        """
+        该方法适用于token失效过后自动获取token,依赖于cookie.txt中的值
+        :return:
+        """
+        print("正在获取最新token,这个过程大概需要1分钟!!!")
+        # 获取最新token到本地
+        GetUserToken.calculate()
+        with open('cookie.txt', 'r', encoding='utf-8') as file:
+            content = file.read()
+        self.psessionid = content
+        self.header1 = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+            'Cookie': self.psessionid
+        }
+        print("成功更换为最新token!!!")
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
         body = {
@@ -196,6 +213,8 @@ class GetDataFa:
         url_a = self.vpnurl + link
         print(f"Fetching URL: {url_a}")
 
+        cookie_count_num = 0
+
         for attempt in range(max_attempts):
             try:
                 time.sleep(random.uniform(2, 4))
@@ -204,7 +223,18 @@ class GetDataFa:
 
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
                 if '百度搜索' in str(soup):
-                    print('cookie已失效，请重新获取。')
+                    cookie_count_num += 1
+                    print('cookie已失效!!!')
+                    with open('cookie.txt', 'r', encoding='utf-8') as file:
+                        content = file.read()
+                    self.psessionid = content
+                    self.header1 = {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+                        'Cookie': self.psessionid
+                    }
+                    if cookie_count_num >= 2:
+                        print('cookie已失效，正在重新获取!!!')
+                        self.get_x_token()
                     continue
 
                 else:
@@ -413,6 +443,7 @@ class GetDataFa:
         return law_class
 
     def select_sql(self, data_dt):
+        timemc = str(time.strftime('%Y%m%d', time.localtime(time.time())))
         if data_dt.get('发文字号'):
             # 定义查询语句
             query_sql = """
@@ -433,9 +464,10 @@ class GetDataFa:
             WHERE 
                 法规标题 = ? AND 
                 发文字号 = ? AND 
-                发布日期 = ?  
+                发布日期 = ? AND
+                收录日期 = ? 
             """
-            params = (data_dt.get("法规标题"), data_dt.get('发文字号'), data_dt.get('公布日期'))
+            params = (data_dt.get("法规标题"), data_dt.get('发文字号'), data_dt.get('公布日期'), timemc)
         elif data_dt.get('公布日期'):
             query_sql = """
                         SELECT 
@@ -454,9 +486,10 @@ class GetDataFa:
                             fb_新版中央法规_chl 
                         WHERE 
                             法规标题 = ? AND 
-                            发布日期 = ?  
+                            发布日期 = ? AND
+                            收录日期 = ?  
                         """
-            params = (data_dt.get("法规标题"), data_dt.get('公布日期'))
+            params = (data_dt.get("法规标题"), data_dt.get('公布日期'), timemc)
         else:
             query_sql = """
                         SELECT 
@@ -474,9 +507,10 @@ class GetDataFa:
                         FROM 
                             fb_新版中央法规_chl 
                         WHERE 
-                            法规标题 = ? 
+                            法规标题 = ? AND
+                            收录日期 = ? 
                         """
-            params = (data_dt.get("法规标题"))
+            params = (data_dt.get("法规标题"), timemc)
         # 执行查询
         self.cursor.execute(query_sql, params)
         # 获取查询结果
@@ -618,8 +652,10 @@ class GetDataFa:
         # 读取Excel文件
         if choose:
             df = pd.read_excel('附件/chl.xlsx')
+            print("本次收录为: 自动收录!!!")
         else:
             df = pd.read_excel('附件/手动获取的文章.xlsx')
+            print("本次收录为: 手动收录!!!")
 
         count = 0
         # 打印所有标题和链接

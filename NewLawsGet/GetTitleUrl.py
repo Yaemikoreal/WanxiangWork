@@ -1,5 +1,7 @@
 import time
 import random
+
+from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch
 import requests
 import re
@@ -26,8 +28,53 @@ ES_CLIENT = Elasticsearch(
     http_auth=('elastic', 'Cdxb1998123!@#')
 )
 
+headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'Referer': 'https://jjll.tytyxdy.com/https/44696469646131313237446964696461bd6feb2613c3be1bcd4ca96fd868/law',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-User': '?1',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"'
+}
+local_headers = {
+    "POST": "/law/search/RecordSearch HTTP/1.1",
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "Connection": "keep-alive",
+    "Content-Length": "781",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Cookie": "Hm_up_8266968662c086f34b2a3e2ae9014bf8=%7B%22ysx_yhqx_20220602%22%3A%7B%22value%22%3A%220%22%2C%22scope%22%3A1%7D%2C%22ysx_hy_20220527%22%3A%7B%22value%22%3A%2206%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%220b1ef4c1-c209-ed11-b392-00155d3c0709%22%2C%22scope%22%3A1%7D%2C%22ysx_yhjs_20220602%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%7D; pkulaw_v6_sessionid=wcb3dfh0hth4jhgxpuez3qza; referer=; Hm_lvt_8266968662c086f34b2a3e2ae9014bf8=1726199379,1726621215,1727055874,1727406883; Hm_lpvt_8266968662c086f34b2a3e2ae9014bf8=1727406883; HMACCOUNT=C1E3DEC5C46B85EE; cookieUUID=cookieUUID_1727406883463; xCloseNew=28",
+    "Host": "www.pkulaw.com",
+    "Origin": "https://www.pkulaw.com",
+    "Referer": "https://www.pkulaw.com/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+    "X-Requested-With": "XMLHttpRequest",
+    "sec-ch-ua": "\"Microsoft Edge\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\""
+}
 
-def check_elasticsearch_existence(title):
+
+def save_to_excel(dataframe, filename):
+    """保存DataFrame到Excel文件"""
+    with pd.ExcelWriter(filename) as writer:
+        dataframe.to_excel(writer, startrow=0, startcol=0)
+    print(f"{filename} 写入完毕！！！")
+
+
+def check_elasticsearch_existence(title, index):
     """
     检查 Elasticsearch 中是否存在给定标题的文章。
 
@@ -57,25 +104,26 @@ def check_elasticsearch_existence(title):
         "from": 0,
         "size": 10
     }
-    response = ES_CLIENT.search(index='chl', body=query_body)
+    response = ES_CLIENT.search(index=index, body=query_body)
     if int(response['hits']['total']) == 0:
-        print(f'文章不存在: {title}')
+        # print(f'文章不存在: {title}')
         return True
     else:
-        print(f'存在文章: {title}')
+        # print(f'存在文章: {title}')
         return False
 
 
 def create_form_data(page_index):
     """
     创建用于发送请求的表单数据。
-
+    适用于 法律法规
     参数:
     page_index (int): 当前页面索引。
 
     返回:
     dict: 表单数据字典。
     """
+
     previous_index = page_index - 1
     if previous_index < 0:
         previous_index = 0
@@ -125,38 +173,85 @@ def create_form_data(page_index):
     return form_data
 
 
-def make_request(page_index):
+def create_form_data_local(page_index):
+    """
+    创建用于发送请求的表单数据。
+    适用于 地方法规
+    参数:
+    page_index (int): 当前页面索引。
+
+    返回:
+    dict: 表单数据字典。
+    """
+    previous_index = page_index - 1
+    if previous_index < 0:
+        previous_index = 0
+    form_data = {
+        'Menu': 'law',
+        'Keywords': '',
+        'SearchKeywordType': 'Title',
+        'MatchType': 'Exact',
+        'RangeType': 'Piece',
+        'Library': 'lar',
+        'ClassFlag': 'lar',
+        'GroupLibraries': '',
+        'QueryOnClick': False,
+        'AfterSearch': False,
+        'PreviousLib': 'lar',
+        'pdfStr': '',
+        'pdfTitle': '',
+        'IsSynonymSearch': False,
+        'RequestFrom': 'btnSearch',
+        'LastLibForChangeColumn': 'lar',
+        'IsAdv': False,
+        'ClassCodeKey': ',,,,,,',
+        'Aggs.RelatedPrompted': '01',
+        'Aggs.EffectivenessDic': '',
+        'Aggs.SpecialType': '',
+        'Aggs.IssueDepartment': '',
+        'Aggs.TimelinessDic': '',
+        'Aggs.Category': '',
+        'Aggs.IssueDate': '',
+        'GroupByIndex': '2',
+        'OrderByIndex': '0',
+        'ShowType': 'Default',
+        'GroupValue': '',
+        'TitleKeywords': '',
+        'FullTextKeywords': '',
+        'Pager.PageIndex': page_index,
+        'RecordShowType': 'List',
+        'Pager.PageSize': '100',
+        'QueryBase64Request': '',
+        'VerifyCodeResult': '',
+        'isEng': 'chinese',
+        'OldPageIndex': previous_index,
+        'newPageIndex': '',
+        'IsShowListSummary': '',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+    return form_data
+
+
+def make_request(page_index, choose):
     """
     发送 POST 请求并返回响应文本。
 
     参数:
     page_index (int): 当前页面索引。
-
+    choose(bool): 为True时处理法律法规新内容，为False时处理地方法规内容
     返回:
     str: 响应文本。
     """
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Referer': 'https://jjll.tytyxdy.com/https/44696469646131313237446964696461bd6feb2613c3be1bcd4ca96fd868/law',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"'
-    }
-
     url = 'https://www.pkulaw.com/law/search/RecordSearch'
     time.sleep(random.uniform(2, 4))
-
+    if choose:
+        params_data = create_form_data(page_index)
+        ture_headers = headers
+    else:
+        params_data = create_form_data_local(page_index)
+        ture_headers = local_headers
     try:
-        response = requests.post(url, data=create_form_data(page_index), verify=False, headers=headers)
+        response = requests.post(url, data=params_data, verify=False, headers=ture_headers)
         print(f'连接状态<{response.status_code}>')
         return response.text
     except Exception as e:
@@ -166,7 +261,7 @@ def make_request(page_index):
 
 def extract_titles_and_urls(content):
     """
-    从网页内容中提取标题和 URL。
+    从网页内容中提取标题和 URL。适用于法律法规
 
     参数:
     content (str): 网页内容。
@@ -179,6 +274,33 @@ def extract_titles_and_urls(content):
         re.S)
     matches = pattern.finditer(content)
     titles_and_urls = {match.group('title'): match.group('url') for match in matches}
+
+    if not titles_and_urls:
+        print('获取标题与URL数据内容为空！！！')
+        return 'end', {}
+
+    print(titles_and_urls)
+    return 'continue', titles_and_urls
+
+
+def extract_titles_and_urls_local(content):
+    """
+    从网页内容中提取标题和 URL。适用于地方法规
+
+    参数:
+    content (str): 网页内容。
+
+    返回:
+    tuple: 包含状态 ('end' 或 'continue') 和标题与 URL 字典的元组。
+    """
+    titles_and_urls = {}
+    soup = BeautifulSoup(content, 'html.parser')
+    title_url_soup = soup.find_all('a', target='_blank', flink='true')
+    for tag in title_url_soup:
+        title = tag.get_text()
+        if title:
+            url = tag.get('href')
+            titles_and_urls[title] = url
 
     if not titles_and_urls:
         print('获取标题与URL数据内容为空！！！')
@@ -216,40 +338,52 @@ def remove_unwanted_titles(titles_and_urls):
     return filtered_titles_and_urls
 
 
-# 主程序
-def calculate():
-    # 页数
-    page_index = 0
-    # 收录内容
+def get_title_url(page_index, choose):
+    index = 'chl' if choose else 'lar'
+    print(f"正在收录: {index} 内容")
     needed_content = {}
     while True:
         # 发送 POST 请求并返回响应文本
-        content = make_request(page_index)
-
-        # 从网页内容中提取标题和 URL
-        state, titles_and_urls = extract_titles_and_urls(content)
-
+        content = make_request(page_index, choose)
+        if choose:
+            # 从网页内容中提取标题和 URL
+            state, titles_and_urls = extract_titles_and_urls(content)
+        else:
+            state, titles_and_urls = extract_titles_and_urls_local(content)
+        print(f"从第 {page_index + 1} 页获取到了 {len(titles_and_urls)} 篇文章!!!")
         if state == 'continue':
             print(f"正在获取第 {page_index + 1} 页内容!!!")
             for title, url in titles_and_urls.items():
                 # 检查 Elasticsearch 中是否存在给定标题的文章。
-                if check_elasticsearch_existence(title):
-                    needed_content[title] = url
+                if check_elasticsearch_existence(title, index):
+                    if not needed_content.get(title):
+                        print(f"添加标题:{title}  {url}")
+                        needed_content[title] = url
+            if page_index >= 35:
+                print("获取完毕!!!")
+                break
         else:
             print("获取失败!!!(或已经获取完毕)")
-            break
+            return needed_content
         page_index += 1
 
+
+# 主程序
+def calculate(choose=True):
+    # 页数
+    page_index = 0
+    # 收录内容
+    needed_content = get_title_url(page_index, choose)
     # 移除不需要的文章标题
     final_content = remove_unwanted_titles(needed_content)
 
     if final_content:
         df = pd.DataFrame.from_dict(final_content, orient='index', columns=['链接'])
         df.index.name = '标题'
-        with pd.ExcelWriter('附件/chl.xlsx') as writer:
-            df.to_excel(writer, startrow=0, startcol=0)
-        print("写入完毕！！！")
+        filename = '附件/chl.xlsx' if choose else '附件/lar.xlsx'
+        save_to_excel(df, filename)
 
 
 if __name__ == '__main__':
-    main()
+    # choose(bool): 为True时处理法律法规新内容，为False时处理地方法规内容
+    calculate(choose=False)
