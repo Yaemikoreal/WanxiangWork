@@ -1,3 +1,4 @@
+import logging
 import time
 import random
 
@@ -11,8 +12,8 @@ import pandas as pd
 该方法用于自动获取法宝新法速递标题和url信息
 
 注意:运行该方法前，先启动NewInterface脚本！！！
-
-输出内容存在于:附件/chl.xlsx中.
+为True时处理法律法规新内容，为False时处理地方法规内容
+输出内容存在于:附件/chl.xlsx 和 附件/lar.xlsx 中.
 """
 
 # 代理配置
@@ -27,6 +28,9 @@ ES_CLIENT = Elasticsearch(
     ['http://10.0.0.1:8041'],
     http_auth=('elastic', 'Cdxb1998123!@#')
 )
+# 配置日志输出到控制台
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -71,7 +75,7 @@ def save_to_excel(dataframe, filename):
     """保存DataFrame到Excel文件"""
     with pd.ExcelWriter(filename) as writer:
         dataframe.to_excel(writer, startrow=0, startcol=0)
-    print(f"{filename} 写入完毕！！！")
+    logging.info(f"{filename} 写入完毕！！！")
 
 
 def check_elasticsearch_existence(title, index):
@@ -106,10 +110,10 @@ def check_elasticsearch_existence(title, index):
     }
     response = ES_CLIENT.search(index=index, body=query_body)
     if int(response['hits']['total']) == 0:
-        # print(f'文章不存在: {title}')
+        # logging.info(f'文章不存在: {title}')
         return True
     else:
-        # print(f'存在文章: {title}')
+        # logging.info(f'存在文章: {title}')
         return False
 
 
@@ -252,10 +256,10 @@ def make_request(page_index, choose):
         ture_headers = local_headers
     try:
         response = requests.post(url, data=params_data, verify=False, headers=ture_headers)
-        print(f'连接状态<{response.status_code}>')
+        logging.info(f'连接状态<{response.status_code}>')
         return response.text
     except Exception as e:
-        print(f'Exception occurred: {e}')
+        logging.error(f'Exception occurred: {e}')
         return make_request(page_index)
 
 
@@ -276,10 +280,10 @@ def extract_titles_and_urls(content):
     titles_and_urls = {match.group('title'): match.group('url') for match in matches}
 
     if not titles_and_urls:
-        print('获取标题与URL数据内容为空！！！')
+        logging.info('获取标题与URL数据内容为空！！！')
         return 'end', {}
 
-    print(titles_and_urls)
+    logging.info(titles_and_urls)
     return 'continue', titles_and_urls
 
 
@@ -303,10 +307,10 @@ def extract_titles_and_urls_local(content):
             titles_and_urls[title] = url
 
     if not titles_and_urls:
-        print('获取标题与URL数据内容为空！！！')
+        logging.info('获取标题与URL数据内容为空！！！')
         return 'end', {}
 
-    print(titles_and_urls)
+    logging.info(titles_and_urls)
     return 'continue', titles_and_urls
 
 
@@ -329,18 +333,19 @@ def remove_unwanted_titles(titles_and_urls):
         '任免职务的通知', '套转职级的通知', '公开赛', '任职资格的批复', '击剑'
     ]
     filtered_titles_and_urls = {}
-
+    if titles_and_urls is None:
+        return filtered_titles_and_urls
     for title, url in titles_and_urls.items():
         if not any(keyword in title for keyword in unwanted_keywords):
             filtered_titles_and_urls[title] = url
 
-    print(f'一共获取到 {len(filtered_titles_and_urls)} 篇有效文章!!!')
+    logging.info(f'一共获取到 {len(filtered_titles_and_urls)} 篇有效文章!!!')
     return filtered_titles_and_urls
 
 
 def get_title_url(page_index, choose):
     index = 'chl' if choose else 'lar'
-    print(f"正在收录: {index} 内容")
+    logging.info(f"正在收录: {index} 内容")
     needed_content = {}
     while True:
         # 发送 POST 请求并返回响应文本
@@ -350,20 +355,20 @@ def get_title_url(page_index, choose):
             state, titles_and_urls = extract_titles_and_urls(content)
         else:
             state, titles_and_urls = extract_titles_and_urls_local(content)
-        print(f"从第 {page_index + 1} 页获取到了 {len(titles_and_urls)} 篇文章!!!")
+        logging.info(f"从第 {page_index + 1} 页获取到了 {len(titles_and_urls)} 篇文章!!!")
         if state == 'continue':
-            print(f"正在获取第 {page_index + 1} 页内容!!!")
+            logging.info(f"正在获取第 {page_index + 1} 页内容!!!")
             for title, url in titles_and_urls.items():
                 # 检查 Elasticsearch 中是否存在给定标题的文章。
                 if check_elasticsearch_existence(title, index):
                     if not needed_content.get(title):
-                        print(f"添加标题:{title}  {url}")
+                        logging.info(f"添加标题:{title}  {url}")
                         needed_content[title] = url
             if page_index >= 35:
-                print("获取完毕!!!")
+                logging.info("获取完毕!!!")
                 break
         else:
-            print("获取失败!!!(或已经获取完毕)")
+            logging.info("获取失败!!!(或已经获取完毕)")
             return needed_content
         page_index += 1
 
@@ -386,4 +391,4 @@ def calculate(choose=True):
 
 if __name__ == '__main__':
     # choose(bool): 为True时处理法律法规新内容，为False时处理地方法规内容
-    calculate(choose=False)
+    calculate(choose=True)

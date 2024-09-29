@@ -1,8 +1,12 @@
 import datetime
+import logging
 import random
 import time
 from DrissionPage import ChromiumPage, ChromiumOptions
 import json
+# 配置日志输出到控制台
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 co = ChromiumOptions().set_paths()
 # 1、设置无头模式：
@@ -45,7 +49,7 @@ def logining():
 
     # 点击指定元素
     page.ele('xpath://div[@class="quick-actions_homepage"]//a[text()="(4)  ZC入口"]').click()
-    print("正在等待法宝页面加载完毕(这个过程大概需要15-20秒)!!!")
+    logging.info("正在等待法宝页面加载完毕(这个过程大概需要15-20秒)!!!")
     # 切换到最新标签页
     tab = page.latest_tab
     time.sleep(random.uniform(15, 20))
@@ -55,7 +59,7 @@ def logining():
 def get_cookie(tab):
     while True:
         # 刷新
-        print("刷新一次")
+        logging.info("刷新一次")
         tab.refresh()
         time.sleep(3)
         # 获取浏览器cookies并存至文本中
@@ -71,7 +75,7 @@ def calculate():
     refresh_str = ''
     # 关闭浏览器
     page.quit()
-    print("浏览器已关闭!!")
+    logging.info("浏览器已关闭!!")
     for it in cookie:
         name = it.get('name')
         if name == 'refresh':
@@ -84,7 +88,7 @@ def calculate():
 
     with open('cookie.txt', 'w', encoding='utf-8') as file:
         file.write(json.dumps(cookie_str))
-    print("token获取完毕！！！")
+    logging.info("token获取完毕！！！")
 
 
 if __name__ == '__main__':

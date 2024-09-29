@@ -111,26 +111,29 @@ def csslisthq(url_base):
     return new_css_list
 
 
-@app.route('/htmlqx', methods=['POST'])
-def html_cleaner():
-    """
-    Flask 路由处理器，接收 POST 请求，处理 HTML 并返回修改后的 HTML。
+# @app.route('/htmlqx', methods=['POST'])
+# def html_cleaner():
+#     """
+#     Flask 路由处理器，接收 POST 请求，处理 HTML 并返回修改后的 HTML。
+#
+#     返回:
+#     dict: 包含处理后的 HTML 和消息码。
+#     """
+#     data = request.form
+#     html_content = data.get('html', data.get('\ufeffhtml'))
+#
+#     if html_content:
+#         soup = BeautifulSoup(html_content, "html.parser")
+#         processed_soup = processor(soup, new_css_list)
+#         return {'html': str(processed_soup), 'msg_code': 0}
+#     else:
+#         return {'error': 'No HTML provided', 'msg_code': 1}
 
-    返回:
-    dict: 包含处理后的 HTML 和消息码。
-    """
-    data = request.form
-    html_content = data.get('html', data.get('\ufeffhtml'))
-
-    if html_content:
-        soup = BeautifulSoup(html_content, "html.parser")
-        processed_soup = processor(soup, new_css_list)
-        return {'html': str(processed_soup), 'msg_code': 0}
-    else:
-        return {'error': 'No HTML provided', 'msg_code': 1}
-
-
-if __name__ == '__main__':
+def main():
     url_base = "https://www.pkulaw.com"
     new_css_list = csslisthq(url_base)  # 在启动时获取 CSS 列表
     app.run(port=8186, debug=False, host='0.0.0.0')
+
+
+if __name__ == '__main__':
+    main()

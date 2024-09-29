@@ -2,8 +2,7 @@
     <cookies>
         <!--在这里输入cookie-->
         <![CDATA[
-
-x_vpn_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZhbHYxfHwzIiwiZXhwIjoxNzI2NzMyODY3LCJpc3MiOiJ3d3cueHh4LmNvbSIsImF1ZCI6Ind3dy54eHguY29tIn0.ZRySQkrjY5hri-OYyXXWC7Vsp4wY0SCg16MZHiJ5Nmc; refresh=0
+x_vpn_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZhbHYxfHwzIiwiZXhwIjoxNzI3MzM2MzY5LCJpc3MiOiJ3d3cueHh4LmNvbSIsImF1ZCI6Ind3dy54eHguY29tIn0.Ld8XBR-5aRw77yEa1mJStqMX7t9yvAiOqvv9oJAO9RI; refresh=0
 ]]>
     </cookies>
         <!--在这里输入待拼接的vpn链接-->

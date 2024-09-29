@@ -5,6 +5,10 @@ import logging
 from bs4 import BeautifulSoup
 from query.PublicFunction import load_config
 
+"""
+该方法用于手动处理目录数据
+依赖于 附件/html.text获取的search信息
+"""
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('my_logger')

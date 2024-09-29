@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 import pandas as pd
 import requests
 from tqdm import tqdm
@@ -14,7 +15,7 @@ import random
 from elasticsearch import Elasticsearch
 from query.PublicFunction import load_config
 import GetUserToken
-
+import logging
 """
 该方法用于获取并处理新法速递文章内容并入库
 该方法依赖于“附件"文件夹下的xls或者手动获取数据 excel表格
@@ -25,7 +26,9 @@ ES_HTTP_AUTH = tuple(app_config.get('es_http_auth').split(':'))
 
 # 创建Elasticsearch客户端
 es = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
-
+# 配置日志输出到控制台
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class GetDataFa:
     def __init__(self):
@@ -65,7 +68,7 @@ class GetDataFa:
         该方法适用于token失效过后自动获取token,依赖于cookie.txt中的值
         :return:
         """
-        print("正在获取最新token,这个过程大概需要1分钟!!!")
+        logging.info("正在获取最新token,这个过程大概需要1分钟!!!")
         # 获取最新token到本地
         GetUserToken.calculate()
         with open('cookie.txt', 'r', encoding='utf-8') as file:
@@ -75,7 +78,8 @@ class GetDataFa:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
             'Cookie': self.psessionid
         }
-        print("成功更换为最新token!!!")
+        logging.info("成功更换为最新token!!!")
+
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
         body = {
@@ -114,7 +118,7 @@ class GetDataFa:
         try:
             return iscuncunzaif(issql)
         except Exception as e:
-            print('数据连接失败', e)
+            logging.info('数据连接失败', e)
 
             return self.iscuncunzaifss(issql)
 
@@ -171,8 +175,9 @@ class GetDataFa:
         return html
 
     def public_down(self, url, save_path, vpncode):
-        print(f'正在下载附件 {url}')
-
+        logging.info(f'正在下载附件 {url}')
+        # 确保保存路径的父目录存在
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
         # 设置请求头
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36',
@@ -196,22 +201,22 @@ class GetDataFa:
                 t.close()
 
                 if total_size != 0 and t.n != total_size:
-                    print("ERROR, something went wrong")
+                    logging.error("ERROR, something went wrong")
                 return "ok"
             elif req.status_code == 521:
-                print("状态码521 - 需要进一步处理")
+                logging.error("状态码521 - 需要进一步处理")
                 # 处理状态码521的逻辑可以在此添加
             elif req.status_code == 404:
-                print("下载失败，网页打不开！！！")
-                print(url)
+                logging.error("下载失败，网页打不开！！！")
+                logging.error(url)
                 return "fail, 下载失败，网页打不开！！！"
         except Exception as e:
-            print(e)
+            logging.error(e)
 
     def feach_url(self, link):
         max_attempts = 5
         url_a = self.vpnurl + link
-        print(f"Fetching URL: {url_a}")
+        logging.info(f"Fetching URL: {url_a}")
 
         cookie_count_num = 0
 
@@ -224,7 +229,7 @@ class GetDataFa:
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
                 if '百度搜索' in str(soup):
                     cookie_count_num += 1
-                    print('cookie已失效!!!')
+                    logging.info('cookie已失效!!!')
                     with open('cookie.txt', 'r', encoding='utf-8') as file:
                         content = file.read()
                     self.psessionid = content
@@ -233,7 +238,7 @@ class GetDataFa:
                         'Cookie': self.psessionid
                     }
                     if cookie_count_num >= 2:
-                        print('cookie已失效，正在重新获取!!!')
+                        logging.info('cookie已失效，正在重新获取!!!')
                         self.get_x_token()
                     continue
 
@@ -242,15 +247,20 @@ class GetDataFa:
                     if ul is not None:
                         return soup, ul, url_a
             except Exception as e:
-                print('请求失败:', e)
+                logging.error('请求失败:', e)
                 time.sleep(random.uniform(2, 4))
                 continue
 
-    def attachment_processing(self, soup, title, urla, data_dt):
+    def attachment_processing(self, soup, title, urla, data_dt, types_regulations):
         """
         附件和全文处理函数
         :return:
         """
+        formatted_date = datetime.now().strftime("%Y%m")
+        if types_regulations:
+            file_path = f"/新法速递附件/chl附件/{formatted_date}/"
+        else:
+            file_path = f"/新法速递附件/lar附件/{formatted_date}/"
         full = soup.find('div', id='divFullText')
         full = self.changeinfo(full)
         full = BeautifulSoup(full, "html.parser")
@@ -271,11 +281,11 @@ class GetDataFa:
                 ysrca = '/datafolder/附件/' + self.mkm + '/' + wjm
                 replaced_full = str(replaced_full).replace(hrefc, ysrca)
                 try:
-                    self.public_down(hrefc, './附件' + "/新法速递附件/" + wjm, self.psessionid)
+                    self.public_down(hrefc, './附件' + file_path + wjm, self.psessionid)
                     time.sleep(random.uniform(2, 4))
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
                 except Exception as e:
-                    print(f"附件下载出错： {e}")
+                    logging.error(f"附件下载出错： {e}")
                     test.attrs = {'href': ysrca}
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
         if 'img' in str(full):
@@ -293,11 +303,11 @@ class GetDataFa:
                 replaced_full = str(replaced_full).replace(ysrc, ysrca)
 
                 try:
-                    self.public_down(ysrc, os.path.join('./', "附件/新法速递附件/", file_name), self.psessionid)
+                    self.public_down(ysrc, os.path.join('./', file_path, file_name), self.psessionid)
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": ysrc})
                     time.sleep(random.uniform(2, 4))
                 except Exception as e:
-                    print(f"Error downloading {ysrc}: {e}")
+                    logging.error(f"Error downloading {ysrc}: {e}")
 
                 img.attrs = {'src': ysrca}
 
@@ -442,11 +452,11 @@ class GetDataFa:
             law_class = str(law_class_s[0] + ';' + law_class_s[1])
         return law_class
 
-    def select_sql(self, data_dt):
-        timemc = str(time.strftime('%Y%m%d', time.localtime(time.time())))
+    def select_sql(self, data_dt, table_name='fb_新版中央法规_chl'):
+        select_table_name = table_name
         if data_dt.get('发文字号'):
             # 定义查询语句
-            query_sql = """
+            query_sql = f"""
             SELECT 
                 法规标题, 
                 发文字号, 
@@ -460,16 +470,15 @@ class GetDataFa:
                 唯一标志, 
                 收录日期 
             FROM 
-                fb_新版中央法规_chl 
+                {select_table_name}
             WHERE 
                 法规标题 = ? AND 
                 发文字号 = ? AND 
-                发布日期 = ? AND
-                收录日期 = ? 
+                发布日期 = ? 
             """
-            params = (data_dt.get("法规标题"), data_dt.get('发文字号'), data_dt.get('公布日期'), timemc)
+            params = (data_dt.get("法规标题"), data_dt.get('发文字号'), data_dt.get('公布日期'))
         elif data_dt.get('公布日期'):
-            query_sql = """
+            query_sql = f"""
                         SELECT 
                             法规标题, 
                             发文字号, 
@@ -483,15 +492,14 @@ class GetDataFa:
                             唯一标志, 
                             收录日期 
                         FROM 
-                            fb_新版中央法规_chl 
+                            {select_table_name} 
                         WHERE 
                             法规标题 = ? AND 
-                            发布日期 = ? AND
-                            收录日期 = ?  
+                            发布日期 = ? 
                         """
-            params = (data_dt.get("法规标题"), data_dt.get('公布日期'), timemc)
+            params = (data_dt.get("法规标题"), data_dt.get('公布日期'))
         else:
-            query_sql = """
+            query_sql = f"""
                         SELECT 
                             法规标题, 
                             发文字号, 
@@ -505,27 +513,26 @@ class GetDataFa:
                             唯一标志, 
                             收录日期 
                         FROM 
-                            fb_新版中央法规_chl 
+                            {select_table_name} 
                         WHERE 
-                            法规标题 = ? AND
-                            收录日期 = ? 
+                            法规标题 = ? 
                         """
-            params = (data_dt.get("法规标题"), timemc)
+            params = (data_dt.get("法规标题"))
         # 执行查询
         self.cursor.execute(query_sql, params)
         # 获取查询结果
         results = self.cursor.fetchall()
         # 如果该条数据已经存在于数据库，返回True
         if results:
-            print("该文章已经存在于数据库!!!")
-            print("=" * 20)
+            logging.info(f"该文章已经存在于{table_name}表!!!")
+            logging.info("=" * 20)
             return True
         return False
 
-    def write_to_sql(self, data_dt):
+    def write_to_sql(self, data_dt, table_name):
         try:
-            insesql = """
-                INSERT INTO fb_新版中央法规_chl (
+            insesql = f"""
+                INSERT INTO {table_name} (
                     法规标题,
                     发文字号,
                     类别,
@@ -545,29 +552,36 @@ class GetDataFa:
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 );"""
             params_lt = (
-            data_dt.get('法规标题'), data_dt.get('发文字号'), data_dt.get('法规类别'), data_dt.get('公布日期'),
-            data_dt.get('施行日期'), data_dt.get('制定机关'), data_dt.get('时效性'),
-            data_dt.get('效力位阶'), data_dt.get('唯一标志'), data_dt.get('全文'), data_dt.get('url'),
-            data_dt.get('唯一标志'), data_dt.get('附件'), data_dt.get('收录日期'))
+                data_dt.get('法规标题'), data_dt.get('发文字号'), data_dt.get('法规类别'), data_dt.get('公布日期'),
+                data_dt.get('施行日期'), data_dt.get('制定机关'), data_dt.get('时效性'),
+                data_dt.get('效力位阶'), data_dt.get('唯一标志'), data_dt.get('全文'), data_dt.get('url'),
+                data_dt.get('唯一标志'), data_dt.get('附件'), data_dt.get('收录日期'))
             self.cursor.execute(insesql, params_lt)
             self.cursor.commit()
-            print(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
-            print("=" * 20)
+            logging.info(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
+            logging.info("=" * 20)
         except Exception as e:
-            print(f"文章 {data_dt.get('法规标题')} 写入错误:", e)
-            print("=" * 20)
+            logging.info(f"文章 {data_dt.get('法规标题')} 写入错误:", e)
+            logging.info("=" * 20)
 
-    def process_soup(self, link, titles):
+    def process_soup(self, link, titles, types_regulations):
         """
         对单篇文章进行统一处理
+        :param types_regulations: True为chl收录，False为lar收录
         :param titles: 法规标题
         :param link: 文章url
         :return:
         """
         data_dt = {'法规标题': titles}
         # 检查该条数据是否已经存在于数据库
-        if self.select_sql(data_dt):
-            return
+        if types_regulations:
+            table_name = 'fb_新版中央法规_chl'
+            if self.select_sql(data_dt, table_name):
+                return
+        else:
+            table_name = 'fb_新版地方法规_lar'
+            if self.select_sql(data_dt, table_name):
+                return
 
         time.sleep(random.uniform(2, 4))
 
@@ -583,20 +597,37 @@ class GetDataFa:
             search_date_text = str(search_date)
             if '公布日期' in search_date_text:
                 publica_date = search_date.get('title')
+                if publica_date:
+                    publica_date = publica_date.strip()
+                else:
+                    publica_date = search_date.get_text().lstrip('公布日期：')
                 data_dt['公布日期'] = publica_date
 
             if '施行日期' in search_date_text:
                 execute_date = search_date.get('title')
+                if execute_date:
+                    execute_date = execute_date.strip()
+                else:
+                    execute_date = search_date.get_text().lstrip('施行日期：')
                 data_dt['施行日期'] = execute_date
 
             if '发文字号' in search_date_text:
                 contant_number = search_date.get('title')
-                contant_number = contant_number.strip()
+                if contant_number:
+                    contant_number = contant_number.strip()
+                else:
+                    contant_number = search_date.get_text().lstrip('发文字号：')
                 data_dt['发文字号'] = contant_number
 
             if '时效性' in search_date_text:
-                timeliness = search_date.find('span').get('title')
-                timeliness = self.timeliness_dt.get(timeliness)
+                timeliness = search_date.find('span')
+                if timeliness:
+                    timeliness = timeliness.get('title')
+                    timeliness = self.timeliness_dt.get(timeliness)
+                else:
+                    timeliness = search_date.find('a', class_='timelinessDic')
+                    timeliness = timeliness.get_text()
+                    timeliness = self.timeliness_dt.get(timeliness)
                 data_dt['时效性'] = timeliness
 
             if '法规类别' in search_date_text:
@@ -623,10 +654,10 @@ class GetDataFa:
         issql = True
         if issql:
             # 附件处理
-            data_dt = self.attachment_processing(soup, title, urla, data_dt)
+            data_dt = self.attachment_processing(soup, title, urla, data_dt, types_regulations)
             data_dt = self.full_formatting(data_dt)
-            if not self.select_sql(data_dt):
-                self.write_to_sql(data_dt)
+            if not self.select_sql(data_dt, table_name):
+                self.write_to_sql(data_dt, table_name)
 
     def full_formatting(self, data_dt):
         """
@@ -639,11 +670,13 @@ class GetDataFa:
         data_dt['全文'] = full
         return data_dt
 
-    def calculate(self, choose=False):
+    def calculate(self, choose=False, types_regulations=True):
         """
         总流程
+        :param types_regulations: True为chl收录，False为lar收录
         :param choose: True为自动收录，False为手动收录
         :return: 在 47数据库，FB6.0库 fb_新版中央法规_chl表 中查询插入数据结果
+                    47数据库，FB6.0库 fb_新版地方法规_lar 中查询插入数据结果
         """
 
         if not self.cursor:
@@ -651,11 +684,15 @@ class GetDataFa:
 
         # 读取Excel文件
         if choose:
-            df = pd.read_excel('附件/chl.xlsx')
-            print("本次收录为: 自动收录!!!")
+            if types_regulations:
+                df = pd.read_excel('附件/chl.xlsx')
+                logging.info("本次收录为: chl 自动收录!!!")
+            else:
+                df = pd.read_excel('附件/lar.xlsx')
+                logging.info("本次收录为: lar 自动收录!!!")
         else:
             df = pd.read_excel('附件/手动获取的文章.xlsx')
-            print("本次收录为: 手动收录!!!")
+            logging.info("本次收录为: 手动收录!!!")
 
         count = 0
         # 打印所有标题和链接
@@ -663,15 +700,21 @@ class GetDataFa:
             count += 1
             titles = row['标题']
             link = row['链接']
-            print(f'[{count}] 标题   {titles}  url为{link}')
-            self.process_soup(link, titles)
-        print("全部获取完毕！！！")
+            logging.info(f'[{count}] 标题   {titles}  url为{link}')
+            self.process_soup(link, titles, types_regulations)
+        logging.info("全部获取完毕！！！")
 
 
-def main_test():
+def main_test(choose_t, types_regulations_t):
+    """
+    :param types_regulations_t: True为自动收录，False为手动收录
+    :param choose_t: True为chl收录，False为lar收录
+    """
     obj = GetDataFa()
-    obj.calculate(choose=True)
+    obj.calculate(choose=choose_t, types_regulations=types_regulations_t)
 
 
 if __name__ == '__main__':
-    main_test()
+    choose = True
+    types_regulations = False
+    main_test(choose, types_regulations)
