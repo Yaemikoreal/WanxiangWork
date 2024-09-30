@@ -1,6 +1,6 @@
 import re
 
-from NewLawsGet.ProcessingMethod.预处理 import selectsqls
+from .预处理 import selectsqls
 
 
 def fbbmbhcl(bh):

@@ -175,10 +175,10 @@ if __name__ == "__main__":
     data_dt = {
         "status": True,
         # fb_新版中央法规_chl or fb_新版地方法规_lar
-        "table_name": 'fb_新版地方法规_lar',
+        "table_name": 'fb_新版中央法规_chl',
         "where_value": "[收录日期] = '20240930'",
         # 法律法规 or 地方法规
-        "projectId": '地方法规'
+        "projectId": '法律法规'
     }
 
     obj = get_shujuku(**data_dt)

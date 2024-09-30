@@ -5,4 +5,11 @@
     <orderEntry type="jdk" jdkName="Python 3.8 (新法速递)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PyNamespacePackagesService">
+    <option name="namespacePackageFolders">
+      <list>
+        <option value="$MODULE_DIR$/NewLawsGet" />
+      </list>
+    </option>
+  </component>
 </module>

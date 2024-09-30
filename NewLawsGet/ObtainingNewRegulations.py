@@ -6,17 +6,17 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 import os
 from urllib3 import disable_warnings
-from NewLawsGet.ProcessingMethod import FullFormattingProcess
-from NewLawsGet.ProcessingMethod.预处理 import iscuncunzaif
-from NewLawsGet.ProcessingMethod.编号处理 import *
+from ProcessingMethod import FullFormattingProcess
+from ProcessingMethod.预处理 import iscuncunzaif
+from ProcessingMethod.编号处理 import *
 import pyodbc
 import xml.etree.ElementTree as ET
 import random
 from elasticsearch import Elasticsearch
-from query.PublicFunction import load_config
+from ProcessingMethod.PublicFunction import load_config
 import GetUserToken
 import logging
-
+from ProcessingMethod.logger import logger
 """
 该方法用于获取并处理新法速递文章内容并入库
 该方法依赖于“附件"文件夹下的xls或者手动获取数据 excel表格
@@ -27,9 +27,6 @@ ES_HTTP_AUTH = tuple(app_config.get('es_http_auth').split(':'))
 
 # 创建Elasticsearch客户端
 es = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
-# 配置日志输出到控制台
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class GetDataFa:
@@ -70,7 +67,7 @@ class GetDataFa:
         该方法适用于token失效过后自动获取token,依赖于cookie.txt中的值
         :return:
         """
-        logging.info("正在获取最新token,这个过程大概需要1分钟!!!")
+        logger.info("正在获取最新token,这个过程大概需要1分钟!!!")
         # 获取最新token到本地
         GetUserToken.calculate()
         with open('cookie.txt', 'r', encoding='utf-8') as file:
@@ -80,7 +77,7 @@ class GetDataFa:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
             'Cookie': self.psessionid
         }
-        logging.info("成功更换为最新token!!!")
+        logger.info("成功更换为最新token!!!")
 
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
@@ -120,7 +117,7 @@ class GetDataFa:
         try:
             return iscuncunzaif(issql)
         except Exception as e:
-            logging.info('数据连接失败', e)
+            logger.info('数据连接失败', e)
 
             return self.iscuncunzaifss(issql)
 
@@ -177,7 +174,7 @@ class GetDataFa:
         return html
 
     def public_down(self, url, save_path, vpncode):
-        logging.info(f'正在下载附件 {url}')
+        logger.info(f'正在下载附件 {url}')
         # 确保保存路径的父目录存在
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         # 设置请求头
@@ -203,22 +200,22 @@ class GetDataFa:
                 t.close()
 
                 if total_size != 0 and t.n != total_size:
-                    logging.error("ERROR, something went wrong")
+                    logger.error("ERROR, something went wrong")
                 return "ok"
             elif req.status_code == 521:
-                logging.error("状态码521 - 需要进一步处理")
+                logger.error("状态码521 - 需要进一步处理")
                 # 处理状态码521的逻辑可以在此添加
             elif req.status_code == 404:
-                logging.error("下载失败，网页打不开！！！")
-                logging.error(url)
+                logger.error("下载失败，网页打不开！！！")
+                logger.error(url)
                 return "fail, 下载失败，网页打不开！！！"
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
 
     def feach_url(self, link):
         max_attempts = 5
         url_a = self.vpnurl + link
-        logging.info(f"Fetching URL: {url_a}")
+        logger.info(f"Fetching URL: {url_a}")
 
         cookie_count_num = 0
 
@@ -231,7 +228,7 @@ class GetDataFa:
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
                 if '百度搜索' in str(soup):
                     cookie_count_num += 1
-                    logging.info('cookie已失效!!!')
+                    logger.info('cookie已失效!!!')
                     with open('cookie.txt', 'r', encoding='utf-8') as file:
                         content = file.read()
                     self.psessionid = content
@@ -240,7 +237,7 @@ class GetDataFa:
                         'Cookie': self.psessionid
                     }
                     if cookie_count_num >= 2:
-                        logging.info('cookie已失效，正在重新获取!!!')
+                        logger.info('cookie已失效，正在重新获取!!!')
                         self.get_x_token()
                     continue
 
@@ -249,7 +246,7 @@ class GetDataFa:
                     if ul is not None:
                         return soup, ul, url_a
             except Exception as e:
-                logging.error('请求失败:', e)
+                logger.error('请求失败:', e)
                 time.sleep(random.uniform(2, 4))
                 continue
 
@@ -287,7 +284,7 @@ class GetDataFa:
                     time.sleep(random.uniform(2, 4))
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
                 except Exception as e:
-                    logging.error(f"附件下载出错： {e}")
+                    logger.error(f"附件下载出错： {e}")
                     test.attrs = {'href': ysrca}
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
         if 'img' in str(full):
@@ -309,7 +306,7 @@ class GetDataFa:
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": ysrc})
                     time.sleep(random.uniform(2, 4))
                 except Exception as e:
-                    logging.error(f"Error downloading {ysrc}: {e}")
+                    logger.error(f"Error downloading {ysrc}: {e}")
 
                 img.attrs = {'src': ysrca}
 
@@ -526,8 +523,8 @@ class GetDataFa:
         results = self.cursor.fetchall()
         # 如果该条数据已经存在于数据库，返回True
         if results:
-            logging.info(f"该文章已经存在于{table_name}表!!!")
-            logging.info("=" * 20)
+            logger.info(f"该文章已经存在于{table_name}表!!!")
+            logger.info("=" * 20)
             return True
         return False
 
@@ -560,11 +557,11 @@ class GetDataFa:
                 data_dt.get('唯一标志'), data_dt.get('附件'), data_dt.get('收录日期'))
             self.cursor.execute(insesql, params_lt)
             self.cursor.commit()
-            logging.info(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
-            logging.info("=" * 20)
+            logger.info(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
+            logger.info("=" * 20)
         except Exception as e:
-            logging.info(f"文章 {data_dt.get('法规标题')} 写入错误:", e)
-            logging.info("=" * 20)
+            logger.info(f"文章 {data_dt.get('法规标题')} 写入错误:", e)
+            logger.info("=" * 20)
 
     def process_soup(self, link, titles, types_regulations):
         """
@@ -702,10 +699,10 @@ class GetDataFa:
         }
         response = es.search(index=index, body=query_body)
         if int(response['hits']['total']) == 0:
-            # logging.info(f'文章不存在: {title}')
+            # logger.info(f'文章不存在: {title}')
             return True
         else:
-            # logging.info(f'存在文章: {title}')
+            # logger.info(f'存在文章: {title}')
             return False
 
     def calculate(self, choose=False, types_regulations=True):
@@ -720,18 +717,18 @@ class GetDataFa:
         if not self.cursor:
             raise Exception('数据库连接失败！')
 
-        logging.info("开始读取dataframe.")
+        logger.info("开始读取dataframe.")
         # 读取Excel文件
         if choose:
             if types_regulations:
                 df = pd.read_excel('附件/chl.xlsx')
-                logging.info("本次收录为: chl 自动收录!!!")
+                logger.info("本次收录为: chl 自动收录!!!")
             else:
                 df = pd.read_excel('附件/lar.xlsx')
-                logging.info("本次收录为: lar 自动收录!!!")
+                logger.info("本次收录为: lar 自动收录!!!")
         else:
             df = pd.read_excel('附件/手动获取的文章.xlsx')
-            logging.info("本次收录为: 手动收录!!!")
+            logger.info("本次收录为: 手动收录!!!")
 
         count = 0
         index_t = 'chl' if types_regulations else 'lar'
@@ -740,12 +737,12 @@ class GetDataFa:
             titles = row['标题']
             link = row['链接']
             if self.check_elasticsearch_existence(title=titles, index=index_t):
-                logging.info(f'[{count}] 标题   {titles}  url为{link}')
-                self.process_soup(link, titles, types_regulations)
                 count += 1
+                logger.info(f'[{count}] 标题   {titles}  url为{link}')
+                self.process_soup(link, titles, types_regulations)
             else:
-                logging.info(f"ES数据库已经存在文章: {titles} ,不予写入!!!")
-        logging.info("全部获取完毕！！！")
+                logger.info(f"ES数据库已经存在文章: {titles} ,不予写入!!!")
+        logger.info("全部获取完毕！！！")
 
 
 def main_test(choose_t, types_regulations_t):

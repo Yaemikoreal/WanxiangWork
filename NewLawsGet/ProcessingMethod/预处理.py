@@ -3,7 +3,7 @@ import time
 
 from bs4 import BeautifulSoup, Comment
 
-from NewLawsGet.ProcessingMethod.链接数据库 import sql_server_info, get_connect_cursor, query, insert_, query_1, query_del
+from .链接数据库 import sql_server_info, get_connect_cursor, query, insert_, query_1, query_del
 
 
 def _remove_attrs(soup):
