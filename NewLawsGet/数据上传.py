@@ -1,4 +1,5 @@
 import json
+import random
 import time
 import requests
 import pyodbc
@@ -6,8 +7,25 @@ import pyodbc
 
 class get_shujuku(object):
 
+    def __init__(self, **kwargs):
+        # 法规模版
+        self.projectId_dt = {
+            "地方法规": "981577858f7d59da5bf2eabfc7635b71",
+            "法律法规": "fbd7f99f9649070ef0a8c9a3245e00e2"
+        }
+        # 需要写入的法规模版地址
+        self.mb = kwargs.get('projectId')
+        self.projectId = self.projectId_dt.get(self.mb)
+        # status,ture为法规，False为解读文件
+        self.status = kwargs.get('status')
+        # 需要写入的表名
+        self.table_name = kwargs.get('table_name')
+        # where条件语句
+        self.where_value = kwargs.get('where_value')
+
     def post_sj1_fagui(self, query_result):
         print(f"正在写入文章:  {query_result[1]}")
+        print(f"注意: 正在往 [{self.mb}] 模版中写入数据!!!")
         url = 'http://47.97.3.24:8075/api/trends/addEmployData'
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 Edg/91.0.864.37',
@@ -36,13 +54,15 @@ class get_shujuku(object):
                 "失效依据": query_result[12],
                 "失效日期": query_result[13],
             },
-            "projectId": "fbd7f99f9649070ef0a8c9a3245e00e2"
+            # TODO 写入之前注意传入的模版
+            "projectId": f"{self.projectId}"
+            # "projectId":""fbd7f99f9649070ef0a8c9a3245e00e2""      # 法律法规
         }
         print(data)
         jsonData = json.dumps(data, ensure_ascii=False)
         response = requests.post(url=url, headers=header, data=jsonData.encode())
-        print("状态" + str(response.status_code))
-        print(response)
+        print(f"连接状态: { str(response.status_code)}")
+        print("==="*30)
 
     def post_sj1_jiedu(self, query_result):
         url = 'http://47.97.3.24:8075/api/trends/addEmployData'
@@ -69,7 +89,7 @@ class get_shujuku(object):
         print("状态" + str(response.status_code))
         print(response)
 
-    def write_fagui(self,table_name,where_value):
+    def write_fagui(self):
         connect = pyodbc.connect(
             'Driver={SQL Server};Server=47.97.3.24,14333;Database=LawEnclosure;UID=saa;PWD=1+2-3..*Qwe!@#;'
             'charset=gbk')
@@ -95,14 +115,17 @@ class get_shujuku(object):
             [url],
             [附件]
         FROM 
-            [FB6.0].[dbo].[{table_name}]
+            [FB6.0].[dbo].[{self.table_name}]
         WHERE 
-            {where_value};
+            {self.where_value};
         """
         cursor.execute(sql)
         url_list = cursor.fetchall()
+        count_num = 0
         for i in range(len(url_list)):
-            time.sleep(2)
+            count_num += 1
+            time.sleep(random.uniform(1, 2))
+            print(f"正在写入第 [{count_num}] 条数据.")
             self.post_sj1_fagui(url_list[i])
         cursor.close()
         connect.close()
@@ -138,17 +161,25 @@ class get_shujuku(object):
         cursor.close()
         connect.close()
 
-    def calculate(self, status=True, table_name='fb_新版中央法规_chl',where_value=None):
+    def calculate(self):
         # True:法规 ,  False:解读
-        if status:
-            """"""
-            self.write_fagui(table_name=table_name,where_value=where_value)
+        if self.status:
+            print("正在进行 [法律法规] 上传!!!")
+            self.write_fagui()
         else:
+            print("正在进行 [地方法规] 上传!!!")
             self.write_jiedu()
 
 
 if __name__ == "__main__":
-    obj = get_shujuku()
-    table_name = 'fb_新版中央法规_chl'
-    where_value = "[收录日期] = '20240929'"
-    obj.calculate(status=True, table_name=table_name, where_value=where_value)
+    data_dt = {
+        "status": True,
+        # fb_新版中央法规_chl or fb_新版地方法规_lar
+        "table_name": 'fb_新版地方法规_lar',
+        "where_value": "[收录日期] = '20240930'",
+        # 法律法规 or 地方法规
+        "projectId": '地方法规'
+    }
+
+    obj = get_shujuku(**data_dt)
+    obj.calculate()

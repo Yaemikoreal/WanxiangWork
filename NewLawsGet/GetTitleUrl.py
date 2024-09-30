@@ -247,7 +247,7 @@ def make_request(page_index, choose):
     str: 响应文本。
     """
     url = 'https://www.pkulaw.com/law/search/RecordSearch'
-    time.sleep(random.uniform(2, 4))
+    time.sleep(random.uniform(4, 7))
     if choose:
         params_data = create_form_data(page_index)
         ture_headers = headers
@@ -364,9 +364,9 @@ def get_title_url(page_index, choose):
                     if not needed_content.get(title):
                         logging.info(f"添加标题:{title}  {url}")
                         needed_content[title] = url
-            if page_index >= 35:
+            if page_index >= 25:
                 logging.info("获取完毕!!!")
-                break
+                return needed_content
         else:
             logging.info("获取失败!!!(或已经获取完毕)")
             return needed_content
@@ -391,4 +391,4 @@ def calculate(choose=True):
 
 if __name__ == '__main__':
     # choose(bool): 为True时处理法律法规新内容，为False时处理地方法规内容
-    calculate(choose=True)
+    calculate(choose=False)

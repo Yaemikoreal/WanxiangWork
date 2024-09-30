@@ -16,6 +16,7 @@ from elasticsearch import Elasticsearch
 from query.PublicFunction import load_config
 import GetUserToken
 import logging
+
 """
 该方法用于获取并处理新法速递文章内容并入库
 该方法依赖于“附件"文件夹下的xls或者手动获取数据 excel表格
@@ -29,6 +30,7 @@ es = Elasticsearch([ES_HOSTS], http_auth=ES_HTTP_AUTH)
 # 配置日志输出到控制台
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class GetDataFa:
     def __init__(self):
@@ -651,13 +653,11 @@ class GetDataFa:
         unique_identifier = unique_identifier.split('.')[2]
         data_dt['唯一标志'] = unique_identifier
 
-        issql = True
-        if issql:
-            # 附件处理
-            data_dt = self.attachment_processing(soup, title, urla, data_dt, types_regulations)
-            data_dt = self.full_formatting(data_dt)
-            if not self.select_sql(data_dt, table_name):
-                self.write_to_sql(data_dt, table_name)
+        # 附件处理
+        data_dt = self.attachment_processing(soup, title, urla, data_dt, types_regulations)
+        data_dt = self.full_formatting(data_dt)
+        if not self.select_sql(data_dt, table_name):
+            self.write_to_sql(data_dt, table_name)
 
     def full_formatting(self, data_dt):
         """
@@ -669,6 +669,44 @@ class GetDataFa:
         full = FullFormattingProcess.new_full_calculate(full)
         data_dt['全文'] = full
         return data_dt
+
+    def check_elasticsearch_existence(self, title, index):
+        """
+        检查 Elasticsearch 中是否存在给定标题的文章。
+
+        参数:
+        title (str): 文章标题。
+
+        返回:
+        bool: 如果文章不存在返回 True，否则返回 False。
+        """
+        query_body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "match_phrase": {
+                                "标题": {
+                                    "query": title,
+                                    "slop": 0,
+                                    "zero_terms_query": "NONE",
+                                    "boost": 1.0
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "from": 0,
+            "size": 10
+        }
+        response = es.search(index=index, body=query_body)
+        if int(response['hits']['total']) == 0:
+            # logging.info(f'文章不存在: {title}')
+            return True
+        else:
+            # logging.info(f'存在文章: {title}')
+            return False
 
     def calculate(self, choose=False, types_regulations=True):
         """
@@ -682,6 +720,7 @@ class GetDataFa:
         if not self.cursor:
             raise Exception('数据库连接失败！')
 
+        logging.info("开始读取dataframe.")
         # 读取Excel文件
         if choose:
             if types_regulations:
@@ -695,13 +734,17 @@ class GetDataFa:
             logging.info("本次收录为: 手动收录!!!")
 
         count = 0
+        index_t = 'chl' if types_regulations else 'lar'
         # 打印所有标题和链接
         for index, row in df.iterrows():
-            count += 1
             titles = row['标题']
             link = row['链接']
-            logging.info(f'[{count}] 标题   {titles}  url为{link}')
-            self.process_soup(link, titles, types_regulations)
+            if self.check_elasticsearch_existence(title=titles, index=index_t):
+                logging.info(f'[{count}] 标题   {titles}  url为{link}')
+                self.process_soup(link, titles, types_regulations)
+                count += 1
+            else:
+                logging.info(f"ES数据库已经存在文章: {titles} ,不予写入!!!")
         logging.info("全部获取完毕！！！")
 
 
