@@ -9,6 +9,7 @@ import pandas as pd
 from query.SecondSearchJudgment import main as main_df_cal
 from retrying import retry
 from query.QueryTitle import main_panduan
+
 _log = logging.get_logger()
 """
 本方法用于获取重庆市教育委员会行政规范性文件
@@ -74,6 +75,7 @@ class EducationalDocuments:
             self.read_pages_start = 0
         # 附件下载路径字典
         self.download_dt = {}
+        self.shoulu_date = "JX" + str(datetime.now().strftime("%Y.%m.%d"))
         # # 类别
         # self.category = {"机关工作综合规定": "003;00301"}
 
@@ -112,16 +114,16 @@ class EducationalDocuments:
             # 提取成文日期
             document_date = match.group(2).strip()
             document_date = document_date.replace("年", ".").replace("月", ".").replace("日", "")
-            return document_number,document_date
+            return document_number, document_date
         else:
-            return None,None
+            return None, None
 
     def title_data_get(self, url):
         """
         用于获取到总页面内容，获取到该页的 标题，发文字号，成文日期
         :return:result_lt：列表套字典，字典装有信息
         """
-        issued_num,issued_date = None,None
+        issued_num, issued_date = None, None
         result_lt = []
         # 获取到总网页内容
         soup_title = self.pf.fetch_url(url=url, headers=self.headers)
@@ -425,7 +427,8 @@ class EducationalDocuments:
                 continue
             _log.info(f"需要写入的文章:{it.get('法规标题')}")
             # 个人收录来源标记
-            it['收录来源个人'] = self.myself_mark
+            # it['收录来源个人'] = f"{self.myself_mark}-{self.formatted_date}"
+            it['收录时间'] = self.shoulu_date
             # soup
             soup = self.pf.fetch_url(new_get_url, headers=self.headers)
             # 正文
@@ -450,6 +453,29 @@ class EducationalDocuments:
         filtered_list = [item for item in filtered_list if len(item) > 5]
         return filtered_list
 
+    def filter_oa(self, result_lt):
+        new_result_lt = []
+        for it in result_lt:
+            title = it.get('法规标题')
+            if not title:
+                continue
+            results = self.select_from_oa(title)
+            if len(results) == 0:
+                _log.info(f"47数据库中没有 [{title}] 这条数据!")
+                new_result_lt.append(it)
+        return new_result_lt
+
+    def select_from_oa(self, title):
+        sql = rf"SELECT * FROM [自收录数据].dbo.[专项补充收录] WHERE [法规标题] = '{title}'"
+        results = self.pf.query_sql_BidDocument(sql)
+        return results
+
+    def write_to_oa(self, it):
+        sql = rf"INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES ('{it['唯一标志']}','{it.get('法规标题')}','{it['全文']}','{it['发布部门']}','{it['类别']}','{it.get('发布日期')}','{it['效力级别']}','{it['实施日期']}','{it['发文字号']}','{it['时效性']}','{it['来源']}','{it['收录时间']}')"
+        self.pf.save_sql_BidDocument(sql)
+        _log.info(f"写入成功: {it.get('法规标题')}")
+        _log.info(f"{sql}")
+
     def calculate(self):
         # 有几页就遍历几次
         for i in range(self.read_pages_start, self.num_pages):
@@ -462,6 +488,7 @@ class EducationalDocuments:
             _log.info(f"第{i + 1}页    获取到{len(result_lt)} 篇内容！！！")
             # 过滤已有的文章
             new_result_lt = self.pf.filter(result_lt)
+            new_result_lt = self.filter_oa(new_result_lt)
             if not new_result_lt:
                 _log.info(f"第{i + 1}页    无内容需要写入！！！")
                 continue
@@ -472,8 +499,9 @@ class EducationalDocuments:
                 _log.info(f"第{i + 1}页    实际需要写入的文章有 {len(filtered_list)} 篇！！！")
                 data_df = pd.DataFrame(filtered_list)
                 if not data_df.empty:
-                    data_df = main_df_cal(data_df=data_df, write_table='行政规范性文件_new')
-                    self.pf.to_mysql(data_df, self.table_name)
+                    # data_df = main_df_cal(data_df=data_df, write_table='行政规范性文件_new')
+
+                    data_df.apply(self.write_to_oa, axis=1)
                     _log.info(f"第{i + 1}页    {len(filtered_list)}篇文件写入完毕！！！")
                 else:
                     _log.info(f"第{i + 1}页:   内容已经存在！")

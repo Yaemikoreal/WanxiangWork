@@ -78,6 +78,7 @@ class GetOtherFile:
         self.data_dt = None
         # 附件下载路径字典
         self.download_dt = {}
+        self.shoulu_date = "JX" + str(datetime.now().strftime("%Y.%m.%d"))
 
     def remove_outer_brackets(self, text_remove, end_phrase):
         """
@@ -128,6 +129,8 @@ class GetOtherFile:
         result_lt = []
         # 获取到总网页内容
         soup_title = self.pf.fetch_url(url=url, headers=self.headers)
+        if not soup_title:
+            return result_lt
         soup_title_all = soup_title.find(["table", "div", 'ul'],
                                          class_=["leadership-right rt mt20 overview", "p-rt rt", "fr-main",
                                                  "zcwjjjd-zcwj-box2"])
@@ -150,10 +153,10 @@ class GetOtherFile:
             class_other_lt = ["li-4", "right-list mz-right-list", "list", "infos-box",
                               "hdjl-table", "rsj-list1", "right-list", "tjh-c-body", "zsj-fr-main",
                               "inter-list leader-info-list ml-list", "rightcon"]
-            soup_title_all = soup_title.find(['div', 'ul'], class_=class_other_lt)
-            soup_title_all = soup_title_all.find_all('a', href=True, title=True)
+            soup_title_all_ture = soup_title.find(['div', 'ul'], class_=class_other_lt)
+            soup_title_all = soup_title_all_ture.find_all('a', href=True, title=True)
             if not soup_title_all:
-                soup_title_all = soup_title_all.find_all('a', href=True)
+                soup_title_all = soup_title_all_ture.find_all('a', href=True)
             for tag in soup_title_all:
                 # 标题
                 p_tag = tag.find('p')
@@ -197,6 +200,8 @@ class GetOtherFile:
                     'detail-container',
                     'Content',
                     ]
+        if not soup:
+            return ""
         zhengwen = soup.find('div', class_=['zcwjk-xlcon', 'gfxwj-content', 'zcwjk-con', 'zwxl-main', 'zwxl-article',
                                             'lef border', 'xl-con clearfix'])
         zhengwen_stat = None
@@ -349,6 +354,8 @@ class GetOtherFile:
 
     def a_href_calculate(self, soup, quanwen, title_any):
         download_dt = {}
+        if not soup:
+            return ""
         download = soup.find('div', class_="zwxl-article")
         if not download:
             return quanwen
@@ -403,6 +410,8 @@ class GetOtherFile:
             # 发布日期
             if not it.get('发布日期'):
                 it['发布日期'] = self.pf.match_date(it['全文'], soup)
+            if not it.get('发布日期'):
+                it['发布日期'] = ""
             # 发文字号
             data_dt = self.pf.soup_get_date(soup)
             self.data_dt = data_dt
@@ -410,6 +419,7 @@ class GetOtherFile:
             _log.info(f"date_and_wordsize出错:{e}")
 
         tag_text = data_dt.get("发文字号")
+        it["发文字号"] = ""
         if tag_text:
             it["发文字号"] = tag_text
         return it
@@ -422,6 +432,8 @@ class GetOtherFile:
         :param new_get_url:
         :return:
         """
+        it["发布部门"] = ""
+        it["类别"] = ""
         if it.get('发布日期'):
             # 唯一标志
             md5_str = it.get('法规标题') + it.get('发布日期')
@@ -483,11 +495,9 @@ class GetOtherFile:
                 continue
             _log.info(f"需要写入的文章:{it.get('法规标题')}")
             # 个人收录来源标记
-            it['收录来源个人'] = self.myself_mark
+            it['收录时间'] = self.shoulu_date
             # soup
             soup = self.pf.fetch_url(new_get_url, headers=self.headers)
-            if not soup:
-                print(1)
             # 正文
             it['全文'] = self.zhengwen_get(soup)
             # 处理发布日期和发文字号
@@ -536,6 +546,29 @@ class GetOtherFile:
                 new_result_lt.append(it)
         return new_result_lt
 
+    def select_from_oa(self, title):
+        sql = rf"SELECT * FROM [自收录数据].dbo.[专项补充收录] WHERE [法规标题] = '{title}'"
+        results = self.pf.query_sql_BidDocument(sql)
+        return results
+
+    def filter_oa(self, result_lt):
+        new_result_lt = []
+        for it in result_lt:
+            title = it.get('法规标题')
+            if not title:
+                continue
+            results = self.select_from_oa(title)
+            if len(results) == 0:
+                _log.info(f"47数据库中没有 [{title}] 这条数据!")
+                new_result_lt.append(it)
+        return new_result_lt
+
+    def write_to_oa(self, it):
+        sql = rf"INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES ('{it['唯一标志']}','{it.get('法规标题')}','{it['全文']}','{it['发布部门']}','{it['类别']}','{it.get('发布日期')}','{it['效力级别']}','{it['实施日期']}','{it['发文字号']}','{it['时效性']}','{it['来源']}','{it['收录时间']}')"
+        self.pf.save_sql_BidDocument(sql)
+        _log.info(f"写入成功: {it.get('法规标题')}")
+        _log.info(f"{sql}")
+
     def calculate(self):
         # 有几页就遍历几次
         for i in range(self.read_pages_start, self.num_pages):
@@ -550,6 +583,7 @@ class GetOtherFile:
             new_result_lt = self.clean_title(result_lt)
             # 过滤已有的文章
             new_result_lt = self.pf.filter(new_result_lt)
+            new_result_lt = self.filter_oa(new_result_lt)
             # 过滤url
             new_result_lt = self.any_url_calculate(new_result_lt)
             if not new_result_lt:
@@ -562,8 +596,8 @@ class GetOtherFile:
                 _log.info(f"第{i + 1}页    实际需要写入的文章有 {len(filtered_list)} 篇！！！")
                 data_df = pd.DataFrame(filtered_list)
                 if not data_df.empty:
-                    data_df = main_df_cal(data_df=data_df, write_table='重庆市其他文件_new')
-                    self.pf.to_mysql(data_df, self.table_name)
+                    # data_df = main_df_cal(data_df=data_df, write_table='重庆市其他文件_new')
+                    data_df.apply(self.write_to_oa, axis=1)
                     _log.info(f"第{i + 1}页    写入完毕！！！")
                 else:
                     _log.info(f"第{i + 1}页:   内容已经存在！")
