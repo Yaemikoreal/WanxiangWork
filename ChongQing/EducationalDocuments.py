@@ -61,7 +61,19 @@ class EducationalDocuments:
             "重庆市知识产权局": "8;831;83103;831030306",
             "重庆两江新区管理委员会": "8;831;83103;831030313",
             "重庆高新技术产业开发区管理委员会": "8;831;83102",
-            "重庆市万盛经济技术开发区管理委员会": "8;831;83102"
+            "重庆市万盛经济技术开发区管理委员会": "8;831;83102",
+            "巫山县人民政府": "8;831;83103;83103S101",
+            "巫山县科技技术局": "8;831;83103;83103S101",
+            "巫山县规划和自然资源局": "8;831;83103;83103S101",
+            "巫山县农业农村委员会": "8;831;83103;83103S101",
+            "巫山县文化和旅游发展委员会": "8;831;83103;83103S101",
+            "巫山县应急管理局": "8;831;83103;83103S101",
+            "巫山县医疗保障局": "8;831;83103;83103S101",
+            "巫山县抱龙镇人民政府": "8;831;83103;83103S101",
+            "巫山县两坪乡人民政府": "8;831;83103;83103S101",
+            "巫山县建平乡人民政府": "8;831;83103;83103S101",
+            "巫山县大溪乡人民政府": "8;831;83103;83103S101",
+            "巫山县红椿土家族乡人民政府": "8;831;83103;83103S101",
         }
         # 在函数返回为空的时候指定发布部门
         self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
@@ -127,6 +139,8 @@ class EducationalDocuments:
         result_lt = []
         # 获取到总网页内容
         soup_title = self.pf.fetch_url(url=url, headers=self.headers)
+        if not soup_title:
+            return result_lt
         soup_title_all = soup_title.find(["table", "div"], class_='zcwjk-list')
         soup_title_all = soup_title_all.find_all(['tr', 'div'], class_=['row', 'item clearfix', 'zcwjk-list-c clearfix',
                                                                         'zcwjk-list-c clearfix cur'])
@@ -477,6 +491,7 @@ class EducationalDocuments:
         _log.info(f"{sql}")
 
     def calculate(self):
+        _log.info(f"[{self.lasy_department}] 正在收录: [{self.start_url}]")
         # 有几页就遍历几次
         for i in range(self.read_pages_start, self.num_pages):
             if i == 0:

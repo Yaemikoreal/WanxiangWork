@@ -201,6 +201,7 @@ class GetDataFa:
 
                 if total_size != 0 and t.n != total_size:
                     logger.error("ERROR, something went wrong")
+                logger.info(f"该附件下载完毕: [{save_path}]")
                 return "ok"
             elif req.status_code == 521:
                 logger.error("状态码521 - 需要进一步处理")
@@ -260,6 +261,11 @@ class GetDataFa:
             file_path = f"/新法速递附件/chl附件/{formatted_date}/"
         else:
             file_path = f"/新法速递附件/lar附件/{formatted_date}/"
+        # 检测路径是否存在
+        if not os.path.exists(file_path):
+            # 如果路径不存在，则创建路径
+            os.makedirs(file_path)
+            logger.info(f"创建路径: 目录 [{file_path}] 已创建。")
         full = soup.find('div', id='divFullText')
         full = self.changeinfo(full)
         full = BeautifulSoup(full, "html.parser")

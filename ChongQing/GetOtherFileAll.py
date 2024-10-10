@@ -72,8 +72,7 @@ departments = [
     {"部门名称": "重庆市知识产权局", "URL": "https://zscqj.cq.gov.cn/zwgk_232/zcwj/qtwj/"},
     {"部门名称": "重庆两江新区管理委员会", "URL": "https://ljxq.cq.gov.cn/zwgk_199/zfxxgkml/xqgw/qtwj/"},
     {"部门名称": "重庆高新技术产业开发区管理委员会", "URL": "https://gxq.cq.gov.cn/zwgk_202/zfxxgkml/zcwj/qtgw/"},
-    {"部门名称": "重庆市万盛经济技术开发区管理委员会",
-     "URL": "https://ws.cq.gov.cn/cqws_zwxxgkml/zcwjjjdkcs/zcwj_zfxxgkml/"}
+    {"部门名称": "重庆市万盛经济技术开发区管理委员会", "URL": "https://ws.cq.gov.cn/cqws_zwxxgkml/zcwjjjdkcs/zcwj_zfxxgkml/"}
 ]
 
 

@@ -8,10 +8,10 @@ from sqlalchemy import create_engine, text
 import re
 import pyodbc
 
-
 """
 本方法用于获取重庆市巫山县人民政府地方规范性文件
 """
+
 
 class WushanStandardizedDocuments:
     def __init__(self):
@@ -206,7 +206,7 @@ class WushanStandardizedDocuments:
             except requests.RequestException as e:
                 print(f"请求失败: {e}")
                 continue
-        return text_version_all_lt, new_url_lt, department_of_publication_lt, level_of_effectiveness_lt,shixing_date_lt,shixiao_lt
+        return text_version_all_lt, new_url_lt, department_of_publication_lt, level_of_effectiveness_lt, shixing_date_lt, shixiao_lt
 
     def remove_nbsp(self, soup):
         # 遍历所有的文本节点

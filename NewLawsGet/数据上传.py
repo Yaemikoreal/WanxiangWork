@@ -164,10 +164,8 @@ class get_shujuku(object):
     def calculate(self):
         # True:法规 ,  False:解读
         if self.status:
-            print("正在进行 [法律法规] 上传!!!")
             self.write_fagui()
         else:
-            print("正在进行 [地方法规] 上传!!!")
             self.write_jiedu()
 
 
@@ -176,7 +174,7 @@ if __name__ == "__main__":
         "status": True,
         # fb_新版中央法规_chl or fb_新版地方法规_lar
         "table_name": 'fb_新版中央法规_chl',
-        "where_value": "[收录日期] = '20240930'",
+        "where_value": "[收录日期] = '20241010'",
         # 法律法规 or 地方法规
         "projectId": '法律法规'
     }
