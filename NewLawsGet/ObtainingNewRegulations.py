@@ -17,6 +17,7 @@ from ProcessingMethod.PublicFunction import load_config
 import GetUserToken
 import logging
 from ProcessingMethod.logger import logger
+
 """
 该方法用于获取并处理新法速递文章内容并入库
 该方法依赖于“附件"文件夹下的xls或者手动获取数据 excel表格
@@ -61,6 +62,27 @@ class GetDataFa:
             '失效': '02',
             '部分修订': '03'
         }
+        # 代理
+        self.proxies = dict(http='http://183.159.204.186:10344', https='http://183.159.204.186:10344')
+        self.proxies_url = "http://route.xiongmaodaili.com/xiongmao-web/api/glip?secret=b9200c80d01ddc746e97430b3d4a46a9&orderNo=GL202403191725045jqovn7t&count=1&isTxt=0&proxyType=1&returnAccount=1"
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+            'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
+        }
+
+    def get_new_proxies(self):
+        """
+        获取更新可用代理IP
+        :return:
+        """
+        response = requests.get(self.proxies_url, headers=self.headers, timeout=15)
+        data_js = response.json()
+        proxie_dt = data_js.get('obj')[0]
+        proxies_ip = proxie_dt.get('ip')
+        proxies_port = proxie_dt.get('port')
+        ip = f'http://{proxies_ip}:{proxies_port}'
+        self.proxies = dict(http=ip, https=ip)
+        logger.info(f"[{ip}] 代理更换完毕!")
 
     def get_x_token(self):
         """
@@ -78,6 +100,15 @@ class GetDataFa:
             'Cookie': self.psessionid
         }
         logger.info("成功更换为最新token!!!")
+
+    def test_ip(self, proxy):
+        try:
+            response = requests.get('https://www.example.com', proxies=proxy, timeout=5)
+            logger.info("代理依旧生效!")
+            return True
+        except requests.exceptions.RequestException as e:
+            logger.info(f"{proxy} 代理已失效!")
+            return False
 
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
@@ -185,7 +216,7 @@ class GetDataFa:
         # 禁用urllib3的警告
         disable_warnings()
         # 发送GET请求
-        req = requests.get(url, headers=headers, stream=True)
+        req = requests.get(url, headers=headers, stream=True, proxies=self.proxies)
 
         try:
             if req.status_code == 200:
@@ -223,7 +254,7 @@ class GetDataFa:
         for attempt in range(max_attempts):
             try:
                 time.sleep(random.uniform(2, 4))
-                resp = requests.get(url_a, headers=self.header1, verify=False)
+                resp = requests.get(url_a, headers=self.header1, verify=False, proxies=self.proxies)
                 soup = BeautifulSoup(resp.text, 'html.parser')
 
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
@@ -738,6 +769,9 @@ class GetDataFa:
 
         count = 0
         index_t = 'chl' if types_regulations else 'lar'
+        if not self.test_ip(self.proxies):
+            # 尝试更换代理
+            self.get_new_proxies()
         # 打印所有标题和链接
         for index, row in df.iterrows():
             titles = row['标题']

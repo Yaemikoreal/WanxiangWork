@@ -13,7 +13,7 @@ from ProxyTesting import test_ip
 from TestFile import process_file
 from PIL import Image
 
-# 该网站如果不发起刷新请求，那么验证码就会固定，每次所需要的验证码都是相同的
+
 web = webdriver.Firefox()
 
 
@@ -68,7 +68,7 @@ class DataGet():
 
     def get_session(self, url):
         """
-        # 获得session进行后续处理
+        获得session进行后续处理
         """
         resp = requests.get(url, proxies=self.proxies, timeout=15)
         self.session = resp.cookies
@@ -79,6 +79,7 @@ class DataGet():
         """
         验证码识别的函数，有小概率识别失败
         """
+        # 该网站如果不发起刷新请求，那么验证码就会固定，每次所需要的验证码都是相同的
         time_stamp = str(time.time()).replace('.', '')[0:13]
         url = f'http://c.gb688.cn/bzgk/gb/gc?_{time_stamp}'
         header = {
@@ -138,7 +139,8 @@ class DataGet():
                     print('验证码发送错误，可能是识别错误')
                     return False
                 page_source = requests.get(download_url, headers=headers, proxies=self.proxies,timeout=15)
-                soup = BeautifulSoup(page_source.text, 'html.parser')
+                if page_source.status_code == 200:
+                    soup = BeautifulSoup(page_source.text, 'html.parser')
                 if soup:
                     break
             except requests.exceptions.RequestException as e:
@@ -146,7 +148,7 @@ class DataGet():
                 max_retries -= 1
                 if max_retries > 0:
                     # 等待后重试
-                    time.sleep(random.uniform(2, 4))
+                    time.sleep(random.uniform(3, 5))
                 else:
                     print("所有重试均失败。")
                     return False
@@ -249,6 +251,12 @@ class DataGet():
             number = row['Code']
             # 打印出当前标题和标准号的信息
             print(f'标题 {title}  标准号为 {number}')
+            filename = number + ".pdf"
+            file_path = os.path.join("处理完成的pdf/", filename)
+            file_status = os.path.isfile(file_path)
+            if file_status:
+                print("该标准文件已经存在!!!")
+                continue
             try:
                 # 调用can_be_download函数，返回是否可以下载的状态以及网站相应的名字
                 file_can_download, file_name = self.can_be_download(number)
@@ -279,7 +287,7 @@ class DataGet():
                     else:
                         # 如果验证码不正确，则重新获取验证码并验证
                         self.check_code(self.get_qr_code(), url)
-
+                    print("sleep 然后进行下一次尝试")
                     time.sleep(random.uniform(3, 5))
 
         # 存储次数，下次从结束的地方开始
