@@ -32,14 +32,24 @@ class DataGet():
         获取更新可用代理IP
         :return:
         """
-        response = requests.get(self.proxies_url, headers=self.headers, timeout=15)
-        data_js = response.json()
-        proxie_dt = data_js.get('obj')[0]
-        proxies_ip = proxie_dt.get('ip')
-        proxies_port = proxie_dt.get('port')
-        ip = f'http://{proxies_ip}:{proxies_port}'
-        self.proxies = dict(http=ip, https=ip)
-        print("代理更换完毕!")
+        max_retries = 3
+        while max_retries > 0:
+            try:
+                response = requests.get(self.proxies_url, headers=self.headers, timeout=15)
+                data_js = response.json()
+                proxie_dt = data_js.get('obj')[0]
+                proxies_ip = proxie_dt.get('ip')
+                proxies_port = proxie_dt.get('port')
+                ip = f'http://{proxies_ip}:{proxies_port}'
+                self.proxies = dict(http=ip, https=ip)
+                print("代理更换完毕!")
+                break
+            except Exception as e:
+                max_retries -= 1
+                print(f"[proxies] 剩余重试次数:[{max_retries}],错误: {e}")
+                time.sleep(random.uniform(1,2))
+                continue
+
 
     def can_be_download(self, openstd_id):
         urla = 'https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2='
@@ -70,10 +80,19 @@ class DataGet():
         """
         获得session进行后续处理
         """
-        resp = requests.get(url, proxies=self.proxies, timeout=15)
-        self.session = resp.cookies
-        self.session = str(self.session.values()).replace('[', '').replace(']', '').replace("'", '')
-        resp.close()
+        max_retries = 1
+        while max_retries > 0:
+            try:
+                resp = requests.get(url, proxies=self.proxies, timeout=15)
+                self.session = resp.cookies
+                self.session = str(self.session.values()).replace('[', '').replace(']', '').replace("'", '')
+                resp.close()
+                break
+            except Exception as e:
+                max_retries -= 1
+                print(f"[session] 剩余重试次数:[{max_retries}],错误: {e}")
+                time.sleep(random.uniform(1, 2))
+                continue
 
     def get_qr_code(self):
         """
@@ -151,6 +170,11 @@ class DataGet():
                     time.sleep(random.uniform(3, 5))
                 else:
                     print("所有重试均失败。")
+                    # 更换代理
+                    self.get_new_proxies()
+                    time.sleep(random.uniform(0.5, 1))
+                    # 获取session会话
+                    self.get_session(download_url)
                     return False
         time.sleep(1)
 
@@ -244,9 +268,9 @@ class DataGet():
         file_name = None
 
         num = 1
-        standard_df = pd.read_excel('tools/标准号.xlsx')
-        # 通过iloc函数从第num行开始读取最多40行数据，并使用for循环遍历这些数据
-        for index, row in standard_df.iloc[num:num + 40].iterrows():  # 设置每次读取的数据量
+        standard_df = pd.read_excel('tools/标准号1.xlsx')
+        # 通过iloc函数从第num行开始读取最多60行数据，并使用for循环遍历这些数据
+        for index, row in standard_df.iloc[num:num + 60].iterrows():  # 设置每次读取的数据量
             title = row['Name']
             number = row['Code']
             # 打印出当前标题和标准号的信息

@@ -216,7 +216,7 @@ class GetDataFa:
         # 禁用urllib3的警告
         disable_warnings()
         # 发送GET请求
-        req = requests.get(url, headers=headers, stream=True, proxies=self.proxies)
+        req = requests.get(url, headers=headers, stream=True)
 
         try:
             if req.status_code == 200:
@@ -254,7 +254,7 @@ class GetDataFa:
         for attempt in range(max_attempts):
             try:
                 time.sleep(random.uniform(2, 4))
-                resp = requests.get(url_a, headers=self.header1, verify=False, proxies=self.proxies)
+                resp = requests.get(url_a, headers=self.header1, verify=False, timeout=20)
                 soup = BeautifulSoup(resp.text, 'html.parser')
 
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
@@ -769,9 +769,9 @@ class GetDataFa:
 
         count = 0
         index_t = 'chl' if types_regulations else 'lar'
-        if not self.test_ip(self.proxies):
-            # 尝试更换代理
-            self.get_new_proxies()
+        # if not self.test_ip(self.proxies):
+        #     # 尝试更换代理
+        #     self.get_new_proxies()
         # 打印所有标题和链接
         for index, row in df.iterrows():
             titles = row['标题']
