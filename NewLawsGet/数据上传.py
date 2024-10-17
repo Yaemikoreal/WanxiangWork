@@ -8,6 +8,10 @@ import pyodbc
 class get_shujuku(object):
 
     def __init__(self, **kwargs):
+        self.va_dt = {
+            "法律法规": {"table_name": 'fb_新版中央法规_chl',  "projectId": '法律法规'},
+            "地方法规": {"table_name": 'fb_新版地方法规_lar',  "projectId": '地方法规'}
+        }
         # 法规模版
         self.projectId_dt = {
             "地方法规": "981577858f7d59da5bf2eabfc7635b71",
@@ -19,7 +23,7 @@ class get_shujuku(object):
         # status,ture为法规，False为解读文件
         self.status = kwargs.get('status')
         # 需要写入的表名
-        self.table_name = kwargs.get('table_name')
+        self.table_name = self.va_dt.get(self.mb).get('table_name')
         # where条件语句
         self.where_value = kwargs.get('where_value')
 
@@ -61,8 +65,8 @@ class get_shujuku(object):
         print(data)
         jsonData = json.dumps(data, ensure_ascii=False)
         response = requests.post(url=url, headers=header, data=jsonData.encode())
-        print(f"连接状态: { str(response.status_code)}")
-        print("==="*30)
+        print(f"连接状态: {str(response.status_code)}")
+        print("===" * 30)
 
     def post_sj1_jiedu(self, query_result):
         url = 'http://47.97.3.24:8075/api/trends/addEmployData'
@@ -170,11 +174,10 @@ class get_shujuku(object):
 
 
 if __name__ == "__main__":
+
     data_dt = {
         "status": True,
-        # fb_新版中央法规_chl or fb_新版地方法规_lar
-        "table_name": 'fb_新版中央法规_chl',
-        "where_value": "[收录日期] = '20241010'",
+        "where_value": "[收录日期] = '20241016'",
         # 法律法规 or 地方法规
         "projectId": '法律法规'
     }

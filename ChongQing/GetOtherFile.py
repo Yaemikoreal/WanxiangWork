@@ -69,7 +69,8 @@ class GetOtherFile:
             "重庆市人民政府口岸和物流办公室": "8;831;83103",
         }
         # 在函数返回为空的时候指定发布部门
-        self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
+        self.lasy_department_name = kwargs.get('lasy_department')
+        self.lasy_department = self.department_of_publication.get(self.lasy_department_name)
         # 指定起始页数
         self.read_pages_start = kwargs.get('read_pages_start')
         if not self.read_pages_start:
@@ -571,6 +572,7 @@ class GetOtherFile:
 
     def calculate(self):
         # 有几页就遍历几次
+        _log.info(f"[{self.lasy_department_name}] 正在收录: [{self.start_url}]")
         for i in range(self.read_pages_start, self.num_pages):
             if i == 0:
                 new_url = self.start_url

@@ -76,7 +76,8 @@ class EducationalDocuments:
             "巫山县红椿土家族乡人民政府": "8;831;83103;83103S101",
         }
         # 在函数返回为空的时候指定发布部门
-        self.lasy_department = self.department_of_publication.get(kwargs.get('lasy_department'))
+        self.lasy_department_name =kwargs.get('lasy_department')
+        self.lasy_department = self.department_of_publication.get(self.lasy_department_name)
         # 收录来源个人
         self.myself_mark = kwargs.get("lasy_department")
         # 部门
@@ -491,7 +492,7 @@ class EducationalDocuments:
         _log.info(f"{sql}")
 
     def calculate(self):
-        _log.info(f"[{self.lasy_department}] 正在收录: [{self.start_url}]")
+        _log.info(f"[{self.lasy_department_name}] 正在收录: [{self.start_url}]")
         # 有几页就遍历几次
         for i in range(self.read_pages_start, self.num_pages):
             if i == 0:

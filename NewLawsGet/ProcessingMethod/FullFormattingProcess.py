@@ -245,6 +245,10 @@ def soup_cal(soup_ture):
         attrs_to_remove = ['data-index', 'id', 'class', 'type', 'new', 'times', 'lang', 'clear', 'content',
                            'http-equiv', 'name', 'rel']
         for attr in attrs_to_remove:
+            if attr == 'class' and 'class' in tag.attrs:
+                class_value = tag.get('class')
+                if class_value == ["alink"]:
+                    continue
             # tag.attrs 包含了标签的所有属性
             if attr in tag.attrs:
                 del tag[attr]

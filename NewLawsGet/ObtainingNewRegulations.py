@@ -70,19 +70,7 @@ class GetDataFa:
             'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
         }
 
-    def get_new_proxies(self):
-        """
-        获取更新可用代理IP
-        :return:
-        """
-        response = requests.get(self.proxies_url, headers=self.headers, timeout=15)
-        data_js = response.json()
-        proxie_dt = data_js.get('obj')[0]
-        proxies_ip = proxie_dt.get('ip')
-        proxies_port = proxie_dt.get('port')
-        ip = f'http://{proxies_ip}:{proxies_port}'
-        self.proxies = dict(http=ip, https=ip)
-        logger.info(f"[{ip}] 代理更换完毕!")
+
 
     def get_x_token(self):
         """
@@ -101,14 +89,7 @@ class GetDataFa:
         }
         logger.info("成功更换为最新token!!!")
 
-    def test_ip(self, proxy):
-        try:
-            response = requests.get('https://www.example.com', proxies=proxy, timeout=5)
-            logger.info("代理依旧生效!")
-            return True
-        except requests.exceptions.RequestException as e:
-            logger.info(f"{proxy} 代理已失效!")
-            return False
+
 
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
@@ -274,7 +255,11 @@ class GetDataFa:
                     continue
 
                 else:
-                    ul = soup.find('div', class_='fields').find('ul')
+                    ul = soup.find('div', class_='fields')
+                    if not ul:
+                        logger.error("未能找到正确内容!")
+                        continue
+                    ul = ul.find('ul')
                     if ul is not None:
                         return soup, ul, url_a
             except Exception as e:

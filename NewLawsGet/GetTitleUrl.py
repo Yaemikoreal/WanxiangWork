@@ -256,7 +256,7 @@ def make_request(page_index, choose):
         return response.text
     except Exception as e:
         logger.error(f'Exception occurred: {e}')
-        return make_request(page_index)
+        return make_request(page_index,choose)
 
 
 def extract_titles_and_urls(content):
