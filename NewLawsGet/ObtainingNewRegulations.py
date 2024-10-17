@@ -274,9 +274,9 @@ class GetDataFa:
         """
         formatted_date = datetime.now().strftime("%Y%m")
         if types_regulations:
-            file_path = f"/新法速递附件/chl附件/{formatted_date}/"
+            file_path = fr"E:/新法速递附件/chl附件/{formatted_date}/"
         else:
-            file_path = f"/新法速递附件/lar附件/{formatted_date}/"
+            file_path = fr"E:/新法速递附件/lar附件/{formatted_date}/"
         # 检测路径是否存在
         if not os.path.exists(file_path):
             # 如果路径不存在，则创建路径
@@ -302,7 +302,7 @@ class GetDataFa:
                 ysrca = '/datafolder/附件/' + self.mkm + '/' + wjm
                 replaced_full = str(replaced_full).replace(hrefc, ysrca)
                 try:
-                    self.public_down(hrefc, './附件' + file_path + wjm, self.psessionid)
+                    self.public_down(hrefc, file_path + wjm, self.psessionid)
                     time.sleep(random.uniform(2, 4))
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
                 except Exception as e:
@@ -324,7 +324,7 @@ class GetDataFa:
                 replaced_full = str(replaced_full).replace(ysrc, ysrca)
 
                 try:
-                    self.public_down(ysrc, os.path.join('./', file_path, file_name), self.psessionid)
+                    self.public_down(ysrc, file_path + file_name, self.psessionid)
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": ysrc})
                     time.sleep(random.uniform(2, 4))
                 except Exception as e:
