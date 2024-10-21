@@ -1,6 +1,6 @@
 import time
 import random
-from ProcessingMethod.logger import logger
+from ProcessingMethod.LoggerSet import logger
 from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch
 import requests

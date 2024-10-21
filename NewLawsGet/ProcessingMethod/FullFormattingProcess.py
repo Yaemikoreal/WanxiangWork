@@ -26,7 +26,13 @@ def deal_full(data_str):
     # 过滤a标签里的name属性
     for a_tag in soup.find_all('a'):
         if 'name' in a_tag.attrs:
-            del a_tag['name']
+            if "tiao_" not in a_tag['name']:
+                del a_tag['name']
+            else:
+                if "kuan_" not in a_tag['name']:
+                    a_tag['name'] = a_tag['name'].replace("tiao_", "")
+                else:
+                    del a_tag['name']
         if 'id' in a_tag.attrs:
             del a_tag['id']
         if 'anchor' in a_tag.attrs:
@@ -216,6 +222,22 @@ def remove_nbsp(soup):
     return soup
 
 
+def processing_full_format(soup):
+    """
+    处理嵌套的<p>标签，只保留最内层的一对<p>标签。
+
+    :param soup: BeautifulSoup 对象
+    :return: 修改后的 BeautifulSoup 对象
+    """
+    # 查找所有的<p>标签
+    full = str(soup)
+    # full = full.replace("<p><p><p>", "<p>")
+    # full = full.replace("</p></p></p>", "</p>")
+    # full = full.replace("<p><p>", "<p>")
+    # full = full.replace("</p></p>", "</p>")
+    soup = BeautifulSoup(full, "html.parser")
+    return soup
+
 def soup_cal(soup_ture):
     """
     传入正文部分soup，传出初步清洗的结果soup
@@ -243,7 +265,7 @@ def soup_cal(soup_ture):
 
     for tag in soup_ture.find_all(True):
         attrs_to_remove = ['data-index', 'id', 'class', 'type', 'new', 'times', 'lang', 'clear', 'content',
-                           'http-equiv', 'name', 'rel']
+                           'http-equiv', 'rel']
         for attr in attrs_to_remove:
             if attr == 'class' and 'class' in tag.attrs:
                 class_value = tag.get('class')
@@ -278,6 +300,7 @@ def new_full_calculate(full):
     full_soup = BeautifulSoup(full, "html.parser")
     full_soup = soup_cal(full_soup)
     full_soup = remove_nbsp(full_soup)
+    full_soup = processing_full_format(full_soup)
     full = str(full_soup)
     return full
 

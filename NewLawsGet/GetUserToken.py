@@ -1,9 +1,10 @@
 import datetime
+import os
 import random
 import time
 from DrissionPage import ChromiumPage, ChromiumOptions
 import json
-from ProcessingMethod.logger import logger
+from ProcessingMethod.LoggerSet import logger
 
 co = ChromiumOptions().set_paths()
 # 1、设置无头模式：
@@ -83,7 +84,20 @@ def calculate():
             x_vpn_token_str = f"x_vpn_token={x_vpn_token};"
     cookie_str = f"{x_vpn_token_str}{refresh_str}"
 
-    with open('cookie.txt', 'w', encoding='utf-8') as file:
+    # 获取脚本所在的绝对路径
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # 构建目标目录的相对路径
+    config_directory = os.path.join(script_directory, 'ConfigFile')
+
+    # 确保 ConfigFile 目录存在
+    if not os.path.exists(config_directory):
+        os.makedirs(config_directory)
+
+    # 构建文件的绝对路径
+    file_path = os.path.join(config_directory, 'cookie.txt')
+
+    with open(file_path, 'w', encoding='utf-8') as file:
         file.write(json.dumps(cookie_str))
     logger.info("token获取完毕！！！")
 

@@ -1,5 +1,5 @@
 import time
-from .logger import logger
+from .LoggerSet import logger
 
 
 def timer(func):

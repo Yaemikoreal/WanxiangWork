@@ -6,7 +6,7 @@ from GetTitleUrl import calculate as get_title_url
 from ObtainingNewRegulations import main_test as get_new_data
 from ProcessingMethod.decorators import timer
 import logging
-from ProcessingMethod.logger import logger
+from ProcessingMethod.LoggerSet import logger
 # 动态修改sys.path以包含包的根目录
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, root_dir)
@@ -14,10 +14,10 @@ sys.path.insert(0, root_dir)
 
 @timer
 def main():
-    # 获取chl法律法规新内容的标题和url,为True时处理法律法规新内容，为False时处理地方法规内容
-    logger.info("[chl] 正在获取法律法规新内容的标题和url!!!")
-    status_chl = get_title_url(choose=True)
-
+    # # 获取chl法律法规新内容的标题和url,为True时处理法律法规新内容，为False时处理地方法规内容
+    # logger.info("[chl] 正在获取法律法规新内容的标题和url!!!")
+    # status_chl = get_title_url(choose=True)
+    status_chl = True
     if status_chl:
         time.sleep(5)
         # 获取chl法律法规到数据库

@@ -9,8 +9,8 @@ class get_shujuku(object):
 
     def __init__(self, **kwargs):
         self.va_dt = {
-            "法律法规": {"table_name": 'fb_新版中央法规_chl',  "projectId": '法律法规'},
-            "地方法规": {"table_name": 'fb_新版地方法规_lar',  "projectId": '地方法规'}
+            "法律法规": {"table_name": 'fb_新版中央法规_chl', "projectId": '法律法规'},
+            "地方法规": {"table_name": 'fb_新版地方法规_lar', "projectId": '地方法规'}
         }
         # 法规模版
         self.projectId_dt = {
@@ -62,11 +62,25 @@ class get_shujuku(object):
             "projectId": f"{self.projectId}"
             # "projectId":""fbd7f99f9649070ef0a8c9a3245e00e2""      # 法律法规
         }
-        print(data)
+        # print(data)
         jsonData = json.dumps(data, ensure_ascii=False)
-        response = requests.post(url=url, headers=header, data=jsonData.encode())
-        print(f"连接状态: {str(response.status_code)}")
-        print("===" * 30)
+        try_num = 3
+        while True:
+            try:
+                response = requests.post(url=url, headers=header, data=jsonData.encode())
+                if response.status_code == 200:
+                    print(f"连接写入成功!")
+                    print("===" * 30)
+                    break
+                print("===" * 30)
+            except Exception as e:
+                print(f"错误: {e}")
+                time.sleep(random.uniform(2, 2.5))
+                if try_num == 0:
+                    print(f"重试次数用尽(3),跳过...")
+                    break
+                try_num -= 1
+                print("正在进行重试...")
 
     def post_sj1_jiedu(self, query_result):
         url = 'http://47.97.3.24:8075/api/trends/addEmployData'
@@ -128,7 +142,7 @@ class get_shujuku(object):
         count_num = 0
         for i in range(len(url_list)):
             count_num += 1
-            time.sleep(random.uniform(1, 2))
+            time.sleep(random.uniform(0.5, 1))
             print(f"正在写入第 [{count_num}] 条数据.")
             self.post_sj1_fagui(url_list[i])
         cursor.close()
@@ -174,12 +188,11 @@ class get_shujuku(object):
 
 
 if __name__ == "__main__":
-
     data_dt = {
         "status": True,
-        "where_value": "[收录日期] = '20241016'",
+        "where_value": "[收录日期] = '20241021'",
         # 法律法规 or 地方法规
-        "projectId": '法律法规'
+        "projectId": '地方法规'
     }
 
     obj = get_shujuku(**data_dt)

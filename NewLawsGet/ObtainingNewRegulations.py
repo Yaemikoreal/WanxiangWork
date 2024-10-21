@@ -16,7 +16,7 @@ from elasticsearch import Elasticsearch
 from ProcessingMethod.PublicFunction import load_config
 import GetUserToken
 import logging
-from ProcessingMethod.logger import logger
+from ProcessingMethod.LoggerSet import logger
 
 """
 该方法用于获取并处理新法速递文章内容并入库
@@ -36,13 +36,12 @@ class GetDataFa:
         kms = ['chl', '新版中央法规', 'chl']
         self.mkm = kms[1]
         self.mkm0 = kms[2]
-        # 设置代理
-        self.proxies = {
-            'http': 'http://127.0.0.1:1080',
-            'https': 'http://127.0.0.1:1080',
-        }
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        config_directory = os.path.join(script_directory, 'ConfigFile')
+        self.cookie_file_path = os.path.join(config_directory, 'cookie.txt')
         # 读取xml文件里的cookies
-        self.tree = ET.parse('./cookies.xml')
+        cookies_path = os.path.join(config_directory, 'cookies.xml')
+        self.tree = ET.parse(cookies_path)
         self.root = self.tree.getroot()
         self.psessionid = self.root.find('cookies').text.replace('\n', '').replace(' ', '')
         # 读取VPN URL
@@ -62,15 +61,16 @@ class GetDataFa:
             '失效': '02',
             '部分修订': '03'
         }
-        # 代理
-        self.proxies = dict(http='http://183.159.204.186:10344', https='http://183.159.204.186:10344')
+        # 代理以及代理获取
+        self.proxies = {
+            "http": 'http://183.159.204.186:10344',
+            "https": 'http://183.159.204.186:10344'
+        }
         self.proxies_url = "http://route.xiongmaodaili.com/xiongmao-web/api/glip?secret=b9200c80d01ddc746e97430b3d4a46a9&orderNo=GL202403191725045jqovn7t&count=1&isTxt=0&proxyType=1&returnAccount=1"
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
             'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
         }
-
-
 
     def get_x_token(self):
         """
@@ -80,7 +80,8 @@ class GetDataFa:
         logger.info("正在获取最新token,这个过程大概需要1分钟!!!")
         # 获取最新token到本地
         GetUserToken.calculate()
-        with open('cookie.txt', 'r', encoding='utf-8') as file:
+
+        with open(self.cookie_file_path, 'r', encoding='utf-8') as file:
             content = file.read()
         self.psessionid = content
         self.header1 = {
@@ -88,8 +89,6 @@ class GetDataFa:
             'Cookie': self.psessionid
         }
         logger.info("成功更换为最新token!!!")
-
-
 
     def elasticsearch_is_exist(self, tittle):
         # 构建查询请求体
@@ -146,7 +145,7 @@ class GetDataFa:
                 anchor_text = str(anchor)
 
                 # 移除包含特定字符串的<a>标签
-                if 'vpn_inject_scripts' in anchor_text or 'tiao_' in anchor_text:
+                if 'vpn_inject_scripts' in anchor_text:
                     anchor.extract()
                     continue
 
@@ -242,7 +241,7 @@ class GetDataFa:
                 if '百度搜索' in str(soup):
                     cookie_count_num += 1
                     logger.info('cookie已失效!!!')
-                    with open('cookie.txt', 'r', encoding='utf-8') as file:
+                    with open(self.cookie_file_path, 'r', encoding='utf-8') as file:
                         content = file.read()
                     self.psessionid = content
                     self.header1 = {
@@ -754,9 +753,6 @@ class GetDataFa:
 
         count = 0
         index_t = 'chl' if types_regulations else 'lar'
-        # if not self.test_ip(self.proxies):
-        #     # 尝试更换代理
-        #     self.get_new_proxies()
         # 打印所有标题和链接
         for index, row in df.iterrows():
             titles = row['标题']
@@ -772,8 +768,8 @@ class GetDataFa:
 
 def main_test(choose_t, types_regulations_t):
     """
-    :param types_regulations_t: True为自动收录，False为手动收录
-    :param choose_t: True为chl收录，False为lar收录
+    :param types_regulations_t: True为chl收录，False为lar收录
+        :param choose_t: True为自动收录，False为手动收录
     """
     obj = GetDataFa()
     obj.calculate(choose=choose_t, types_regulations=types_regulations_t)

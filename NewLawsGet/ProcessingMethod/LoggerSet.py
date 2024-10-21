@@ -104,10 +104,3 @@ logger = setup_logger()
 
 
 # 注册退出钩子，确保在程序退出时更新运行次数
-@atexit.register
-def update_run_count_on_exit():
-    today = datetime.now().strftime("%Y%m%d")
-    log_filename = get_log_filename()
-    _, count_str = os.path.splitext(log_filename)
-    count = int(count_str.split('-')[2].split('.')[0])
-    update_run_count(today, count)

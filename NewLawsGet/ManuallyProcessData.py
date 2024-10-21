@@ -3,7 +3,7 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from bs4 import BeautifulSoup
 from query.PublicFunction import load_config
-from ProcessingMethod.logger import logger
+from ProcessingMethod.LoggerSet import logger
 """
 该方法用于手动处理目录数据
 依赖于 附件/html.text获取的search信息
@@ -107,9 +107,9 @@ def process_html_and_save_to_excel():
         html_content = file.read()
 
     titles_and_urls = extract_titles_and_urls(html_content)
-    filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
+    # filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
 
-    df = pd.DataFrame(filtered_titles_and_urls)
+    df = pd.DataFrame(titles_and_urls)
     num_rows = df.shape[0]
     logger.info(f"获取到 {num_rows} 条需要获取的文章")
 
