@@ -14,10 +14,9 @@ sys.path.insert(0, root_dir)
 
 @timer
 def main():
-    # # 获取chl法律法规新内容的标题和url,为True时处理法律法规新内容，为False时处理地方法规内容
-    # logger.info("[chl] 正在获取法律法规新内容的标题和url!!!")
-    # status_chl = get_title_url(choose=True)
-    status_chl = True
+    # 获取chl法律法规新内容的标题和url,为True时处理法律法规新内容，为False时处理地方法规内容
+    logger.info("[chl] 正在获取法律法规新内容的标题和url!!!")
+    status_chl = get_title_url(choose=True)
     if status_chl:
         time.sleep(5)
         # 获取chl法律法规到数据库
