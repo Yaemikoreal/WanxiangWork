@@ -9,11 +9,16 @@ LOG_FILE_TEMPLATE = "logs/{}-运行日志-{}.log"
 # 记录运行次数的文件
 RUN_COUNT_FILE = "logs/运行日志统计.txt"
 
+ensure_logs_dir_exists_called = False
+
 
 def ensure_logs_dir_exists():
-    logs_dir = "logs"
-    if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
+    global ensure_logs_dir_exists_called
+    if not ensure_logs_dir_exists_called:
+        logs_dir = "logs"
+        if not os.path.exists(logs_dir):
+            os.makedirs(logs_dir)
+        ensure_logs_dir_exists_called = True
 
 
 def get_log_filename():
@@ -44,9 +49,9 @@ def get_run_count(today):
                 break
 
         if not found_today:
-            f.seek(0, 2)  # 移动到文件末尾
-            f.write("{}:2\n".format(today))
-            return 2
+            with open(run_count_path, "a") as f:
+                f.write("{}:1\n".format(today))
+            return 1
 
     return count + 1
 
@@ -103,4 +108,11 @@ def setup_logger():
 logger = setup_logger()
 
 
+def on_exit():
+    today = datetime.now().strftime("%Y%m%d")
+    count = get_run_count(today)
+    update_run_count(today, count)
+
+
 # 注册退出钩子，确保在程序退出时更新运行次数
+atexit.register(on_exit)

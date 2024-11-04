@@ -132,7 +132,7 @@ if __name__ == "__main__":
     data_dt = {
         "status": True,
         "table_name": '专项补充收录',
-        "where_value": "[收录时间] = 'JX2024.10.09' AND [效力级别] = 'XP08'",
+        "where_value": "[收录时间] = 'JX2024.10.29'",
         "projectId": '地方法规'
     }
 

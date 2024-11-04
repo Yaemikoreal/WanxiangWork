@@ -11,8 +11,6 @@ if sys.platform == 'win32':
 else:
     activate_this = os.path.join(virtual_env, 'bin', 'activate')
 
-# 在 Windows 上，我们不能直接执行 activate.bat 来激活环境，
-# 因为它只是设置了一些环境变量。我们需要手动设置这些变量。
 if sys.platform == 'win32':
     python_exe = os.path.join(virtual_env, 'Scripts', 'python.exe')
     os.environ['PYTHONIOENCODING'] = 'utf-8'  # 设置 Python IO 编码为 UTF-8

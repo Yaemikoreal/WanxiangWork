@@ -2,7 +2,7 @@ import os
 import random
 import re
 import time
-
+from reportlab.lib.pagesizes import A4
 import ddddocr
 import pandas as pd
 import requests
@@ -10,9 +10,8 @@ from bs4 import BeautifulSoup
 from reportlab.pdfgen import canvas
 from selenium import webdriver
 from ProxyTesting import test_ip
-from TestFile import process_file
+from ProcessPictures import process_file
 from PIL import Image
-
 
 web = webdriver.Firefox()
 
@@ -47,9 +46,8 @@ class DataGet():
             except Exception as e:
                 max_retries -= 1
                 print(f"[proxies] 剩余重试次数:[{max_retries}],错误: {e}")
-                time.sleep(random.uniform(1,2))
+                time.sleep(random.uniform(1, 2))
                 continue
-
 
     def can_be_download(self, openstd_id):
         urla = 'https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2='
@@ -151,13 +149,13 @@ class DataGet():
         max_retries = 3
         while max_retries > 0:
             try:
-                response = requests.post(verify_url, headers=headers, proxies=self.proxies, data=data,timeout=15)
+                response = requests.post(verify_url, headers=headers, proxies=self.proxies, data=data, timeout=15)
                 print(f"验证码和下载链接: {response.text, response.headers}")
                 if response.text != "success":
                     print(response.content)
                     print('验证码发送错误，可能是识别错误')
                     return False
-                page_source = requests.get(download_url, headers=headers, proxies=self.proxies,timeout=15)
+                page_source = requests.get(download_url, headers=headers, proxies=self.proxies, timeout=15)
                 if page_source.status_code == 200:
                     soup = BeautifulSoup(page_source.text, 'html.parser')
                 if soup:
@@ -212,6 +210,7 @@ class DataGet():
                             break
                         else:
                             print('下载出错,检查到文章字节数为0')
+                            continue
                     except requests.exceptions.RequestException as e:
                         print(f"请求失败，剩余重试次数: [{max_retries - 1}], 错误信息: {e}")
                         max_retries -= 1
@@ -228,10 +227,11 @@ class DataGet():
 
         page = process_file(str(viewer_div))
         pdf_file_path = f"处理完成的pdf/{title}.pdf"
-        self.create_pdf(pdf_file_path, page)
-
+        # self.create_pdf(pdf_file_path, page)
+        self.images_to_pdf(images_folder="单页/", output_pdf=pdf_file_path)
         # 删除文件
         self.delete_files('下载文件/')
+        self.delete_files('裁剪的系列图片/')
         return True
 
     def delete_files(self, folder_path):
@@ -250,19 +250,44 @@ class DataGet():
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
 
-    def create_pdf(self, pdf_file_path, page_count):
+    def images_to_pdf(self, images_folder, output_pdf):
         """
-        创建 PDF 文件。
+        将指定文件夹内的所有图片文件合并成一个PDF文件，每张图片占据一个PDF页面，并按文件名中的数字顺序排列。
 
-        :param pdf_file_path: PDF 文件路径
-        :param page_count: 页面数量
+        :param images_folder: 包含图片文件的文件夹路径
+        :param output_pdf: 输出的PDF文件路径
         """
-        page_count = int(page_count)
-        c = Image.new("RGB", (1190, 1680), "white")
-        for page in range(page_count + 1):
-            image_file = f'下载文件/{page}.png'
-            c = Image.open(image_file)
-            c.save(pdf_file_path)
+        # 获取文件夹内所有的图片文件名
+        image_files = [f for f in os.listdir(images_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+        # 按文件名中的数字排序
+        image_files.sort(key=lambda x: int(x.split('.')[0]))
+
+        # 创建一个PDF画布
+        c = canvas.Canvas(output_pdf, pagesize=A4)
+
+        for image_path in image_files:
+            img_path = os.path.join(images_folder, image_path)
+            try:
+                # 打开图片
+                img = Image.open(img_path)
+
+                # 获取图片的宽度和高度
+                img_width, img_height = img.size
+
+                # 设置页面大小为图片大小
+                c.setPageSize((img_width, img_height))
+
+                # 在当前页面上绘制图片
+                c.drawImage(img_path, 0, 0, width=img_width, height=img_height)
+
+                # 开始新的页面
+                c.showPage()
+            except IOError:
+                print(f"无法打开图片文件 {img_path}")
+
+        # 保存PDF文件
+        c.save()
 
     def calculate(self):
         file_name = None
@@ -296,6 +321,7 @@ class DataGet():
                     self.get_new_proxies()
                 # 如果可以下载，则根据file_name构造对应的URL
                 url = f'http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno={file_name}'
+                # url = f"http://c.gb688.cn/bzgk/gb/showGb?type=download&hcno={file_name}"
                 # 获取session会话
                 self.get_session(url)
                 # 尝试最多五次获取验证码并验证

@@ -213,14 +213,12 @@ class GetDataFa:
                 if total_size != 0 and t.n != total_size:
                     logger.error("ERROR, something went wrong")
                 logger.info(f"该附件下载完毕: [{save_path}]")
-                return "ok"
             elif req.status_code == 521:
                 logger.error("状态码521 - 需要进一步处理")
                 # 处理状态码521的逻辑可以在此添加
             elif req.status_code == 404:
                 logger.error("下载失败，网页打不开！！！")
                 logger.error(url)
-                return "fail, 下载失败，网页打不开！！！"
         except Exception as e:
             logger.error(e)
 
@@ -776,6 +774,6 @@ def main_test(choose_t, types_regulations_t):
 
 
 if __name__ == '__main__':
-    choose = True
-    types_regulations = False
+    choose = False
+    types_regulations = True
     main_test(choose, types_regulations)

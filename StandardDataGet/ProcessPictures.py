@@ -1,5 +1,4 @@
 import math
-from pin import pin_img
 from bs4 import BeautifulSoup
 from PIL import Image
 import re
@@ -172,6 +171,42 @@ def process_file(source):
         pin_img(tile_width=min_x, tile_height=min_y, page_count_id=page_count_id, coordinates=x_y_lt)
 
     return page_count_id
+
+
+def pin_img(coordinates, tile_width, tile_height, page_count_id):
+    # 小图片的尺寸
+    # tile_width = 232
+    # tile_height = 328
+
+    # 大图片的尺寸（基于提供的坐标推断）
+    max_column = max(coord[0] for coord in coordinates) + 1
+    max_row = max(coord[1] for coord in coordinates) + 1
+    large_width = max_column * tile_width
+    large_height = max_row * tile_height
+    # 创建一个空白的大图片
+    background_img = Image.new('RGB', (int(large_width), int(large_height)), color='white')
+
+    # 遍历坐标列表，并将对应的小图片粘贴到大图片上
+    for coord in coordinates:
+        col, row = coord
+        # 计算左上角的绝对坐标
+        abs_left = col * tile_width
+        abs_top = row * tile_height
+        # img_(6, 8).png
+        # 构建小图片的路径
+        filepath = f"裁剪的系列图片/P{page_count_id}/img_({col}, {row}).png"
+
+        # 打开小图片并粘贴到大图片的指定位置
+        try:
+            little_pic = Image.open(filepath)
+            background_img.paste(little_pic, (int(abs_left), int(abs_top)))
+        except FileNotFoundError:
+            print(f"Warning: File {filepath} not found.")
+
+    # 保存结果
+    output_path = rf'单页/{page_count_id - 1}.png'
+    background_img.save(output_path)
+    print(f"The final image has been saved to {output_path}")
 
 
 def get_target_position(place):

@@ -27,22 +27,23 @@ def to_mysql(df):
 
 obj = WushanStandardizedDocuments.WushanStandardizedDocuments()
 # 读取HTML文件
-with open('test.html', 'r', encoding='utf-8') as file:
+with open('t1.html', 'r', encoding='utf-8') as file:
     html_content = file.read()
 
-# 使用BeautifulSoup解析HTML文档
-soup_ture = BeautifulSoup(html_content, 'html.parser')
-soup_ture = obj.soup_cal(soup_ture)
-soup_ture = obj.remove_nbsp(soup_ture)
-# print(soup_ture)
-soup_text = str(soup_ture)
+# # 使用BeautifulSoup解析HTML文档
+# soup_ture = BeautifulSoup(html_content, 'html.parser')
+# soup_ture = obj.soup_cal(soup_ture)
+# soup_ture = obj.remove_nbsp(soup_ture)
+# # print(soup_ture)
+soup_text = str(html_content)
 
-title = "新疆维吾尔自治区农业农村厅中共新疆维吾尔自治区委员会农村工作领导小组办公室新疆维吾尔自治区发展和改革委员会新疆维吾尔自治区财政厅新疆维吾尔自治区自然资源厅新疆维吾尔自治区水利厅新疆维吾尔自治区人民政府国有资产监督管理委员会新疆维吾尔自治区市场监督管理局新疆维吾尔自治区地方金融管理局新疆维吾尔自治区林业和草原局新疆维吾尔自治区供销合作社联合社关于印发《新疆维吾尔自治区农村产权流转交易管理办法(试行)》的通知"
-date_a = '2024.03.27'
-fawen = '新农政改规〔2024〕1号'
+title = "深圳市生态环境局关于印发《深圳市全面加强生态环境保护推动经济高质量发展的若干措施(2024—2027年)》的通知"
+date_a = '2024.07.01'
+fawen = '深环规〔2024〕7号'
 bumen = {
     '人力资源社会保障部': "6;602;60236",
-    '新疆维吾尔自治区其他机构': "8;829;82903"
+    '新疆维吾尔自治区其他机构': "8;829;82903",
+    "深圳市生态环境局": "8;819;81909;819090034"
 }
 xiaoli = {
     '部门规范性文件': 'XE0302',
@@ -50,7 +51,8 @@ xiaoli = {
 }
 leibie = {
     '社会福利与社会保障': '015;01505',
-    '机关工作综合规定': '00;00301'
+    '机关工作综合规定': '003;00301',
+    '环保综合规定': '089;08901'
 }
 shixiao = '01'
 
@@ -71,11 +73,11 @@ data_dt = {
     "全文": [soup_text],
     "发布日期": [date_a],
     "发文字号": [fawen],
-    "发布部门": [bumen['新疆维吾尔自治区其他机构']],
+    "发布部门": [bumen['深圳市生态环境局']],
     "效力级别": [xiaoli['地方规范性文件']],
     "时效性": [shixiao],
-    "类别": [leibie['机关工作综合规定']],
-    "实施日期": ['2024.05.08']
+    "类别": [leibie['环保综合规定']],
+    "实施日期": ['2024.07.01']
 }
 df = pd.DataFrame.from_dict(data_dt)
 to_mysql(df)
