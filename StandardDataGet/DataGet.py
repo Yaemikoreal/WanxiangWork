@@ -1,7 +1,11 @@
 import os
 import random
 import re
+import shutil
 import time
+import cv2
+import fitz
+import numpy as np
 from reportlab.lib.pagesizes import A4
 import ddddocr
 import pandas as pd
@@ -232,23 +236,30 @@ class DataGet():
         # 删除文件
         self.delete_files('下载文件/')
         self.delete_files('裁剪的系列图片/')
+        self.delete_files('单页/')
         return True
 
     def delete_files(self, folder_path):
         """
-        删除指定文件夹下的所有文件。
+        删除指定文件夹下的所有文件和子目录。
 
         :param folder_path: 文件夹路径
         """
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    os.rmdir(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
+        for root, dirs, files in os.walk(folder_path, topdown=False):
+            for name in files:
+                file_path = os.path.join(root, name)
+                try:
+                    os.remove(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {e}')
+
+            for name in dirs:
+                dir_path = os.path.join(root, name)
+                try:
+                    shutil.rmtree(dir_path)
+                except Exception as e:
+                    print(f'Failed to delete {dir_path}. Reason: {e}')
+        print(f"已删除 {folder_path} !")
 
     def images_to_pdf(self, images_folder, output_pdf):
         """
@@ -266,23 +277,35 @@ class DataGet():
         # 创建一个PDF画布
         c = canvas.Canvas(output_pdf, pagesize=A4)
 
-        for image_path in image_files:
-            img_path = os.path.join(images_folder, image_path)
+        # 固定目标尺寸，这里使用A4纸张的标准尺寸
+        target_width, target_height = A4
+
+        for image_file in image_files:
+            img_path = os.path.join(images_folder, image_file)
             try:
                 # 打开图片
-                img = Image.open(img_path)
+                with Image.open(img_path) as img:
+                    # 获取图片的宽度和高度
+                    img_width, img_height = img.size
 
-                # 获取图片的宽度和高度
-                img_width, img_height = img.size
+                    # 计算图片与目标尺寸的比例，选择较小的比例值来保持图片原始比例
+                    ratio_w = target_width / img_width
+                    ratio_h = target_height / img_height
+                    ratio = min(ratio_w, ratio_h)
 
-                # 设置页面大小为图片大小
-                c.setPageSize((img_width, img_height))
+                    # 调整图片大小以适应目标尺寸，同时保持原始比例
+                    new_img_width = img_width * ratio
+                    new_img_height = img_height * ratio
 
-                # 在当前页面上绘制图片
-                c.drawImage(img_path, 0, 0, width=img_width, height=img_height)
+                    # 计算图片在页面上的位置，使其居中
+                    x = (target_width - new_img_width) / 2
+                    y = (target_height - new_img_height) / 2
 
-                # 开始新的页面
-                c.showPage()
+                    # 在当前页面上绘制图片
+                    c.drawImage(img_path, x, y, width=new_img_width, height=new_img_height)
+
+                    # 开始新的页面
+                    c.showPage()
             except IOError:
                 print(f"无法打开图片文件 {img_path}")
 
