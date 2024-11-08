@@ -33,37 +33,31 @@ headers = {
     'Accept-Language': 'zh-CN,zh;q=0.9',
     'Cache-Control': 'max-age=0',
     'Connection': 'keep-alive',
-    'Referer': 'https://jjll.tytyxdy.com/https/44696469646131313237446964696461bd6feb2613c3be1bcd4ca96fd868/law',
+    'Referer': 'https://www.pkulaw.com/',
     'Sec-Fetch-Dest': 'document',
     'Sec-Fetch-Mode': 'navigate',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-User': '?1',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-    'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"'
-}
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0',
+    'sec-ch-ua': '"Chromium";v="130", "Microsoft Edge";v="130", "Not?A_Brand";v="99"',
+    'sec-ch-ua-platform': '"Windows"',
+    'cookie': '_bl_uid=8tmqq2CO93Uw9bta8bjwdFIemC45; sensorsdata2015jssdkcross=%7B%22%24device_id%22%3A%22192e6e8033463-09f2438d266e14-4c657b58-1327104-192e6e803353a1%22%7D; chlOrderMemery=0; pkulaw_v6_sessionid=csxwoyuawngyx3f1jqp2jlis; Hm_lvt_8266968662c086f34b2a3e2ae9014bf8=1728870449,1729214780,1729473999,1730683927; HMACCOUNT=C1E3DEC5C46B85EE; cookieUUID=cookieUUID_1730683930205; WEIXIN_APP_LOGIN_KEY=af99cfe9-9420-4e9a-9e12-ffb0fbe05607; xCloseNew=6; isTip_topSub=true; Hm_up_8266968662c086f34b2a3e2ae9014bf8=%7B%22ysx_yhqx_20220602%22%3A%7B%22value%22%3A%220%22%2C%22scope%22%3A1%7D%2C%22ysx_hy_20220527%22%3A%7B%22value%22%3A%2206%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%220b1ef4c1-c209-ed11-b392-00155d3c0709%22%2C%22scope%22%3A1%7D%2C%22ysx_yhjs_20220602%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%7D; __tst_cookieid=4060083874#; __tst_status=1370926534#; referer=https://www.pkulaw.com/; Hm_lpvt_8266968662c086f34b2a3e2ae9014bf8=1730787935'}
 local_headers = {
-    "POST": "/law/search/RecordSearch HTTP/1.1",
-    "Accept": "*/*",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-    "Connection": "keep-alive",
-    "Content-Length": "781",
-    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "Cookie": "Hm_up_8266968662c086f34b2a3e2ae9014bf8=%7B%22ysx_yhqx_20220602%22%3A%7B%22value%22%3A%220%22%2C%22scope%22%3A1%7D%2C%22ysx_hy_20220527%22%3A%7B%22value%22%3A%2206%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%220b1ef4c1-c209-ed11-b392-00155d3c0709%22%2C%22scope%22%3A1%7D%2C%22ysx_yhjs_20220602%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%7D; pkulaw_v6_sessionid=wcb3dfh0hth4jhgxpuez3qza; referer=; Hm_lvt_8266968662c086f34b2a3e2ae9014bf8=1726199379,1726621215,1727055874,1727406883; Hm_lpvt_8266968662c086f34b2a3e2ae9014bf8=1727406883; HMACCOUNT=C1E3DEC5C46B85EE; cookieUUID=cookieUUID_1727406883463; xCloseNew=28",
-    "Host": "www.pkulaw.com",
-    "Origin": "https://www.pkulaw.com",
-    "Referer": "https://www.pkulaw.com/",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-origin",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
-    "X-Requested-With": "XMLHttpRequest",
-    "sec-ch-ua": "\"Microsoft Edge\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\""
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'Referer': 'https://www.pkulaw.com/',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-User': '?1',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0',
+    'sec-ch-ua': '"Chromium";v="130", "Microsoft Edge";v="130", "Not?A_Brand";v="99"',
+    'sec-ch-ua-platform': '"Windows"',
+    'cookie': '_bl_uid=8tmqq2CO93Uw9bta8bjwdFIemC45; sensorsdata2015jssdkcross=%7B%22%24device_id%22%3A%22192e6e8033463-09f2438d266e14-4c657b58-1327104-192e6e803353a1%22%7D; chlOrderMemery=0; pkulaw_v6_sessionid=csxwoyuawngyx3f1jqp2jlis; Hm_lvt_8266968662c086f34b2a3e2ae9014bf8=1728870449,1729214780,1729473999,1730683927; HMACCOUNT=C1E3DEC5C46B85EE; cookieUUID=cookieUUID_1730683930205; WEIXIN_APP_LOGIN_KEY=af99cfe9-9420-4e9a-9e12-ffb0fbe05607; xCloseNew=6; isTip_topSub=true; Hm_up_8266968662c086f34b2a3e2ae9014bf8=%7B%22ysx_yhqx_20220602%22%3A%7B%22value%22%3A%220%22%2C%22scope%22%3A1%7D%2C%22ysx_hy_20220527%22%3A%7B%22value%22%3A%2206%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%220b1ef4c1-c209-ed11-b392-00155d3c0709%22%2C%22scope%22%3A1%7D%2C%22ysx_yhjs_20220602%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%7D; __tst_cookieid=4060083874#; __tst_status=1370926534#; referer=https://www.pkulaw.com/; Hm_lpvt_8266968662c086f34b2a3e2ae9014bf8=1730776656'
 }
 
 
@@ -109,7 +103,7 @@ def check_elasticsearch_existence(title, index):
         # logger.info(f'文章不存在: {title}')
         return True
     else:
-        # logger.info(f'存在文章: {title}')
+        logger.info(f'ES存在文章: {title}')
         return False
 
 
@@ -128,47 +122,50 @@ def create_form_data(page_index):
     if previous_index < 0:
         previous_index = 0
     form_data = {
-        'Menu': 'law',
-        'Keywords': '',
-        'SearchKeywordType': 'Title',
-        'MatchType': 'Exact',
-        'RangeType': 'Piece',
-        'Library': 'chl',
-        'ClassFlag': 'chl',
-        'GroupLibraries': '',
-        'QueryOnClick': False,
-        'AfterSearch': False,
-        'PreviousLib': 'chl',
-        'pdfStr': '',
-        'pdfTitle': '',
-        'IsSynonymSearch': False,
-        'RequestFrom': 'btnSearch',
-        'LastLibForChangeColumn': 'chl',
-        'IsAdv': False,
-        'ClassCodeKey': ',,,,,,',
-        'Aggs.RelatedPrompted': '01',
-        'Aggs.EffectivenessDic': '',
-        'Aggs.SpecialType': '',
-        'Aggs.IssueDepartment': '',
-        'Aggs.TimelinessDic': '',
-        'Aggs.Category': '',
-        'Aggs.IssueDate': '',
-        'GroupByIndex': '2',
-        'OrderByIndex': '0',
-        'ShowType': 'Default',
-        'GroupValue': '',
-        'TitleKeywords': '',
-        'FullTextKeywords': '',
-        'Pager.PageIndex': page_index,
-        'RecordShowType': 'List',
-        'Pager.PageSize': '100',
-        'QueryBase64Request': '',
-        'VerifyCodeResult': '',
-        'isEng': 'chinese',
-        'OldPageIndex': previous_index,
-        'newPageIndex': '',
-        'IsShowListSummary': '',
-        'X-Requested-With': 'XMLHttpRequest'
+      "Menu": "law",
+      "Keywords": "",
+      "SearchKeywordType": "Title",
+      "MatchType": "Exact",
+      "RangeType": "Piece",
+      "Library": "chl",
+      "ClassFlag": "chl",
+      "GroupLibraries": "",
+      "QueryOnClick": False,
+      "AfterSearch": False,
+      "PreviousLib": "chl",
+      "pdfStr": "",
+      "pdfTitle": "",
+      "IsSynonymSearch": False,
+      "RequestFrom": "",
+      "LastLibForChangeColumn": "chl",
+      "IsSearchProvision": False,
+      "IsCustomSortSearch": False,
+      "CustomSortExpression": "",
+      "IsAdv": False,
+      "ClassCodeKey": ",,,,,,",
+      "Aggs.RelatedPrompted": "01",
+      "Aggs.EffectivenessDic": "",
+      "Aggs.SpecialType": "",
+      "Aggs.IssueDepartment": "",
+      "Aggs.TimelinessDic": "",
+      "Aggs.Category": "",
+      "Aggs.IssueDate": "",
+      "GroupByIndex": "2",
+      "OrderByIndex": "0",
+      "ShowType": "Default",
+      "GroupValue": "",
+      "TitleKeywords": "",
+      "FullTextKeywords": "",
+      "Pager.PageIndex": page_index,
+      "RecordShowType": "List",
+      "Pager.PageSize": "100",
+      "QueryBase64Request": "",
+      "VerifyCodeResult": "",
+      "isEng": "chinese",
+      "OldPageIndex": previous_index,
+      "newPageIndex": "",
+      "IsShowListSummary": "",
+      "X-Requested-With": "XMLHttpRequest"
     }
     return form_data
 
@@ -203,6 +200,9 @@ def create_form_data_local(page_index):
         'IsSynonymSearch': False,
         'RequestFrom': 'btnSearch',
         'LastLibForChangeColumn': 'lar',
+        'IsSearchProvision': 'False',
+        'IsCustomSortSearch': 'False',
+        'CustomSortExpression': '',
         'IsAdv': False,
         'ClassCodeKey': ',,,,,,',
         'Aggs.RelatedPrompted': '01',
@@ -243,20 +243,28 @@ def make_request(page_index, choose):
     str: 响应文本。
     """
     url = 'https://www.pkulaw.com/law/search/RecordSearch'
-    time.sleep(random.uniform(4, 7))
-    if choose:
-        params_data = create_form_data(page_index)
-        ture_headers = headers
-    else:
-        params_data = create_form_data_local(page_index)
-        ture_headers = local_headers
-    try:
-        response = requests.post(url, data=params_data, verify=False, headers=ture_headers)
-        logger.info(f'连接状态<{response.status_code}>')
-        return response.text
-    except Exception as e:
-        logger.error(f'Exception occurred: {e}')
-        return make_request(page_index,choose)
+    try_num = 5
+    while try_num > 0:
+        time.sleep(random.uniform(2, 4))
+        if choose:
+            params_data = create_form_data(page_index)
+            ture_headers = headers
+        else:
+            params_data = create_form_data_local(page_index)
+            ture_headers = local_headers
+        try:
+            response = requests.post(url, data=params_data, verify=False, headers=ture_headers)
+            logger.info(f'连接状态<{response.status_code}>')
+            response_text = response.text
+            if "<script>var " in response_text:
+                logger.info("获取内容不符，重试~")
+                try_num -= 1
+                continue
+            return response_text
+        except Exception as e:
+            logger.error(f'错误: {e}')
+            try_num -= 1
+
 
 
 def extract_titles_and_urls(content):
@@ -346,6 +354,9 @@ def get_title_url(page_index, choose):
     while True:
         # 发送 POST 请求并返回响应文本
         content = make_request(page_index, choose)
+        if not content:
+            logger.info("未能获取到内容，重试!")
+            continue
         if choose:
             # 从网页内容中提取标题和 URL
             state, titles_and_urls = extract_titles_and_urls(content)
@@ -389,4 +400,4 @@ def calculate(choose=True):
 
 if __name__ == '__main__':
     # choose(bool): 为True时处理法律法规新内容，为False时处理地方法规内容
-    calculate(choose=True)
+    calculate(choose=False)
