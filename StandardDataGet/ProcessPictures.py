@@ -1,6 +1,6 @@
 import math
 from bs4 import BeautifulSoup
-from PIL import Image
+from PIL import Image, ImageFilter, ImageDraw
 import re
 import os
 
@@ -20,18 +20,12 @@ def cut_pic(x, y, filename, page_count_id, x_target, y_target, y_height):
     save_path = f"裁剪的系列图片/P{page_count_id}/"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    output_path = os.path.join(save_path, f'img_{x_target, y_target}.png')
-    file_status = os.path.exists(output_path)
-    if file_status:
-        print(f"{output_path} 已存在")
     # 打开图片
     with Image.open(image_path) as img:
         img_x, img_y = img.size
 
         # 定义裁剪区域
-        # crop_area = (x, y, x + 119, y + 168)
         crop_area = (x, y, x + img_x / 10, y + img_y / y_height)
-
         # 进行裁剪
         cropped_img = img.crop(crop_area)
 
@@ -42,11 +36,7 @@ def cut_pic(x, y, filename, page_count_id, x_target, y_target, y_height):
         if not file_status:
             # 保存裁剪后的图片
             cropped_img.save(output_path)
-            print(f"{output_path} 已保存")
-        else:
-            # 加载已存在的图片
-            # cropped_img = Image.open(output_path)
-            print(f"{output_path} 已存在")
+            # print(f"{output_path} 已保存")
     return
 
 
@@ -68,10 +58,7 @@ def process_file(source):
     :return: 最后处理的页面 ID
     """
     page_count_id = 0
-    # 使用 BeautifulSoup 解析 HTML 源代码
     soup = BeautifulSoup(source, 'html.parser')
-
-    # 查找所有具有 class="page" 的 div 元素
     divs = soup.find_all('div', class_='page')
     data_lt = []
     data_page_dt = {}
@@ -80,40 +67,17 @@ def process_file(source):
         # 提取文件名
         filename_match = re.search(r'viewGbImg\?fileName=(.*?)$', div['bg'])
         filename = filename_match.group(1) if filename_match else ''
-
-        # 提取页面 ID
-        page_id = div['id']
-        div_stat = div['style']
-        # 使用正则表达式匹配宽度
-        width_match = re.search(r'width:(\d+\.?\d*)px;', div_stat)
-        width = float(width_match.group(1)) if width_match else None
-
-        # 使用正则表达式匹配高度
-        height_match = re.search(r'height:(\d+\.?\d*)px;', div_stat)
-        height = float(height_match.group(1)) if height_match else None
-
-        # 使用正则表达式匹配 margin-left
-        margin_left_match = re.search(r'margin-left:(-?\d+\.?\d*)px;', div_stat)
-        margin_left = float(margin_left_match.group(1)) if margin_left_match else None
         # 查找所有的 <span> 元素
         span_all = div.find_all('span', style=True)
-
-        # 初始化计数器
         num = 0
-
-        # 处理每个 <span> 元素
         for span in span_all:
             # 提取背景位置
             x_and_y = span['style'].lstrip('background-position: ').rstrip(';')
             x_and_y_parts = x_and_y.split()
             x = int(x_and_y_parts[0].rstrip('px').lstrip("-"))
             y = int(x_and_y_parts[1].rstrip('px').lstrip("-"))
-            # 裁剪图片
-            # 提取 x_target 和 y_target 的坐标
+            # 裁剪图片提取 x_target 和 y_target 的坐标
             x_target, y_target = map(int, span['class'][0].split('-')[-2:])
-            # x_y_dt[[x_target, y_target]] = (x, y)
-            # data_dt[filename][page_count_id].append([x_target, y_target])
-            # little_pic = cut_pic(x, y, filename, page_count_id, span['class'][0], y_height=12)
             data_dt = {
                 "x": x,
                 "y": y,
@@ -173,55 +137,57 @@ def process_file(source):
     return page_count_id
 
 
-def pin_img(coordinates, tile_width, tile_height, page_count_id):
-    # 小图片的尺寸
-    # tile_width = 232
-    # tile_height = 328
+def pin_img(coordinates, tile_width, tile_height, page_count_id, padding=0):
+    """
+    将多个小图片拼接成一张大图，避免边缘黑线。
 
-    # 大图片的尺寸（基于提供的坐标推断）
+    参数:
+        coordinates (list of tuples): 各个小图片的位置坐标，例如 [(0, 0), (1, 0)]。
+        tile_width (int): 小图片的宽度。
+        tile_height (int): 小图片的高度。
+        page_count_id (int): 页面编号，用于构建文件路径。
+        padding (int): 小图片之间的间距，默认为0。
+    """
+
+    # 计算大图片的尺寸
     max_column = max(coord[0] for coord in coordinates) + 1
     max_row = max(coord[1] for coord in coordinates) + 1
-    large_width = max_column * tile_width
-    large_height = max_row * tile_height
-    # 创建一个空白的大图片
-    background_img = Image.new('RGB', (int(large_width), int(large_height)), color='white')
+    large_width = int(max_column * tile_width + padding * (max_column - 1))
+    large_height = int(max_row * tile_height + padding * (max_row - 1))
 
-    # 遍历坐标列表，并将对应的小图片粘贴到大图片上
+    # 创建一个空白的大图片
+    background_img = Image.new('RGBA', (large_width, large_height), color=(255, 255, 255, 255))
+
+    # 存储未找到的文件路径
+    missing_files = []
+
+    # 遍历坐标列表，将小图片粘贴到大图片上
     for coord in coordinates:
         col, row = coord
-        # 计算左上角的绝对坐标
-        abs_left = col * tile_width
-        abs_top = row * tile_height
-        # img_(6, 8).png
-        # 构建小图片的路径
+        abs_left = int(col * (tile_width + padding))
+        abs_top = int(row * (tile_height + padding))
         filepath = f"裁剪的系列图片/P{page_count_id}/img_({col}, {row}).png"
 
-        # 打开小图片并粘贴到大图片的指定位置
         try:
-            little_pic = Image.open(filepath)
-            background_img.paste(little_pic, (int(abs_left), int(abs_top)))
+            with Image.open(filepath) as little_pic:
+                # 确保小图片也是 RGBA 模式，以便正确处理透明度
+                little_pic = little_pic.convert('RGBA')
+                background_img.paste(little_pic, (abs_left, abs_top), little_pic)
         except FileNotFoundError:
-            print(f"Warning: File {filepath} not found.")
+            missing_files.append(filepath)
+            continue
 
-    # 保存结果
-    output_path = rf'单页/{page_count_id - 1}.png'
-    background_img.save(output_path)
-    print(f"The final image has been saved to {output_path}")
+    if missing_files:
+        print("Warning: The following files were not found:")
+        for file in missing_files:
+            print(file)
 
+    # 保存结果图片
+    output_path = f'单页/{page_count_id - 1}.png'
+    background_img.save(output_path, format='PNG')
+    print(f"单页数据已经保存至: [{output_path}]")
 
-def get_target_position(place):
-    """
-    从 place 字符串中提取 x_target 和 y_target 的坐标。
-    一行十张照片
-
-    :param place: 包含位置信息的字符串
-    :return: (x_target, y_target) 坐标元组
-    """
-    # 提取 x_target 和 y_target 的坐标
-    x_target, y_target = map(int, place.split('-')[-2:])
-    x_target = int(x_target / 10 * 1190) if x_target != 0 else 0
-    y_target = int(y_target / 10 * 1680) if y_target != 0 else 0
-    return x_target, y_target
+    return output_path, missing_files
 
 
 if __name__ == '__main__':

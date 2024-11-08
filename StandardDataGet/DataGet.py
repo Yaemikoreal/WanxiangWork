@@ -20,38 +20,13 @@ from PIL import Image
 web = webdriver.Firefox()
 
 
-class DataGet():
+class DataGet:
     def __init__(self):
-        self.proxies = dict(http='http://183.159.204.186:10344', https='http://183.159.204.186:10344')
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
             'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
         }
-        self.proxies_url = "http://route.xiongmaodaili.com/xiongmao-web/api/glip?secret=b9200c80d01ddc746e97430b3d4a46a9&orderNo=GL202403191725045jqovn7t&count=1&isTxt=0&proxyType=1&returnAccount=1"
         self.session = None
-
-    def get_new_proxies(self):
-        """
-        获取更新可用代理IP
-        :return:
-        """
-        max_retries = 3
-        while max_retries > 0:
-            try:
-                response = requests.get(self.proxies_url, headers=self.headers, timeout=15)
-                data_js = response.json()
-                proxie_dt = data_js.get('obj')[0]
-                proxies_ip = proxie_dt.get('ip')
-                proxies_port = proxie_dt.get('port')
-                ip = f'http://{proxies_ip}:{proxies_port}'
-                self.proxies = dict(http=ip, https=ip)
-                print("代理更换完毕!")
-                break
-            except Exception as e:
-                max_retries -= 1
-                print(f"[proxies] 剩余重试次数:[{max_retries}],错误: {e}")
-                time.sleep(random.uniform(1, 2))
-                continue
 
     def can_be_download(self, openstd_id):
         urla = 'https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2='
@@ -77,15 +52,16 @@ class DataGet():
                 return False, result[0]
         except Exception as e:
             print('可能是网络出现错误', e)
+            return False, False
 
     def get_session(self, url):
         """
         获得session进行后续处理
         """
-        max_retries = 1
+        max_retries = 2
         while max_retries > 0:
             try:
-                resp = requests.get(url, proxies=self.proxies, timeout=15)
+                resp = requests.get(url, timeout=15)
                 self.session = resp.cookies
                 self.session = str(self.session.values()).replace('[', '').replace(']', '').replace("'", '')
                 resp.close()
@@ -109,7 +85,7 @@ class DataGet():
         max_retries = 3
         while max_retries > 0:
             try:
-                resp = requests.get(url, proxies=self.proxies, headers=header, timeout=15)
+                resp = requests.get(url, headers=header, timeout=15)
                 resp.raise_for_status()  # 检查响应状态码
 
                 # 保存验证码图片
@@ -153,13 +129,13 @@ class DataGet():
         max_retries = 3
         while max_retries > 0:
             try:
-                response = requests.post(verify_url, headers=headers, proxies=self.proxies, data=data, timeout=15)
+                response = requests.post(verify_url, headers=headers, data=data, timeout=15)
                 print(f"验证码和下载链接: {response.text, response.headers}")
                 if response.text != "success":
                     print(response.content)
                     print('验证码发送错误，可能是识别错误')
                     return False
-                page_source = requests.get(download_url, headers=headers, proxies=self.proxies, timeout=15)
+                page_source = requests.get(download_url, headers=headers, timeout=15)
                 if page_source.status_code == 200:
                     soup = BeautifulSoup(page_source.text, 'html.parser')
                 if soup:
@@ -172,8 +148,6 @@ class DataGet():
                     time.sleep(random.uniform(3, 5))
                 else:
                     print("所有重试均失败。")
-                    # 更换代理
-                    self.get_new_proxies()
                     time.sleep(random.uniform(0.5, 1))
                     # 获取session会话
                     self.get_session(download_url)
@@ -203,7 +177,7 @@ class DataGet():
                 max_retries = 3
                 while max_retries > 0:
                     try:
-                        download_pdf = requests.get(download_pageurl, proxies=self.proxies, headers=headers, timeout=15)
+                        download_pdf = requests.get(download_pageurl, headers=headers, timeout=15)
                         print(f'download_pdf状态: {download_pdf.status_code}')
                         print('字节长度:' + str(len(download_pdf.content)))
 
@@ -237,6 +211,7 @@ class DataGet():
         self.delete_files('下载文件/')
         self.delete_files('裁剪的系列图片/')
         self.delete_files('单页/')
+        print(f"标准 [{title}] 处理完毕!!!")
         return True
 
     def delete_files(self, folder_path):
@@ -313,62 +288,36 @@ class DataGet():
         c.save()
 
     def calculate(self):
-        file_name = None
-
-        num = 1
         standard_df = pd.read_excel('tools/标准号1.xlsx')
-        # 通过iloc函数从第num行开始读取最多60行数据，并使用for循环遍历这些数据
-        for index, row in standard_df.iloc[num:num + 60].iterrows():  # 设置每次读取的数据量
+        existing_files = set(os.listdir("处理完成的pdf/"))
+        for index, row in standard_df.iterrows():
             title = row['Name']
             number = row['Code']
-            # 打印出当前标题和标准号的信息
             print(f'标题 {title}  标准号为 {number}')
             filename = number + ".pdf"
-            file_path = os.path.join("处理完成的pdf/", filename)
-            file_status = os.path.isfile(file_path)
-            if file_status:
+            if filename in existing_files:
                 print("该标准文件已经存在!!!")
                 continue
-            try:
-                # 调用can_be_download函数，返回是否可以下载的状态以及网站相应的名字
-                file_can_download, file_name = self.can_be_download(number)
-            except Exception as e:
-                print(e)
-                file_can_download = False
-            # 每处理完一条数据，num加一
-            num += 1
-            time.sleep(random.uniform(2, 8))
+            # 返回是否可以下载的状态以及网站相应的名字
+            file_can_download, file_name = self.can_be_download(number)
+
             if file_can_download and file_name:
-                if not test_ip(self.proxies):
-                    # 更换代理
-                    self.get_new_proxies()
+                time.sleep(random.uniform(2, 5))
                 # 如果可以下载，则根据file_name构造对应的URL
                 url = f'http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno={file_name}'
-                # url = f"http://c.gb688.cn/bzgk/gb/showGb?type=download&hcno={file_name}"
-                # 获取session会话
-                self.get_session(url)
                 # 尝试最多五次获取验证码并验证
                 for retry in range(5):
-                    if not test_ip(self.proxies):
-                        # 尝试更换代理
-                        self.get_new_proxies()
-                        # 获取session会话
-                        self.get_session(url)
+                    # 获取session会话
+                    self.get_session(url)
+                    download_status = self.check_code(self.get_qr_code(), url)
                     # 如果验证码正确则退出循环
-                    if self.check_code(self.get_qr_code(), url):
+                    if download_status:
+                        print("=====" * 30)
                         break
-                    else:
-                        # 如果验证码不正确，则重新获取验证码并验证
-                        self.check_code(self.get_qr_code(), url)
-                    print("sleep 然后进行下一次尝试")
+                    print(f"sleep 然后进行下一次尝试 [{retry + 1}]")
+                    print("=====" * 30)
                     time.sleep(random.uniform(3, 5))
 
-        # 存储次数，下次从结束的地方开始
-        with open('tools/count.txt', 'w') as file:
-            file.write(str(num))
-
-
-# 推标需要使用和网页一样的css样式进行切割background-position为切割位置  pdfImg为放置位置   以白色为底，将图片放入对应的地方
 
 if __name__ == '__main__':
     obj = DataGet()
