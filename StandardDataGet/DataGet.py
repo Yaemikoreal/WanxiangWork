@@ -3,19 +3,17 @@ import random
 import re
 import shutil
 import time
-import cv2
-import fitz
-import numpy as np
-from reportlab.lib.pagesizes import A4
+
 import ddddocr
 import pandas as pd
 import requests
+from PIL import Image
 from bs4 import BeautifulSoup
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from selenium import webdriver
-from ProxyTesting import test_ip
+
 from ProcessPictures import process_file
-from PIL import Image
 
 web = webdriver.Firefox()
 
@@ -65,6 +63,7 @@ class DataGet:
                 self.session = resp.cookies
                 self.session = str(self.session.values()).replace('[', '').replace(']', '').replace("'", '')
                 resp.close()
+                print("[session] 获取完毕")
                 break
             except Exception as e:
                 max_retries -= 1

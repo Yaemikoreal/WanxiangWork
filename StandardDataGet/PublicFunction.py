@@ -23,6 +23,7 @@ def load_config(env='development'):
     config.read('config.ini')
     return config[env]
 
+
 def annex_get(url, save_path, headers, save_path_real='重庆市其他文件'):
     """
     本函数用于附件内容获取
@@ -267,7 +268,7 @@ def process_row_clean(title):
     return True
 
 
-def save_sql_BidDocument(sql,params):
+def save_sql_BidDocument(sql, params):
     """
     用于插入数据库
     :param sql
@@ -280,10 +281,11 @@ def save_sql_BidDocument(sql,params):
     cursor = connect.cursor()
     # sql = "INSERT INTO [自收录数据].dbo.[专项补充收录] ([唯一标志],[法规标题],[全文],[发布部门],[类别],[发布日期],[效力级别],[实施日期],[发文字号],[时效性],[来源],[收录时间]) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
     # cursor.executemany(sql, all_result)
-    cursor.execute(sql,params)
+    cursor.execute(sql, params)
     cursor.commit()
     cursor.close()
     connect.close()
+
 
 def query_sql_BidDocument(sql):
     """
@@ -307,6 +309,7 @@ def query_sql_BidDocument(sql):
         # 关闭游标和连接
         cursor.close()
         connect.close()
+
 
 def get_md5(string):
     """
