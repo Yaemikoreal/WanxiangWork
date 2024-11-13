@@ -67,7 +67,7 @@ class get_shujuku(object):
         try_num = 5
         while True:
             try:
-                response = requests.post(url=url, headers=header, data=jsonData.encode())
+                response = requests.post(url=url, headers=header, data=jsonData.encode(), timeout=10)
                 if response.status_code == 200:
                     print(f"连接写入成功!")
                     print("===" * 30)
@@ -189,9 +189,9 @@ class get_shujuku(object):
 if __name__ == "__main__":
     data_dt = {
         "status": True,
-        "where_value": "[收录日期] = '20241030'",
+        "where_value": "[收录日期] = '20241112'",
         # 法律法规 or 地方法规
-        "projectId": '法律法规'
+        "projectId": '地方法规'
     }
 
     obj = get_shujuku(**data_dt)
