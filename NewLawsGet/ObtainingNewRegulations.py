@@ -308,26 +308,22 @@ class GetDataFa:
                     fujian.append({"Title": title, "SavePath": ysrca, "Url": urla})
         if 'img' in str(full):
             for img in full.find_all('img'):
-                # 跳过带有 style 属性的 img 标签
-                if img.has_attr('style'):
-                    continue
-
                 ysrc = img.get('src')
+                if ysrc:
+                    file_name = ysrc.split('/')[-1]
+                    file_name = file_name.rstrip('?vpn-1')
 
-                file_name = ysrc.split('/')[-1]
-                file_name = file_name.rstrip('?vpn-1')
+                    ysrca = os.path.join('/datafolder/附件/' + self.mkm + '/' + file_name)
+                    replaced_full = str(replaced_full).replace(ysrc, ysrca)
 
-                ysrca = os.path.join('/datafolder/附件/' + self.mkm + '/' + file_name)
-                replaced_full = str(replaced_full).replace(ysrc, ysrca)
+                    try:
+                        self.public_down(ysrc, file_path + file_name, self.psessionid)
+                        fujian.append({"Title": title, "SavePath": ysrca, "Url": ysrc})
+                        time.sleep(random.uniform(2, 4))
+                    except Exception as e:
+                        logger.error(f"Error downloading {ysrc}: {e}")
 
-                try:
-                    self.public_down(ysrc, file_path + file_name, self.psessionid)
-                    fujian.append({"Title": title, "SavePath": ysrca, "Url": ysrc})
-                    time.sleep(random.uniform(2, 4))
-                except Exception as e:
-                    logger.error(f"Error downloading {ysrc}: {e}")
-
-                img.attrs = {'src': ysrca}
+                    img.attrs = {'src': ysrca}
 
         #  正文处理
         if len(fujian) != 0:
@@ -775,5 +771,5 @@ def main_test(choose_t, types_regulations_t):
 
 if __name__ == '__main__':
     choose = False
-    types_regulations = True
+    types_regulations = False
     main_test(choose, types_regulations)
