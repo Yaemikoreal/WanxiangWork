@@ -60,8 +60,10 @@ def check_article_exists(title, index_name='lar'):
     else:
         logger.info(f'{index_name} 已经存在该文章!!  {title}')
         return False
+
+
 def screening_date(links_text):
-    fb_date, ss_date = None,None
+    fb_date, ss_date = None, None
     for link in links_text:
         dt_num = link.get_text()
         if "公布" in dt_num:
@@ -70,12 +72,14 @@ def screening_date(links_text):
             ss_date = dt_num.replace('施行', '')
     return fb_date, ss_date
 
+
 def screening_document_number(links_text):
     for link in links_text:
         dt_num = link.get_text()
         if "号" in dt_num:
             return dt_num
     return None
+
 
 def other_msg_calculate(links_other_text):
     shixiao, xiaoli, bumen = None, None, None
@@ -85,9 +89,11 @@ def other_msg_calculate(links_other_text):
             shixiao = text_msg
         if any(keyword in text_msg for keyword in ['文件', '法规', '规章', '批复']):
             xiaoli = text_msg
-        if any(keyword in text_msg for keyword in ['人民', '政府', '委会', '局', '厅', '法院','其他']):
+        if any(keyword in text_msg for keyword in ['人民', '政府', '委会', '局', '厅', '法院', '其他']):
             bumen = text_msg
     return shixiao, xiaoli, bumen
+
+
 def extract_titles_and_urls(html_content):
     """
     从 HTML 内容中提取所有标题和 URL，并返回一个字典列表。
@@ -164,7 +170,7 @@ def process_html_and_save_to_excel():
         html_content = file.read()
 
     titles_and_urls = extract_titles_and_urls(html_content)
-    # filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
+    filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
 
     df = pd.DataFrame(titles_and_urls)
     num_rows = df.shape[0]

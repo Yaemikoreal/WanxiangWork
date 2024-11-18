@@ -193,7 +193,7 @@ def remove_nbsp(soup):
     a = re.compile(r'\n|&nbsp|&nbsp;|\xa0|\\xa0|\u3000|\\u3000|\\u0020|\t|\r|\f|&ensp;|&emsp;|&emsp|&ensp|\?|？| ')
     soup = BeautifulSoup(a.sub(' ', str(soup)), "html.parser")
 
-    remove_text_lt = ['span', 'video', 'p']
+    remove_text_lt = ['span', 'video']
     for it_t in remove_text_lt:
         # 遍历所有的对应标签
         for span in soup.find_all(it_t):
