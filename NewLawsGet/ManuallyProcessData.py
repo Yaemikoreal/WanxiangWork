@@ -54,7 +54,9 @@ def check_article_exists(title, index_name='lar'):
         "size": 10
     }
     response = es_client.search(index=index_name, body=query_body)
-    if int(response['hits']['total']['value']) == 0:
+    any_hits = response.get('hits')
+    any_hits_lt = any_hits.get('hits')
+    if len(any_hits_lt) == 0:
         logger.info(f'{index_name} 不存在该文章!!  {title}')
         return True
     else:
@@ -112,7 +114,6 @@ def extract_titles_and_urls(html_content):
     msg_links = container.find_all('div', attrs={'class': 'item'})
     for it in msg_links:
         count_num += 1
-        print(count_num)
         link_any = it.find('a', attrs={'logfunc': '文章点击', 'target': '_blank', 'flink': 'true'})
         if not link_any:
             link_any = it.find('a', attrs={'target': '_blank', 'flink': 'true'})
@@ -154,8 +155,10 @@ def filter_unwanted_titles(titles_and_urls):
     """
     filtered_titles_and_urls = []
     for item in titles_and_urls:
-        if check_article_exists(item['标题'], 'chl'):
+        if check_article_exists(item['标题'], 'chl') and check_article_exists(item['标题'], 'lar'):
+            logger.info(f"需要获取的文章: {item['标题']}")
             filtered_titles_and_urls.append(item)
+        logger.info("===" * 20)
     return filtered_titles_and_urls
 
 
@@ -164,7 +167,7 @@ def process_html_and_save_to_excel():
     读取 HTML 文件，提取标题和 URL，过滤后保存到 Excel 文件。
     """
     input_file_path = '附件/html.text'
-    output_file_path = '附件/法宝法器数据排查/手动获取的文章_价格管理_地方法规_法宝_2.xlsx'
+    output_file_path = '附件/手动获取的文章.xlsx'
 
     with open(input_file_path, 'r', encoding='utf-8') as file:
         html_content = file.read()
@@ -172,7 +175,7 @@ def process_html_and_save_to_excel():
     titles_and_urls = extract_titles_and_urls(html_content)
     filtered_titles_and_urls = filter_unwanted_titles(titles_and_urls)
 
-    df = pd.DataFrame(titles_and_urls)
+    df = pd.DataFrame(filtered_titles_and_urls)
     num_rows = df.shape[0]
     logger.info(f"获取到 {num_rows} 条需要获取的文章")
 

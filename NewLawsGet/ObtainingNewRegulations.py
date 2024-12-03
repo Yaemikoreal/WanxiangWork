@@ -186,41 +186,49 @@ class GetDataFa:
 
     def public_down(self, url, save_path, vpncode):
         logger.info(f'正在下载附件 {url}')
+
         # 确保保存路径的父目录存在
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
         # 设置请求头
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36',
             'cookie': vpncode
         }
+
         # 禁用urllib3的警告
         disable_warnings()
-        # 发送GET请求
-        req = requests.get(url, headers=headers, stream=True)
 
         try:
-            if req.status_code == 200:
-                total_size = int(req.headers.get('content-length', 0))  # 获取文件总大小
-                block_size = 1024  # 每次读取的块大小为1KB
-                t = tqdm(total=total_size, unit='iB', unit_scale=True)  # 初始化进度条
+            with requests.get(url, headers=headers, stream=True, verify=False) as req:
+                if req.status_code == 200:
+                    total_size = int(req.headers.get('content-length', 0))  # 获取文件总大小
+                    block_size = 1024 * 1024  # 每次读取的块大小为1MB
+                    t = tqdm(total=total_size, unit='iB', unit_scale=True, desc=os.path.basename(save_path))  # 初始化进度条
 
-                with open(save_path, "wb") as f:
-                    for data in req.iter_content(block_size):
-                        t.update(len(data))  # 更新进度条
-                        f.write(data)
-                t.close()
+                    with open(save_path, "wb") as f:
+                        for data in req.iter_content(block_size):
+                            t.update(len(data))  # 更新进度条
+                            f.write(data)
+                    t.close()
 
-                if total_size != 0 and t.n != total_size:
-                    logger.error("ERROR, something went wrong")
-                logger.info(f"该附件下载完毕: [{save_path}]")
-            elif req.status_code == 521:
-                logger.error("状态码521 - 需要进一步处理")
-                # 处理状态码521的逻辑可以在此添加
-            elif req.status_code == 404:
-                logger.error("下载失败，网页打不开！！！")
-                logger.error(url)
+                    if total_size != 0 and t.n != total_size:
+                        logger.error("ERROR, something went wrong")
+                    logger.info(f"该附件下载完毕: [{save_path}]")
+
+                elif req.status_code == 521:
+                    logger.error("状态码521 - 需要进一步处理")
+                    # 处理状态码521的逻辑可以在此添加
+
+                elif req.status_code == 404:
+                    logger.error("下载失败，网页打不开！！！")
+                    logger.error(url)
+
+                else:
+                    logger.error(f"未知的状态码: {req.status_code}")
+
         except Exception as e:
-            logger.error(e)
+            logger.error(f"请求失败: {e}")
 
     def feach_url(self, link):
         max_attempts = 5
@@ -264,6 +272,43 @@ class GetDataFa:
                 time.sleep(random.uniform(2, 4))
                 continue
 
+    def change_wrap_handle(self, change_wrap):
+        """
+        处理本法变迁
+        :param change_wrap:
+        :return:
+        """
+        result_soup = BeautifulSoup('', 'html.parser')
+        li_all = change_wrap.find_all('li')
+        for tag in li_all:
+            time_tag = tag.find('span', attrs={"class": "time"})
+            time_str = time_tag.get_text()
+            a_all = tag.find_all(['a', 'span'], onmouseover=True)
+            for a_tag in a_all:
+                onmouseover_value = a_tag['onmouseover']
+                # 找到 "AJI(" 和 ")" 的位置
+                start_index = onmouseover_value.find("AJI(") + len("AJI(")
+                end_index = onmouseover_value.find(")", start_index)
+                # 提取中间的数字
+                value = onmouseover_value[start_index:end_index]
+                a_tag['href'] = f'javascript:SLC({value},0)'
+                a_tag['class'] = 'alink'
+                # 删除onmouseover属性
+                del a_tag['logcode']
+                del a_tag['onmouseover']
+                new_str = time_str + " " + a_tag.get_text()
+                a_tag.string = new_str
+        # 找到所有class为"alink"的标签
+        alink_tags = change_wrap.find_all(class_='alink')
+        # 将所有class为"alink"的标签添加到新的BeautifulSoup对象中
+        for tag in alink_tags:
+            if tag.name == 'a':
+                result_soup.append(tag)
+            else:
+                tag.name = 'a'
+                result_soup.append(tag)
+        return result_soup
+
     def attachment_processing(self, soup, title, urla, data_dt, types_regulations):
         """
         附件和全文处理函数
@@ -279,6 +324,12 @@ class GetDataFa:
             # 如果路径不存在，则创建路径
             os.makedirs(file_path)
             logger.info(f"创建路径: 目录 [{file_path}] 已创建。")
+        change_wrap = soup.find('div', attrs={"class": "change-wrap"})
+        if change_wrap:
+            result_soup = self.change_wrap_handle(change_wrap)
+        else:
+            result_soup = None
+        # TODO 本法变迁输出
         full = soup.find('div', id='divFullText')
         full = self.changeinfo(full)
         full = BeautifulSoup(full, "html.parser")
@@ -330,7 +381,10 @@ class GetDataFa:
             full = replaced_full
         full = str(full).replace("附法律依据", '')
         full = str(full).replace("附：相关法律条文            ", '')
-        full = str(full)
+        if result_soup:
+            full = str(result_soup) + str(full)
+        else:
+            full = str(full)
         b = re.compile(r"'")
         full = b.sub('', str(full))
         full = b.sub('窗体底端', str(full))

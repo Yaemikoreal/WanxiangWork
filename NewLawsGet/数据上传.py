@@ -26,8 +26,38 @@ class get_shujuku(object):
         self.table_name = self.va_dt.get(self.mb).get('table_name')
         # where条件语句
         self.where_value = kwargs.get('where_value')
+        #
+        self.title_not_lt = ['同志任免职的通知', '职务任免的通知', '工作职务的通知', '同志退休的通知',
+                             '同志挂任职务的通知', '同志挂职的通知', '任职的通知', '同志正式任职的通知',
+                             '同志试用期满正式任用的通知', '同志职级任职的通知', '同志免职退休的通知',
+                             '轮岗调整的通知', '同志免职通知', '同志岗位聘用的通知', '领导分工调整的通知',
+                             '领导班子工作分工的通知', '工作人员职务的通知', '同志职务聘任的通知', '免职的通知',
+                             '任职资格的批复',
+                             '任职资格核准的批复', '同志职级晋升的通知', '同志职级套转的通知',
+                             '同志职级晋升和免职的通知', '同志任职的决定', '同志提前退休的通知', '试用期满任职的通知',
+                             '组成人员的通知', '挂职服务锻炼的通知', '同志到龄退休的通知', '同志试用期转正的通知',
+                             '同志职务调整的通知', '同志晋升职级的通知', '同志聘任的通知',
+                             '调整领导工作分工的通知', '指挥部成员的通知', '同志确定职级的通知', '同志任(聘)职的通知',
+                             '同志职务职级调整的通知', '同志主持工作的通知', '同志职务的通知', '领导分工的通知',
+                             '指挥部组成人员的通知', '同志免职(退休)的通知',
+                             '职务职级任免的通知', '工作分工调整的通知', '负责人调整的通知', '调整工作领导小组的通知',
+                             '任职资格的通知', '职级的通知', '聘任的批复', '同志工作安排的通知', '确定职级的通知',
+                             '离任的通知', '同志轮岗交流的通知', '同志转正的通知', '解聘的通知', '挂职的通知',
+                             '调整河长的通知', '选举情况的通报', '同志分工的通知']
+
+    def judge_title(self, title):
+        for it in self.title_not_lt:
+            if it in title:
+                print(f"{title} 属于人事任免内容!")
+                return False
+        print(f"{title} 不在人事任免内容!")
+        return True
 
     def post_sj1_fagui(self, query_result):
+        # if query_result[0] not in ["7930531", "7931623"]:
+        #     print(f"该数据不需要再上传 [{query_result[1]}]")
+        #     print("===" * 30)
+        #     return
         print(f"正在写入文章:  {query_result[1]}")
         print(f"注意: 正在往 [{self.mb}] 模版中写入数据!!!")
         url = 'http://47.97.3.24:8075/api/trends/addEmployData'
@@ -141,9 +171,14 @@ class get_shujuku(object):
         count_num = 0
         for i in range(len(url_list)):
             count_num += 1
-            time.sleep(random.uniform(0.5, 1))
-            print(f"正在写入第 [{count_num}] 条数据.")
-            self.post_sj1_fagui(url_list[i])
+            title = url_list[i][1]
+            if self.judge_title(title):
+                time.sleep(random.uniform(0.5, 1))
+                print(f"正在写入第 [{count_num}] 条数据.")
+                self.post_sj1_fagui(url_list[i])
+            else:
+                # TODO 补充逻辑：处理人事任免内容的上传.
+                pass
         cursor.close()
         connect.close()
 
