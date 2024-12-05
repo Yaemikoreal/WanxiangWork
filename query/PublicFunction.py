@@ -191,7 +191,7 @@ def fetch_url(url, headers):
             _log.info(f"休眠{sleep}秒")
             time.sleep(sleep)
             # 发送 HTTP GET 请求
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=10)
             if response.status_code == 200:
                 # 返回页面内容
                 soup = BeautifulSoup(response.content, 'html.parser')
@@ -201,7 +201,7 @@ def fetch_url(url, headers):
                 _log.info(f"请求失败，状态码：{response.status_code}")
         except requests.exceptions.RequestException as e:
             _log.info(f"出错！      {e}")
-            sleep = random.uniform(2, 4)
+            sleep = random.uniform(2, 3)
             _log.info(f"休眠{sleep}秒")
             time.sleep(sleep)
             _log.info("==========================")
@@ -339,8 +339,8 @@ def soup_cal(soup_ture):
                 # 如果样式是 text-align:end 或 text-align: end，则替换为 text-align:right
                 if s.startswith('text-align:end') or s == 'text-align: end':
                     s = 'text-align:right'
-                if s in not_dt or s.startswith('text-align:right'):
-                    new_styles.append(s)
+                # if s in not_dt or s.startswith('text-align:right'):
+                #     new_styles.append(s)
 
             if new_styles:
                 tag_s['style'] = '; '.join(new_styles)
@@ -735,7 +735,7 @@ def add_right(soup, in_lt):
 
 def main_test():
     md5 = get_md5(
-        """关于《驻马店市市场监督管理行政处罚裁量基准规定（2021版征求意见稿）》及《驻马店市市场监督管理行政处罚自由裁量权基准（2021版征求意见稿）》面向社会公开征求意见的公告""")
+        """关于印发《新疆维吾尔自治区新疆生产建设兵团市场监督管理行政处罚裁量权适用规定》《新疆维吾尔自治区新疆生产建设兵团市场监督管理行政处罚裁量基准（2024年）》的通知""")
     print(md5)
     pass
 

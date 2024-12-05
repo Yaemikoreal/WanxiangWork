@@ -224,9 +224,9 @@ class get_shujuku(object):
 if __name__ == "__main__":
     data_dt = {
         "status": True,
-        "where_value": "[收录日期] = '20241112'",
+        "where_value": "[收录日期] = '20241204'",
         # 法律法规 or 地方法规
-        "projectId": '地方法规'
+        "projectId": '法律法规'
     }
 
     obj = get_shujuku(**data_dt)

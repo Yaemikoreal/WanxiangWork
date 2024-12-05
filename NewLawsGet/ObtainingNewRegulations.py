@@ -825,5 +825,5 @@ def main_test(choose_t, types_regulations_t):
 
 if __name__ == '__main__':
     choose = False
-    types_regulations = False
+    types_regulations = True
     main_test(choose, types_regulations)
