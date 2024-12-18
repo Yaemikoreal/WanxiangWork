@@ -35,7 +35,8 @@ class AuditOffice:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
         }
         self.department_dt = {
-            "广西省审计厅": '8;820;82003;820030151'
+            "广西省审计厅": '8;820;82003;820030151',
+            "贵州省审计厅": '8;822;82203;822030196'
         }
         self.category = kwargs.get("category")
         self.department = self.department_dt.get(kwargs.get("lasy_department"))
@@ -245,13 +246,14 @@ class AuditOffice:
         :param any_title:
         :return:
         """
-        file_path = fr"E:/JXdata/广西省数据收录/广西省审计厅/"
+        file_path = fr"E:/JXdata/省级地区附件下载/贵州省数据收录/贵州省审计厅/"
         # 检测路径是否存在
         if not os.path.exists(file_path):
             # 如果路径不存在，则创建路径
             os.makedirs(file_path)
             _log.info(f"创建路径: 目录 [{file_path}] 已创建。")
         fujian = []
+        fb_date = result_dt.get('发布日期').replace(".", '')[0:6]
         replaced_full = full_text
         for test in full_text.find_all('a', href=re.compile(
                 '.*?(pdf|docx|doc|xlsx|xls|rar|zip|jpeg|jpg|png|txt|7z|gz|PDF|ppt)+$')):
@@ -259,7 +261,7 @@ class AuditOffice:
             src_c = src_c.replace("./", '')
             # TODO
             # 附件url
-            href_c = self.title_url + src_c
+            href_c = self.title_url + fb_date+ "/"+src_c
             # 从URL参数中提取'filename'的值
             filename = href_c.split('&filename=')[-1]
             if 'http' in filename:
@@ -285,7 +287,7 @@ class AuditOffice:
 
                     ysrca = os.path.join('/datafolder/附件/' + 'lar' + '/' + file_name)
                     replaced_full = str(replaced_full).replace(src_i, ysrca)
-                    src_i = self.title_url + src_i
+                    src_i = self.title_url + fb_date+ "/"+src_i
                     try:
                         self.public_down(src_i, file_path + file_name)
                         fujian.append({"Title": any_title, "SavePath": ysrca, "Url": src_i})
@@ -294,7 +296,9 @@ class AuditOffice:
                         _log.error(f"Error downloading {src_i}: {e}")
 
                     img.attrs = {'src': ysrca}
-        result_dt['附件'] = ""
+        tihuan = re.compile('\'')
+        fujian = tihuan.sub('"', str(fujian))
+        result_dt['附件'] = fujian
         result_dt['全文'] = full_text
         return result_dt
 
@@ -329,8 +333,9 @@ class AuditOffice:
                 continue
             # 使用参数化查询防止 SQL 注入
             insert_data.append((
-                it.get('唯一标志'),  it.get('标题'),  it.get('全文'),  it.get('发布部门'),  it.get('来源'),  it.get('附件'),
-                it.get('发布日期'),  it.get('文号'),  it.get('收录时间'),  it.get('发布日期'),  it.get('效力级别'),  it.get('类别')
+                it.get('唯一标志'), it.get('标题'), it.get('全文'), it.get('发布部门'), it.get('来源'), it.get('附件'),
+                it.get('发布日期'), it.get('文号'), it.get('收录时间'), it.get('发布日期'), it.get('效力级别'),
+                it.get('类别')
             ))
 
         # # 批量插入数据
@@ -375,8 +380,8 @@ class AuditOffice:
         else:
             _log.info(f"正在收录文章: [{any_title}]")
             try:
-                full_date = any_soup.find('div', attrs={"class": ["article-inf-left", "info"]})
-                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', full_date.get_text())
+                full_date = any_soup.find('meta', attrs={"name": "PubDate"})
+                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', full_date.get('content'))
                 if match:
                     full_date = match.group(1)
                 # 解析原始字符串为 datetime 对象
@@ -387,7 +392,7 @@ class AuditOffice:
             except Exception as e:
                 result_dt["发布日期"] = result_dt.get('发文日期')
             # 全文以及格式处理
-            full_text = any_soup.find(['div', 'td'], attrs={"class": ["main-txt", "bt_content", "article-con", "content"]})
+            full_text = any_soup.find(['font'], attrs={"id": ["Zoom"]})
             result_dt = self.annex_get_all(result_dt, full_text, any_title, any_url)
             result_dt['全文'] = pf.soup_cal(result_dt['全文'])
             result_dt['全文'] = self.remove_nbsp(result_dt['全文'])
@@ -405,7 +410,7 @@ class AuditOffice:
             # 标题过滤
             if not self.title_filter(any_title):
                 _log.info(f"[{any_title}] 该文章无需录入,标题筛查未通过。")
-                _log.info("===="*20)
+                _log.info("====" * 20)
                 continue
             # if any_title != '江苏省广告产业园区管理办法解读':
             #     continue

@@ -29,17 +29,17 @@ es = Elasticsearch(
 class AuditOffice:
     def __init__(self, **kwargs):
         self.shouludate = "JX" + str(datetime.now().strftime("%Y.%m.%d"))
-        self.center_url = 'https://jssjt.jiangsu.gov.cn'
+        self.center_url = 'https://jtyst.qinghai.gov.cn/'
         self.title_url = kwargs.get("start_url")
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
         }
         self.department_dt = {
-            "江苏省市场监督管理局": '8;810;81003;810030380',
-            "江苏省审计厅": '8;810;81003;810030295'
+            "青海省交通运输厅": '8;827;82703;827030203'
         }
         self.category = kwargs.get("category")
-        self.department = self.department_dt.get(kwargs.get("lasy_department"))
+        self.department_name = kwargs.get("lasy_department")
+        self.department = self.department_dt.get(self.department_name)
         self.title_url_lt = kwargs.get("title_url_lt")
 
     def check_elasticsearch_existence(self, title, index, wenhao=None):
@@ -102,24 +102,12 @@ class AuditOffice:
         # '政策解读', '答记者问' 争议
         # 排除关键字
         excluded_keywords = {
-            '公告', '通报', '通告', '公示', '资质审批名单', '征求意见稿', '备案', '面试名单',
-            '培训会', '核准', '公布表', '获批', '予以备案', '备案公告', '报告', '资源包下载',
-            '活动情况', '诉求清单', '聘用', '招聘启事', '人员启事', '招聘人员面试', '赛的通知',
-            '公告', '公示', '采购意向', '的通告', '视频解读', '邀请函', '图解', '一图读懂',
+            '视频解读', '邀请函', '图解', '一图读懂', '专家访谈',
             '动画解读', '一图看懂', '图文', '视频', '音频', '会议通知', '评估'}
-        # 排除后缀
-        excluded_suffixes = {
-            '公告', '通报', '通告', '公示', '资质审批名单', '征求意见稿', '备案', '面试名单',
-            '工作', '培训会', '核准', '公布表', '获批', '予以备案', '备案公告', '报告', '资源包下载', '评估',
-            '活动情况',
-            '诉求清单'}
         # 针对地方法规文件，不录入国务院等中央文件
         department_not_dt = {
             '国务院'
         }
-        # 检查是否以排除后缀结尾
-        if any(title.endswith(suffix) for suffix in excluded_suffixes):
-            return False
         # 检查是否包含排除关键字
         if any(keyword in title for keyword in excluded_keywords):
             return False
@@ -152,6 +140,8 @@ class AuditOffice:
                         continue
         except Exception as e:
             _log.error("该文章没有表格内容!")
+            result_dt['文号'] = ''
+            result_dt['发文日期'] = ''
         return result_dt
 
     def remove_nbsp(self, soup):
@@ -180,18 +170,14 @@ class AuditOffice:
         a = re.compile(r'\n|&nbsp|&nbsp;|\xa0|\\xa0|\u3000|\\u3000|\\u0020|\t|\r|\f|&ensp;|&emsp;|&emsp|&ensp|\?|？| ')
         soup = BeautifulSoup(a.sub('', str(soup)), "html.parser")
 
-        # remove_text_lt = ['video', 'p']
-        # for it_t in remove_text_lt:
-        #     # 遍历所有的对应标签
-        #     for span in soup.find_all(it_t):
-        #         # 如果对应标签的文本为空，则移除它
-        #         if not span.get_text().strip():
-        #             span.decompose()
-
         remove_all_lt = ['script']
         for it_a in remove_all_lt:
             # 删除所有的对应标签
-            for img in soup.find_all(it_a):
+            for script in soup.find_all(it_a):
+                script.decompose()
+
+        for img in soup.find_all('img'):
+            if ".gif" in img.get('src'):
                 img.decompose()
 
         # 如果有抄送，删除抄送
@@ -260,7 +246,7 @@ class AuditOffice:
         :param any_title:
         :return:
         """
-        file_path = fr"E:/JXdata/省级地区附件下载/江苏省数据收录/江苏省审计厅/"
+        file_path = fr"E:/JXdata/省级地区附件下载/青海省数据收录/"+self.department_name + "/"
         # 检测路径是否存在
         if not os.path.exists(file_path):
             # 如果路径不存在，则创建路径
@@ -269,20 +255,18 @@ class AuditOffice:
         fujian = []
         replaced_full = full_text
         for test in full_text.find_all('a', href=re.compile(
-                '.*?(pdf|docx|doc|xlsx|xls|rar|zip|jpeg|jpg|png|gif|txt|7z|gz|PDF|ppt)+$')):
+                '.*?(pdf|docx|doc|xlsx|xls|rar|zip|jpeg|jpg|png|txt|7z|gz|PDF|ppt)+$')):
             src_c = test.get('href').replace('jspclassid', 'jsp?classid')
-            # 江苏省市场监督管理局特用
-            href_c = self.center_url+ '/' + src_c
+            src_c = src_c.replace("./", '')
+            # TODO
+            # 附件url
+            href_c = self.title_url + src_c
             # 从URL参数中提取'filename'的值
             filename = href_c.split('&filename=')[-1]
             if 'http' in filename:
                 filename = filename.split('/')[-1]
-            # ysrcs = ysrc.split("/")
-            # wjm = ysrcs[len(ysrcs) - 1]
-            # if '?' in wjm:
-            #     wjm = wjm.split('?')
-            #     wjm = wjm[0]
-            if href_c:
+
+            if href_c and "gif" not in filename:
                 ysrca = '/datafolder/附件/' + 'lar' + '/' + filename
                 replaced_full = str(replaced_full).replace(href_c, ysrca)
                 try:
@@ -296,13 +280,13 @@ class AuditOffice:
         if 'img' in str(full_text):
             for img in full_text.find_all('img'):
                 src_i = img.get('src')
-                if src_i:
+                if src_i and ".gif" not in src_i:
                     file_name = src_i.split('/')[-1]
                     file_name = file_name.rstrip('?vpn-1')
 
                     ysrca = os.path.join('/datafolder/附件/' + 'lar' + '/' + file_name)
                     replaced_full = str(replaced_full).replace(src_i, ysrca)
-                    src_i = self.center_url + src_i
+                    src_i = self.title_url + src_i
                     try:
                         self.public_down(src_i, file_path + file_name)
                         fujian.append({"Title": any_title, "SavePath": ysrca, "Url": src_i})
@@ -311,6 +295,7 @@ class AuditOffice:
                         _log.error(f"Error downloading {src_i}: {e}")
 
                     img.attrs = {'src': ysrca}
+
         tihuan = re.compile('\'')
         fujian = tihuan.sub('"', str(fujian))
         result_dt['附件'] = fujian
@@ -346,11 +331,10 @@ class AuditOffice:
             if it['标题'] in existing_titles_in_db:
                 # _log.info(f"47数据库中已经存在 [{it['标题']}] 这条数据!")
                 continue
-
             # 使用参数化查询防止 SQL 注入
             insert_data.append((
-                it['唯一标志'], it['标题'], it['全文'], it['发布部门'], it['来源'], it['附件'],
-                it['发文日期'], it['文号'], it['收录时间'], it['发文日期'], it['效力级别'], it['类别']
+                it.get('唯一标志'),  it.get('标题'),  it.get('全文'),  it.get('发布部门'),  it.get('来源'),  it.get('附件'),
+                it.get('发布日期'),  it.get('文号'),  it.get('收录时间'),  it.get('发布日期'),  it.get('效力级别'),  it.get('类别')
             ))
 
         # # 批量插入数据
@@ -390,26 +374,21 @@ class AuditOffice:
         result_dt = self.wenhao_get(any_soup)
         status = True
         if not self.check_elasticsearch_existence(any_title, 'lar', result_dt.get("文号")):
-            _log.info(f"存在这篇文章: [{any_title}]")
+            _log.info(f"ES存在这篇文章: [{any_title}]")
             status = False
         else:
             _log.info(f"正在收录文章: [{any_title}]")
-            try:
-                full_date = any_soup.find('span', attrs={"class": "date"})
-                full_date = full_date.get_text().replace("发布日期：", "")
-                # 解析原始字符串为 datetime 对象
-                date_object = datetime.strptime(full_date, '%Y-%m-%d %H:%M')
-                # 格式化日期对象为新的字符串
-                full_date = date_object.strftime('%Y.%m.%d')
-                result_dt["发布日期"] = full_date
-            except Exception as e:
-                result_dt["发布日期"] = result_dt.get('发文日期')
+
             # 全文以及格式处理
-            full_text = any_soup.find(['div','td'], attrs={"class": ["main-txt","bt_content"]})
+            full_text = any_soup.find(['div'], attrs={"class": ["detailCon detailContent", "zcCont"]})
+            if not full_text:
+                full_text = any_soup.find("div",attrs={"id": "kr-content"})
             result_dt = self.annex_get_all(result_dt, full_text, any_title, any_url)
             result_dt['全文'] = pf.soup_cal(result_dt['全文'])
             result_dt['全文'] = self.remove_nbsp(result_dt['全文'])
             result_dt["全文"] = str(result_dt['全文'])
+            full_date = pf.match_date(result_dt["全文"], any_soup)
+            result_dt["发布日期"] = full_date
         return result_dt, status
 
     def get_fulltext(self):
@@ -431,6 +410,9 @@ class AuditOffice:
             _log.info(f"正在收录[{any_title}]")
             time.sleep(random.uniform(0.2, 0.5))
             any_soup = pf.fetch_url(any_url, self.headers)
+            if not any_soup:
+                _log.error(f"该文章soup获取出错，请检查url，【{any_title}】")
+                continue
             # 正文处理,发文日期,发文字号
             result_dt, status = self.full_cal(any_soup, any_title, any_url)
             if not status:
@@ -468,8 +450,8 @@ def main(data_dt):
 
 if __name__ == '__main__':
     data_dt = {
-        "start_url": 'https://jw.cq.gov.cn/zwgk/zfxxgkml/zcwj/gfxwj/',  # 访问路径
-        "lasy_department": '江苏省市场监督管理局',  # 在函数返回为空的时候指定发布部门
-        "category": "096;09618"
+        "start_url": 'https://jtyst.qinghai.gov.cn/jtyst/zwgk/zfxxgkml/rdjyzxta/zxta/3ed30519-1.html',  # 访问路径
+        "lasy_department": '青海省交通运输厅',  # 在函数返回为空的时候指定发布部门
+        "category": ""
     }
     main(data_dt)

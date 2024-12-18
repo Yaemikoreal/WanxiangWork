@@ -259,7 +259,7 @@ class MarketSupervisionAdministration:
         :param any_title:
         :return:
         """
-        file_path = fr"E:/JXdata/江苏省市场监督管理局/"
+        file_path = fr"E:/JXdata/省级地区附件下载/江苏省数据收录/江苏省市场监督管理局/"
         # 检测路径是否存在
         if not os.path.exists(file_path):
             # 如果路径不存在，则创建路径
@@ -310,7 +310,9 @@ class MarketSupervisionAdministration:
                         _log.error(f"Error downloading {src_i}: {e}")
 
                     img.attrs = {'src': ysrca}
-        result_dt['附件'] = ""
+        tihuan = re.compile('\'')
+        fujian = tihuan.sub('"', str(fujian))
+        result_dt['附件'] = fujian
         result_dt['全文'] = full_text
         return result_dt
 
@@ -319,7 +321,8 @@ class MarketSupervisionAdministration:
         similarity = matcher.ratio()
         return similarity >= threshold
 
-    def process_data(self, data_lt, count_num):
+    def process_data(self, data_lt):
+        count_num = 0
         # 批量检查 Elasticsearch 中是否存在数据
         existing_titles = {item['标题'] for item in data_lt if
                            self.check_elasticsearch_existence(item.get('标题'), 'lar', item.get("文号"))}
@@ -404,14 +407,13 @@ class MarketSupervisionAdministration:
             result_dt["全文"] = str(result_dt['全文'])
         return result_dt, status
 
-    def get_fulltext(self, title_url_lt):
+    def get_fulltext(self):
         """
         处理每一篇文章内容
-        :param title_url_lt: 标题和url的列表
         :return: 处理好的文章列表
         """
         data_lt = []
-        for it in title_url_lt:
+        for it in self.title_url_lt:
             any_title = it.get("标题")
             # 标题过滤
             if not self.title_filter(any_title):
@@ -450,9 +452,8 @@ class MarketSupervisionAdministration:
         return data_lt
 
     def calculate(self):
-        count_num = 0
-        data_lt = self.get_fulltext(self.title_url_lt)
-        self.process_data(data_lt, count_num)
+        data_lt = self.get_fulltext()
+        self.process_data(data_lt)
 
 
 def main(data_dt):
