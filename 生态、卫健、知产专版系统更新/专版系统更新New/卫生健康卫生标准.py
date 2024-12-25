@@ -1,13 +1,16 @@
 import time
 import random
 import re
-from botpy import logging
+from botpy import logging as botpy_logging
 import pandas as pd
 from bs4 import BeautifulSoup
 from DrissionPage import ChromiumPage, ChromiumOptions
 from 附件下载程序 import public_down
 from 预处理 import selectsql, insertsql, intDate, gettimestr
-_log = logging.get_logger()
+
+# 设置日志记录
+_log = botpy_logging.get_logger()
+
 # 定义常量
 BASE_URL = 'http://www.nhc.gov.cn/wjw/wsbzxx/'  # 基础URL
 URL_TEMPLATE = BASE_URL + 'wsbz{suf}.shtml'  # URL模板，用于生成分页链接
@@ -15,16 +18,14 @@ URL_ROOT = 'http://www.nhc.gov.cn'  # 网站根URL
 CATEGORY = '卫生标准'  # 数据类别
 DATE_CUTOFF = 20200728  # 日期截止点，只处理此日期之后的数据
 DOWNLOAD_PATH = r'E:/JXdata/生态环境依法行政法律资源应用支持系统/卫生健康依法行政法律资源应用支持系统/{}/'.format(CATEGORY)  # 附件下载路径
-EXCEL_SAVE_PATH = r'E:/JXdata/专版系统更新标准收录/收录数据/卫生{}.xlsx'  # Excel文件保存路径
+EXCEL_SAVE_PATH = r'E:/JXdata/专版系统更新标准收录/收录数据/卫生健康标准_{}.xlsx'  # Excel文件保存路径
 DATABASE_TABLE = '[自收录数据].[dbo].[wj-卫计局]'  # 数据库表名
-
+PUBLISH_DEPARTMENT = '卫生健康委员会'
 
 # 创建浏览器对象并设置选项
-# co = ChromiumOptions().set_browser_path(r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe')
-co = ChromiumOptions()
-# 设置无头模式
-co.headless(False)
-wd = ChromiumPage(co)
+options = ChromiumOptions()
+options.headless = True  # 设置无头模式
+browser = ChromiumPage(options)
 
 
 def fetch_page_content(page_index):
@@ -34,74 +35,84 @@ def fetch_page_content(page_index):
     :param page_index: 页面索引，从0开始
     :return: 解析后的BeautifulSoup对象
     """
-    url = URL_TEMPLATE.format(suf='_' + str(page_index) if page_index > 0 else '')  # 构建页面URL
-    wd.get(url)
-    wd.wait(1.5)
-    return BeautifulSoup(wd.html, "html.parser")  # 返回解析后的页面内容
+    url = URL_TEMPLATE.format(suf=f'_{page_index}' if page_index > 0 else '')
+    browser.get(url)
+    browser.wait(1.5)
+    return BeautifulSoup(browser.html, "html.parser")
 
-def get_any_tab(href):
-    any_tab_url = URL_ROOT + href
-    wd.get(any_tab_url)
-    time.sleep(4)
-    soup = BeautifulSoup(wd.html, "html.parser")
-    return any_tab_url, soup
-def process_row(tr, dateed):
+
+def get_tab_content(href):
     """
-    处理表格中的每一行数据，包括检查日期、查询数据库、处理附件、写入Excel和插入数据库。
+    获取指定链接的内容。
 
-    :param tr: 表格行元素
-    :param dateed: 日期截止点
-    :return: 如果成功处理返回True，否则返回False
+    :param href: 链接
+    :return: 完整链接和解析后的BeautifulSoup对象
     """
+    full_url = URL_ROOT + href
+    browser.get(full_url)
+    browser.wait(1.5)
+    return full_url, BeautifulSoup(browser.html, "html.parser")
 
-    href = tr.find('a').get('href')  # 获取链接
-    title = tr.find('a').get('title')  # 获取标题
-    dateop = intDate(tr.find_all('td')[3].text)  # 获取发布日期
-    datashishi = intDate(tr.find_all('td')[4].text)  # 获取实施日期
-    _log.info(f"[{title}]处理中")
-    # 如果发布日期早于截止日期，跳过该行
-    if dateop <= dateed:
+
+def process_row(row_element, date_cutoff):
+    """
+    处理表格中的每一行数据。
+
+    :param row_element: 表格行元素
+    :param date_cutoff: 日期截止点
+    :return: 如果成功处理返回数据字典，否则返回False
+    """
+    link = row_element.find('a').get('href')
+    title = row_element.find('a').get('title')
+    publish_date = intDate(row_element.find_all('td')[3].text)
+    implementation_date = intDate(row_element.find_all('td')[4].text)
+
+    _log.info(f"[{title}] 正在处理")
+
+    if publish_date <= date_cutoff:
         _log.info("发布日期早于截止日期，跳过该行")
         _log.info("====" * 20)
         return False
-    # 查询数据库，检查是否存在相同标题的记录
-    sesql = "SELECT * FROM {} WHERE [标题] LIKE '{}'".format(DATABASE_TABLE,title + '%' if title[-3:] == "..." else title)
-    if selectsql(sesql):
+
+    sql_query = f"SELECT * FROM {DATABASE_TABLE} WHERE [标题] LIKE '{title}%'"
+    if selectsql(sql_query):
         _log.info('数据库已存在该数据!')
         _log.info("====" * 20)
         return False
 
-    any_tab_url, soup = get_any_tab(href)
-    fujian = []  # 用于存储附件链接
-    for test in soup.find_all('a', href=re.compile(r'.*?(pdf|docx|doc|xlsx|xls|rar|zip|jpeg|jpg|png|gif|txt|7z|gz)+$')):
-        ysrc = test.get('href')
-        # 构建完整的附件链接
-        href_full = any_tab_url.rsplit('/', 1)[0] + "/" + ysrc
-        ysrc_name = ysrc.split('/')[-1]  # 获取附件文件名
+    full_url, soup = get_tab_content(link)
+    attachments = []
 
-        # 下载附件
-        public_down(href_full, DOWNLOAD_PATH + ysrc_name)
-        test['href'] = '/datafolder/卫生健康依法行政法律资源应用支持系统/' + CATEGORY + '/' + ysrc_name  # 更新链接为相对路径
-        fujian.append(test['href'])
+    for attachment in soup.find_all('a', href=re.compile(
+            r'.*?(pdf|docx|doc|xlsx|xls|rar|zip|jpeg|jpg|png|gif|txt|7z|gz)+$')):
+        file_link = attachment.get('href')
+        full_file_link = f"{full_url.rsplit('/', 1)[0]}/{file_link}"
+        file_name = file_link.split('/')[-1]
 
-    if fujian:
-        fujian_str = str(fujian).replace("'", '"')  # 将附件列表转换为JSON格式字符串
-        wybz = "wjj" + gettimestr() + str(random.randint(0, 9))  # 生成唯一标志
-        in_sql = "INSERT INTO {} ([标题], [类别], [发布日期], [实施日期], [全文], [url], [附件], [唯一标志]) VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-            DATABASE_TABLE, title, CATEGORY, dateop, datashishi, '', href_full, fujian_str, wybz)
-        insertsql(in_sql)  # 插入数据库
-        data_dt = {
+        public_down(full_file_link, DOWNLOAD_PATH + file_name)
+        attachment['href'] = f'/datafolder/卫生健康依法行政法律资源应用支持系统/{CATEGORY}/{file_name}'
+        attachments.append(attachment['href'])
+
+    if attachments:
+        # 处理日期格式
+        publish_date = f"{str(publish_date)[:4]}.{str(publish_date)[4:6]}.{str(publish_date)[6:]}"
+        implementation_date = f"{str(implementation_date)[:4]}.{str(implementation_date)[4:6]}.{str(implementation_date)[6:]}"
+        attachments_str = str(attachments).replace("'", '"')
+        unique_id = f"wjj{gettimestr()}{random.randint(0, 9)}"
+        insert_sql = f"INSERT INTO {DATABASE_TABLE} ([标题], [类别], [发布日期], [实施日期], [全文], [url], [附件], [唯一标志],[发布部门]) VALUES ('{title}', '{CATEGORY}', '{publish_date}', '{implementation_date}', '', '{full_url}', '{attachments_str}', '{unique_id}','{PUBLISH_DEPARTMENT}')"
+        insertsql(insert_sql)
+        data_dict = {
             "标题": title,
             "类别": CATEGORY,
-            "发布日期": dateop,
-            "实施日期": datashishi,
+            "发布日期": publish_date,
+            "实施日期": implementation_date,
             "全文": '',
-            "url": href_full,
-            "附件": fujian_str,
-            "唯一标志": wybz
+            "url": full_url,
+            "附件": attachments_str,
+            "唯一标志": unique_id
         }
         _log.info("====" * 20)
-        return data_dt
+        return data_dict
     return False
 
 
@@ -109,27 +120,29 @@ def main():
     """
     主函数，负责组织整个流程，包括初始化Excel文件、遍历页面、处理每一行数据以及发送通知。
     """
-    data_lt = []
-    timem = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))  # 生成时间戳
+    data_list = []
+    timestamp = time.strftime('%Y%m%d', time.localtime(time.time()))
+
     try:
-        for page_index in range(1):  # 遍历前10页
-            _log.info(f"处理第[{page_index}]页")
+        for page_index in range(10):  # 可根据需要调整页数
+            _log.info(f"处理第[{page_index + 1}]页")
             soup = fetch_page_content(page_index)
-            for tr in soup.find_all('tr', bgcolor="#ffffff"):  # 遍历每一页中的所有行
-                data_dt = process_row(tr, DATE_CUTOFF)
-                if data_dt:
-                    data_lt.append(data_dt)
+            for row in soup.find_all('tr', bgcolor="#ffffff"):
+                data_dict = process_row(row, DATE_CUTOFF)
+                if data_dict:
+                    data_list.append(data_dict)
             _log.info("====" * 20)
-        data_df = pd.DataFrame(data_lt)
-        if not data_df.empty:
-            file_path = EXCEL_SAVE_PATH.format(timem)
+
+        if data_list:
+            data_df = pd.DataFrame(data_list)
+            file_path = EXCEL_SAVE_PATH.format(timestamp)
             data_df.to_excel(file_path, index=False)
+
     except Exception as e:
-        print(e)
         _log.error(e)
     finally:
-        wd.quit()  # 关闭浏览器
+        browser.quit()
 
 
 if __name__ == '__main__':
-    main()  # 执行主函数
+    main()
