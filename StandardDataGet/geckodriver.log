@@ -1,0 +1,850 @@
+1728614290638	geckodriver	INFO	Listening on 127.0.0.1:57281
+1728614293689	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileW6kiay"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728614295952	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728614296187	Marionette	INFO	Listening on port 57301
+1728614296477	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2544D73CA09ACBA031ACCF546FFF871B" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=D0FD20FC6C61F73FA66E9B63FA49D5CC" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8BC0D8B44DD4E71F9557BADE5175565A" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=D57BB5920163FECC9E316D63B35423B4" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+1728614482227	Marionette	INFO	Stopped listening on port 57301
+Dynamically enable window occlusion 1
+1728615955469	geckodriver	INFO	Listening on 127.0.0.1:58942
+1728615958502	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofiletQcYKU"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728615959988	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728615960220	Marionette	INFO	Listening on port 58950
+1728615960303	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=D57BB5920163FECC9E316D63B35423B4" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728616775448	geckodriver	INFO	Listening on 127.0.0.1:59679
+1728616778498	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilezRXWP8"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728616778936	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728616779107	Marionette	INFO	Listening on port 59689
+1728616779177	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728617586758	geckodriver	INFO	Listening on 127.0.0.1:60213
+1728617589785	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile5uflFT"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728617590772	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728617590937	Marionette	INFO	Listening on port 60221
+1728617591005	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.3466977741726638&page=1&pageSize=50&p.p1=1&p.p7=0.25&p.p90=circulation_date&p.p91=desc" ({})
+Exiting due to channel error.
+1728617866847	geckodriver	INFO	Listening on 127.0.0.1:60500
+1728617869904	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilefIGsB0"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728617870332	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728617870521	Marionette	INFO	Listening on port 60508
+1728617870600	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728618178314	geckodriver	INFO	Listening on 127.0.0.1:60732
+1728618181337	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileiIqIhk"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728618181826	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728618182001	Marionette	INFO	Listening on port 60740
+1728618182087	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+1728618214889	Marionette	INFO	Stopped listening on port 60740
+Dynamically enable window occlusion 1
+console.error: (new AbortError("IndexedDB: main/devtools-compatibility-browsers list() IndexedDB:  execute() A request was aborted, for example through a call to IDBTransaction.abort.", "resource://services-settings/IDBHelpers.sys.mjs", 16))
+console.error: services.settings: 
+Object
+  - prototype Object
+    - columnNumber = 0
+    - data = null
+    - filename = resource://gre/modules/ServiceRequest.sys.mjs
+    - lineNumber = 133
+    - location = {"name":"open","filename":"resource://gre/modules/ServiceRequest.sys.mjs","sourceId":25,"lineNumber":133,"columnNumber":11,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/Utils.sys.mjs","name":"fetch/<","sourceId":24,"lineNumber":268,"columnNumber":15,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/Utils.sys.mjs","name":"fetch","sourceId":24,"lineNumber":219,"columnNumber":12,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-common/kinto-http-client.sys.mjs","name":"timedFetch/<","sourceId":462,"lineNumber":569,"columnNumber":12,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-common/kinto-http-client.sys.mjs","name":"timedFetch","sourceId":462,"lineNumber":544,"columnNumber":12,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-common/kinto-http-client.sys.mjs","name":"request","sourceId":462,"lineNumber":634,"columnNumber":33,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-common/kinto-http-client.sys.mjs","name":"execute","sourceId":462,"lineNumber":2643,"columnNumber":36,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/RemoteSettingsClient.sys.mjs","name":"_fetchChangeset","sourceId":22,"lineNumber":1198,"columnNumber":22,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/RemoteSettingsClient.sys.mjs","name":"_importChanges","sourceId":22,"lineNumber":1060,"columnNumber":18,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/RemoteSettingsClient.sys.mjs","name":"maybeSync","sourceId":22,"lineNumber":749,"columnNumber":35,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://gre/modules/AsyncShutdown.sys.mjs","name":"observe","sourceId":15,"lineNumber":569,"columnNumber":17,"asyncCause":null,"asyncCaller":null,"caller":null,"formattedStack":"observe@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"maybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"execute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"request@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"timedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12\nrequest@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"timedFetch/<@resource://services-common/kinto-http-client.sys.mjs:569:12\ntimedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12\nrequest@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"fetch@resource://services-settings/Utils.sys.mjs:219:12\ntimedFetch/<@resource://services-common/kinto-http-client.sys.mjs:569:12\ntimedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12\nrequest@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"fetch/<@resource://services-settings/Utils.sys.mjs:268:15\nfetch@resource://services-settings/Utils.sys.mjs:219:12\ntimedFetch/<@resource://services-common/kinto-http-client.sys.mjs:569:12\ntimedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12\nrequest@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}},"formattedStack":"open@resource://gre/modules/ServiceRequest.sys.mjs:133:11\nfetch/<@resource://services-settings/Utils.sys.mjs:268:15\nfetch@resource://services-settings/Utils.sys.mjs:219:12\ntimedFetch/<@resource://services-common/kinto-http-client.sys.mjs:569:12\ntimedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12\nrequest@resource://services-common/kinto-http-client.sys.mjs:634:33\nexecute@resource://services-common/kinto-http-client.sys.mjs:2643:36\n_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22\n_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35\nobserve@resource://gre/modules/AsyncShutdown.sys.mjs:569:17\n","nativeSavedFrame":{}}
+    - message = 
+    - name = 
+    - result = 2152071198
+    - stack = open@resource://gre/modules/ServiceRequest.sys.mjs:133:11|fetch/<@resource://services-settings/Utils.sys.mjs:268:15|fetch@resource://services-settings/Utils.sys.mjs:219:12|timedFetch/<@resource://services-common/kinto-http-client.sys.mjs:569:12|timedFetch@resource://services-common/kinto-http-client.sys.mjs:544:12|request@resource://services-common/kinto-http-client.sys.mjs:634:33|execute@resource://services-common/kinto-http-client.sys.mjs:2643:36|_fetchChangeset@resource://services-settings/RemoteSettingsClient.sys.mjs:1198:22|_importChanges@resource://services-settings/RemoteSettingsClient.sys.mjs:1060:18|maybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:749:35|observe@resource://gre/modules/AsyncShutdown.sys.mjs:569:17|
+  - prototype Object
+console.error: (new Error("IndexedDB: main/message-groups getLastModified() IndexedDB:  execute() The application is shutting down", "resource://services-settings/IDBHelpers.sys.mjs", 16))
+1728618885273	geckodriver	INFO	Listening on 127.0.0.1:61302
+1728618888300	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofiled519Ze"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728618889746	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728618889994	Marionette	INFO	Listening on port 61310
+1728618890089	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+1728618906779	Marionette	INFO	Stopped listening on port 61310
+Dynamically enable window occlusion 1
+1728619030874	geckodriver	INFO	Listening on 127.0.0.1:61424
+1728619033882	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileMuBILV"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728619034462	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728619034671	Marionette	INFO	Listening on port 61447
+1728619034943	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+1728619066765	Marionette	INFO	Stopped listening on port 61447
+Dynamically enable window occlusion 1
+console.error: services.settings: 
+Object
+  - prototype Object
+    - columnNumber = 0
+    - data = null
+    - filename = resource://gre/modules/ServiceRequest.sys.mjs
+    - lineNumber = 133
+    - location = {"name":"open","filename":"resource://gre/modules/ServiceRequest.sys.mjs","sourceId":25,"lineNumber":133,"columnNumber":11,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/Utils.sys.mjs","name":"fetch/<","sourceId":24,"lineNumber":268,"columnNumber":15,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/Utils.sys.mjs","name":"fetch","sourceId":24,"lineNumber":219,"columnNumber":12,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/RemoteSettingsClient.sys.mjs","name":"_validateCollectionSignature","sourceId":22,"lineNumber":1009,"columnNumber":47,"asyncCause":null,"asyncCaller":null,"caller":{"filename":"resource://services-settings/RemoteSettingsClient.sys.mjs","name":"maybeSync","sourceId":22,"lineNumber":726,"columnNumber":26,"asyncCause":null,"asyncCaller":null,"caller":null,"formattedStack":"maybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26\n","nativeSavedFrame":{}},"formattedStack":"_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1009:47\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26\n","nativeSavedFrame":{}},"formattedStack":"fetch@resource://services-settings/Utils.sys.mjs:219:12\n_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1009:47\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26\n","nativeSavedFrame":{}},"formattedStack":"fetch/<@resource://services-settings/Utils.sys.mjs:268:15\nfetch@resource://services-settings/Utils.sys.mjs:219:12\n_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1009:47\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26\n","nativeSavedFrame":{}},"formattedStack":"open@resource://gre/modules/ServiceRequest.sys.mjs:133:11\nfetch/<@resource://services-settings/Utils.sys.mjs:268:15\nfetch@resource://services-settings/Utils.sys.mjs:219:12\n_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1009:47\nmaybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26\n","nativeSavedFrame":{}}
+    - message = 
+    - name = 
+    - result = 2152071198
+    - stack = open@resource://gre/modules/ServiceRequest.sys.mjs:133:11|fetch/<@resource://services-settings/Utils.sys.mjs:268:15|fetch@resource://services-settings/Utils.sys.mjs:219:12|_validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1009:47|maybeSync@resource://services-settings/RemoteSettingsClient.sys.mjs:726:26|
+  - prototype Object
+console.warn: services.settings: main/search-default-override-allowlist sync interrupted by shutdown
+console.warn: services.settings: main/search-config-v2 sync interrupted by shutdown
+console.warn: services.settings: main/search-telemetry-v2 sync interrupted by shutdown
+console.warn: services.settings: main/cookie-banner-rules-list sync interrupted by shutdown
+console.warn: services.settings: main/devtools-compatibility-browsers sync interrupted by shutdown
+console.warn: services.settings: main/search-config-icons sync interrupted by shutdown
+console.warn: services.settings: main/urlbar-persisted-search-terms sync interrupted by shutdown
+console.warn: services.settings: main/url-classifier-skip-urls sync interrupted by shutdown
+console.error: ({details:{id:"301b5e58-eec9-4f1e-2f97-09abedfef627", last_modified:1723136665642, bucket:"main", collection:"top-sites", host:"firefox.settings.services.mozilla.com"}})
+1728625859274	geckodriver	INFO	Listening on 127.0.0.1:50102
+1728625862235	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofiled3YwjG"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728625863724	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728625863943	Marionette	INFO	Listening on port 50112
+1728625864025	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=CCBF754B87D53912ACA4F11F81CE880D" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=123E7865AA1F2C0AB1B7042A388D4F8E" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=1F3910E089378480AED28E14CA392840" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=4E869C8EBF3CD4591D4F4DFD96D54185" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list_type?r=0.1748637818471297&page=2&pageSize=50&p.p1=1&p.p90=circulation_date&p.p91=desc" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8B681299977EF4E8F6BB7C74658C689E" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=0760EEEBD07D123533C69499151C1132" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=72C3177FEB44670F5540E69C242901A6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=C80A5A7E7E4DCF612E5D7B58E0FEDB76" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=6E00B712AEF18F3652F3040633C0FF4C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=0CBABD8219F6CFB2F54A520081119867" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EF8DFA874E9A4FB6DD9966E1DABECF3C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=CCBF754B87D53912ACA4F11F81CE880D" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=123E7865AA1F2C0AB1B7042A388D4F8E" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=72C3177FEB44670F5540E69C242901A6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=C80A5A7E7E4DCF612E5D7B58E0FEDB76" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=6E00B712AEF18F3652F3040633C0FF4C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=0CBABD8219F6CFB2F54A520081119867" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EF8DFA874E9A4FB6DD9966E1DABECF3C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=CCBF754B87D53912ACA4F11F81CE880D" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=123E7865AA1F2C0AB1B7042A388D4F8E" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=72C3177FEB44670F5540E69C242901A6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=C80A5A7E7E4DCF612E5D7B58E0FEDB76" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=6E00B712AEF18F3652F3040633C0FF4C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=0CBABD8219F6CFB2F54A520081119867" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EF8DFA874E9A4FB6DD9966E1DABECF3C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=CCBF754B87D53912ACA4F11F81CE880D" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=123E7865AA1F2C0AB1B7042A388D4F8E" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728628419206	geckodriver	INFO	Listening on 127.0.0.1:51874
+1728628422252	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilelOZapv"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728628422699	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728628422871	Marionette	INFO	Listening on port 51882
+1728628422937	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=72C3177FEB44670F5540E69C242901A6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=C80A5A7E7E4DCF612E5D7B58E0FEDB76" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=6E00B712AEF18F3652F3040633C0FF4C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=0CBABD8219F6CFB2F54A520081119867" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EF8DFA874E9A4FB6DD9966E1DABECF3C" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=CCBF754B87D53912ACA4F11F81CE880D" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=123E7865AA1F2C0AB1B7042A388D4F8E" ({})
+1728628550887	Marionette	INFO	Stopped listening on port 51882
+Dynamically enable window occlusion 1
+1728628918545	geckodriver	INFO	Listening on 127.0.0.1:52371
+1728628921578	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileWriDV7"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728628922386	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728628922755	Marionette	INFO	Listening on port 52379
+1728628922869	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+Exiting due to channel error.
+1728628990293	geckodriver	INFO	Listening on 127.0.0.1:52458
+1728628993346	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileMLCpCq"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728628993870	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728628994207	Marionette	INFO	Listening on port 52466
+1728628994458	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8BC0D8B44DD4E71F9557BADE5175565A" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044496-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728629741264	geckodriver	INFO	Listening on 127.0.0.1:53351
+1728629744316	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilewbzF7R"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728629745477	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728629745902	Marionette	INFO	Listening on port 53359
+1728629745992	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+1728630024473	geckodriver	INFO	Listening on 127.0.0.1:53672
+1728630027577	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile3dceS7"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728630028212	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728630028746	Marionette	INFO	Listening on port 53685
+1728630028884	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8BC0D8B44DD4E71F9557BADE5175565A" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044496-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+[GFX1-]: CompositorBridgeChild receives IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+1728631234066	geckodriver	INFO	Listening on 127.0.0.1:55002
+1728631237117	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilecjR0AZ"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728631238612	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728631239051	Marionette	INFO	Listening on port 55010
+1728631239166	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728635815946	geckodriver	INFO	Listening on 127.0.0.1:59037
+1728635818867	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilejE9i8P"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728635820351	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728635820975	Marionette	INFO	Listening on port 59047
+1728635821100	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728636082640	geckodriver	INFO	Listening on 127.0.0.1:59327
+1728636085679	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile3UQLiM"
+1728636116898	geckodriver	INFO	Listening on 127.0.0.1:59356
+1728636120022	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilegpw9IB"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728636121373	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728636122746	Marionette	INFO	Listening on port 59375
+1728636123389	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728696936635	geckodriver	INFO	Listening on 127.0.0.1:60153
+1728696939724	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileaoL87Q"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728696941199	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728696941722	Marionette	INFO	Listening on port 60161
+1728696941842	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728697372370	geckodriver	INFO	Listening on 127.0.0.1:60461
+1728697375401	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilenqoLNQ"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728697375916	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728697376314	Marionette	INFO	Listening on port 60469
+1728697376590	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+1728697887398	geckodriver	INFO	Listening on 127.0.0.1:60866
+1728697890452	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileEf4QoL"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728697890970	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728697891301	Marionette	INFO	Listening on port 60875
+1728697891529	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728698166439	geckodriver	INFO	Listening on 127.0.0.1:61192
+1728698169398	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile9FRXfU"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728698170084	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728698170483	Marionette	INFO	Listening on port 61200
+1728698170596	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+1728698735974	geckodriver	INFO	Listening on 127.0.0.1:61569
+1728698739034	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileo8891S"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728698739676	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728698740114	Marionette	INFO	Listening on port 61577
+1728698740236	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728698907217	Marionette	INFO	Stopped listening on port 61577
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 47: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1728698914085	geckodriver	INFO	Listening on 127.0.0.1:61707
+1728698917055	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileQCcI9T"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728698917861	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728698918325	Marionette	INFO	Listening on port 61718
+1728698918461	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728699081350	geckodriver	INFO	Listening on 127.0.0.1:61846
+1728699084396	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileKZxHCd"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728699085142	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728699085557	Marionette	INFO	Listening on port 61856
+1728699085651	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728699244495	geckodriver	INFO	Listening on 127.0.0.1:61975
+1728699247531	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile2KldMk"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728699248056	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728699248452	Marionette	INFO	Listening on port 61983
+1728699248724	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728699633878	geckodriver	INFO	Listening on 127.0.0.1:62214
+1728699636911	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile8pV4OS"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728699638909	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728699639721	Marionette	INFO	Listening on port 62225
+1728699639920	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728700176971	geckodriver	INFO	Listening on 127.0.0.1:62603
+1728700180014	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilezDGYbL"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728700180862	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728700181285	Marionette	INFO	Listening on port 62614
+1728700181398	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+1728700976081	geckodriver	INFO	Listening on 127.0.0.1:63089
+1728700979111	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilexBtRZv"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728700980613	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728700981325	Marionette	INFO	Listening on port 63100
+1728700981466	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728701172522	Marionette	INFO	Stopped listening on port 63100
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 47: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1728701188484	geckodriver	INFO	Listening on 127.0.0.1:63351
+1728701191549	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileO0zrhI"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728701192793	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728701193345	Marionette	INFO	Listening on port 63364
+1728701193474	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728701623835	geckodriver	INFO	Listening on 127.0.0.1:63685
+1728701626882	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileQNWRk0"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728701627428	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728701627848	Marionette	INFO	Listening on port 63695
+1728701628130	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4, line 24: Script terminated by timeout at:
+mt.localStorage.get@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:24:332
+getData@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:37:132
+F/<@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:52:173
+l@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:32:175
+n@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:65:472
+f/<@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:47:106
+
+1728701716596	Marionette	INFO	Stopped listening on port 63695
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 47: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1728701724224	geckodriver	INFO	Listening on 127.0.0.1:63776
+1728701727245	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileUi6e4L"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728701727752	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728701728154	Marionette	INFO	Listening on port 63784
+1728701728436	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+1728701981269	geckodriver	INFO	Listening on 127.0.0.1:63964
+1728701984318	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile6qF5i5"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728701984864	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728701985269	Marionette	INFO	Listening on port 63973
+1728701985538	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728702345765	geckodriver	INFO	Listening on 127.0.0.1:64320
+1728702348817	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileEvD0p5"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728702349931	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728702350421	Marionette	INFO	Listening on port 64331
+1728702350558	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728702534015	geckodriver	INFO	Listening on 127.0.0.1:64486
+1728702537080	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileh7PGmp"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728702537642	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728702538087	Marionette	INFO	Listening on port 64494
+1728702538234	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=download&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728702791954	geckodriver	INFO	Listening on 127.0.0.1:64673
+1728702795001	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile4cIiM4"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728702795600	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728702795996	Marionette	INFO	Listening on port 64685
+1728702796139	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728702996688	geckodriver	INFO	Listening on 127.0.0.1:64872
+1728702999737	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilee6tE4l"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728703000149	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728703000493	Marionette	INFO	Listening on port 64884
+1728703000586	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728711381419	geckodriver	INFO	Listening on 127.0.0.1:50867
+1728711384457	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilerL2x99"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728711385054	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728711385409	Marionette	INFO	Listening on port 50876
+1728711385654	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+1728896871215	geckodriver	INFO	Listening on 127.0.0.1:52436
+1728896873384	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileO8s574"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728896874997	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728896875540	Marionette	INFO	Listening on port 52449
+1728896875658	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+1728897113691	geckodriver	INFO	Listening on 127.0.0.1:52739
+1728897116711	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofiletrvdpj"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728897117807	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728897118487	Marionette	INFO	Listening on port 52749
+1728897118674	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1728897418372	geckodriver	INFO	Listening on 127.0.0.1:53101
+1728897421307	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilelu1ZDb"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728897421894	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728897422320	Marionette	INFO	Listening on port 53111
+1728897422441	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+JavaScript warning: https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4, line 47: Script terminated by timeout at:
+a@https://hm.baidu.com/hm.js?50758913e6f0dfc9deacbfebce3637e4:47:124
+
+1728898426961	Marionette	INFO	Stopped listening on port 53111
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.1728898427537	Marionette	INFO	Stopped listening on port 53860
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 47: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1728956451999	geckodriver	INFO	Listening on 127.0.0.1:57437
+1728956455050	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofile1hlgsu"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728956456582	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728956456985	Marionette	INFO	Listening on port 57447
+1728956457088	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8BC0D8B44DD4E71F9557BADE5175565A" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044496-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8BC0D8B44DD4E71F9557BADE5175565A" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044496-2024" ({})
+Exiting due to channel error.
+1728956827272	geckodriver	INFO	Listening on 127.0.0.1:57988
+1728956830358	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilexsCSD9"
+1728956850319	geckodriver	INFO	Listening on 127.0.0.1:58016
+1728956853332	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileML7VNV"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728956854164	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728956854707	Marionette	INFO	Listening on port 58024
+1728956854898	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+1728957796575	Marionette	INFO	Stopped listening on port 58024
+Dynamically enable window occlusion 1
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 47: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1728957801224	geckodriver	INFO	Listening on 127.0.0.1:59204
+1728957804339	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileypJo3S"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728957805258	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728957805658	Marionette	INFO	Listening on port 59212
+1728957805831	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1728957909145	geckodriver	INFO	Listening on 127.0.0.1:59359
+1728957912189	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofileqzSFFF"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728957912680	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728957913114	Marionette	INFO	Listening on port 59369
+1728957913280	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=2DB552CAA58F589705C3DC7AD47AC2AB" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2044495-2024" ({})
+1728958270326	geckodriver	INFO	Listening on 127.0.0.1:59795
+1728958273364	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\admin\\AppData\\Local\\Temp\\rust_mozprofilexbWTzP"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1728958274336	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1728958274704	Marionette	INFO	Listening on port 59804
+1728958274807	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=33167059DDB9E7F9D44AC9E9924851F6" ({})
+console.warn: WindowsJumpLists: "Failed to fetch favicon for " "https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2=GB%2017354-2024" ({})
+Exiting due to channel error.
+Exiting due to channel error.

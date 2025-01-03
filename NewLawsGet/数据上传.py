@@ -60,7 +60,7 @@ class get_shujuku(object):
         #     return
         print(f"正在写入文章:  {query_result[1]}")
         print(f"注意: 正在往 [{self.mb}] 模版中写入数据!!!")
-        url = 'http://47.97.3.24:8075/api/trends/addEmployData'
+        url = 'http://data.lawdoo.com/api/api/trends/addEmployData'
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 Edg/91.0.864.37',
             'X-Requested-With': 'XMLHttpRequest',
@@ -224,9 +224,9 @@ class get_shujuku(object):
 if __name__ == "__main__":
     data_dt = {
         "status": True,
-        "where_value": "[收录日期] = '20241204'",
+        "where_value": "[收录日期] = '20250103'",
         # 法律法规 or 地方法规
-        "projectId": '法律法规'
+        "projectId": '地方法规'
     }
 
     obj = get_shujuku(**data_dt)

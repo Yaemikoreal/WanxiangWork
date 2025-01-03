@@ -15,6 +15,8 @@ import random
 from elasticsearch import Elasticsearch
 from ProcessingMethod.PublicFunction import load_config
 import GetUserToken
+import GetUserCookieNew
+import GetUserCookieCplan
 import logging
 from ProcessingMethod.LoggerSet import logger
 
@@ -61,16 +63,12 @@ class GetDataFa:
             '失效': '02',
             '部分修订': '03'
         }
-        # 代理以及代理获取
-        self.proxies = {
-            "http": 'http://183.159.204.186:10344',
-            "https": 'http://183.159.204.186:10344'
-        }
         self.proxies_url = "http://route.xiongmaodaili.com/xiongmao-web/api/glip?secret=b9200c80d01ddc746e97430b3d4a46a9&orderNo=GL202403191725045jqovn7t&count=1&isTxt=0&proxyType=1&returnAccount=1"
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
             'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
         }
+        self.access_plan = None
 
     def get_x_token(self):
         """
@@ -79,8 +77,14 @@ class GetDataFa:
         """
         logger.info("正在获取最新token,这个过程大概需要1分钟!!!")
         # 获取最新token到本地
-        GetUserToken.calculate()
-
+        function_dict = {
+            "A": GetUserToken.calculate,
+            "B": GetUserCookieNew.calculate,
+            "C": GetUserCookieCplan.calculate
+        }
+        # 调用选定函数
+        function_dict[self.access_plan]()
+        # GetUserCookieCplan.calculate()
         with open(self.cookie_file_path, 'r', encoding='utf-8') as file:
             content = file.read()
         self.psessionid = content
@@ -230,43 +234,58 @@ class GetDataFa:
         except Exception as e:
             logger.error(f"请求失败: {e}")
 
+    def token_lose_efficacy(self, cookie_count_num):
+        logger.info('cookie已失效!!!')
+        with open(self.cookie_file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        self.psessionid = content
+        self.header1 = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+            'Cookie': self.psessionid
+        }
+        if cookie_count_num >= 2:
+            logger.info('cookie已失效，正在重新获取!!!')
+            time.sleep(random.uniform(2, 3))
+            self.get_x_token()
+
     def feach_url(self, link):
         max_attempts = 5
-        url_a = self.vpnurl + link
-        logger.info(f"Fetching URL: {url_a}")
+        url_dt = {
+            "A": self.vpnurl + link,
+            "B": "https://elksslpkulaw.aa.sjuku.top" + link,
+            "C": "https://elksslc41982105a8a896422599210c038c4c8elksslauthserver.a6.sjuku.top" + link
 
+        }
+        logger.info(f"当前使用的是{self.access_plan}号访问方案")
+        url_real = url_dt.get(self.access_plan)
         cookie_count_num = 0
 
         for attempt in range(max_attempts):
             try:
-                time.sleep(random.uniform(2, 4))
-                resp = requests.get(url_a, headers=self.header1, verify=False, timeout=20)
+                time.sleep(random.uniform(2, 3))
+                resp = requests.get(url_real, headers=self.header1, verify=False, timeout=20)
                 soup = BeautifulSoup(resp.text, 'html.parser')
 
                 # 如果cookie失效，则会被重定向到百度搜索，这里用来判断是否失效
                 if '百度搜索' in str(soup):
                     cookie_count_num += 1
-                    logger.info('cookie已失效!!!')
-                    with open(self.cookie_file_path, 'r', encoding='utf-8') as file:
-                        content = file.read()
-                    self.psessionid = content
-                    self.header1 = {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
-                        'Cookie': self.psessionid
-                    }
-                    if cookie_count_num >= 2:
-                        logger.info('cookie已失效，正在重新获取!!!')
-                        self.get_x_token()
+                    self.token_lose_efficacy(cookie_count_num)
                     continue
 
                 else:
                     ul = soup.find('div', class_='fields')
                     if not ul:
-                        logger.error("未能找到正确内容!")
+                        logger.error("未能找到正确内容!重试!")
+                        cookie_count_num += 1
+                        self.token_lose_efficacy(cookie_count_num)
                         continue
                     ul = ul.find('ul')
+                    if "剩余50%未阅读" in ul:
+                        logger.error('获取文章不完整!剩余50%未阅读')
+                        continue
                     if ul is not None:
-                        return soup, ul, url_a
+                        logger.info('已正确获取到该文章内容!')
+                        return soup, ul, url_real
             except Exception as e:
                 logger.error('请求失败:', e)
                 time.sleep(random.uniform(2, 4))
@@ -627,10 +646,10 @@ class GetDataFa:
             self.cursor.execute(insesql, params_lt)
             self.cursor.commit()
             logger.info(f"文章 {data_dt.get('法规标题')} 写入成功！！！")
-            logger.info("=" * 20)
+            logger.info("====" * 20)
         except Exception as e:
             logger.info(f"文章 {data_dt.get('法规标题')} 写入错误:", e)
-            logger.info("=" * 20)
+            logger.info("====" * 20)
 
     def process_soup(self, link, titles, types_regulations):
         """
@@ -774,7 +793,7 @@ class GetDataFa:
             # logger.info(f'存在文章: {title}')
             return False
 
-    def calculate(self, choose=False, types_regulations=True):
+    def calculate(self, choose=False, types_regulations=True, access_plan="C"):
         """
         总流程
         :param types_regulations: True为chl收录，False为lar收录
@@ -785,7 +804,7 @@ class GetDataFa:
 
         if not self.cursor:
             raise Exception('数据库连接失败！')
-
+        self.access_plan = access_plan
         logger.info("开始读取dataframe.")
         # 读取Excel文件
         if choose:
@@ -814,16 +833,18 @@ class GetDataFa:
         logger.info("全部获取完毕！！！")
 
 
-def main_test(choose_t, types_regulations_t):
+def main_test(choose_t, types_regulations_t, access_plan):
     """
+    :param access_plan: 访问方案
     :param types_regulations_t: True为chl收录，False为lar收录
-        :param choose_t: True为自动收录，False为手动收录
+    :param choose_t: True为自动收录，False为手动收录
     """
     obj = GetDataFa()
-    obj.calculate(choose=choose_t, types_regulations=types_regulations_t)
+    obj.calculate(choose=choose_t, types_regulations=types_regulations_t, access_plan=access_plan)
 
 
 if __name__ == '__main__':
-    choose = False
+    choose = True
     types_regulations = True
-    main_test(choose, types_regulations)
+    access_plan = "C"
+    main_test(choose, types_regulations, access_plan)

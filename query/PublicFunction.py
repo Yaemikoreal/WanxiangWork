@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup, NavigableString
 import hashlib
 from sqlalchemy import create_engine
 import logging
+from elasticsearch import Elasticsearch
 from query.QueryTitle import main_panduan
 from Sample.分类 import get_data_from_api, key_word
 import re
@@ -13,9 +14,13 @@ import pyodbc
 import requests
 from datetime import datetime
 from pyquery.pyquery import PyQuery as pq
-import jieba
 
 _log = logging.getLogger(__name__)
+# Elasticsearch 配置
+es = Elasticsearch(
+    ['http://10.0.0.1:8041'],
+    http_auth=('elastic', 'Cdxb1998123!@#')
+)
 
 
 def load_config(env='development'):
@@ -104,7 +109,6 @@ def catagroy_select(description, titl):
         if one_id in one_ids:
             max_dictdetail_two = max_dict
         else:
-
             timestamp = int(datetime.now().timestamp() * 1000)  # 获取当前时间戳（毫秒）
             paramdetail = {'lib': 'lar', 'menuConditions': f'0,{one_id},0,0',
                            'conditions': f'{kee},,,0;0,0,-,-,-,0;0,0;0,0;{one_id}', 'a': f'{timestamp}',
@@ -129,9 +133,16 @@ def catagroy_select(description, titl):
                     max_dictdetail_two = max_dictdetail
                 else:
                     max_dictdetail_two = max(data_listdetail_two, key=lambda x: x['sum'])
-        leibeidetail = str(max_dictdetail_two['Value']) + '/' + str(max_dictdetail_two['sum']) + '/' + str(
-            max_dictdetail_two['ID']) + '/' + str(kee)
-        category = max_dictdetail_two['ID']
+        leibiename = str(max_dictdetail_two['Value'])
+        leibeidetail = leibiename + '/' + str(max_dictdetail_two['sum']) + '/' + str(
+            max_dictdetail_two['ID']) + '/' + str(
+            kee)
+        category_new = max_dictdetail_two['ID']
+        query = {"query": {
+            "bool": {"must": [{"term": {"key": f"{category_new}"}}, {"match_phrase": {"value": f"{leibiename}"}}]}}}
+        # print(query)
+        res = es.search(index="menusnew", body=query)
+        category = res['hits']['hits'][0]['_source']['oldkey']
         if len(category) > 5:
             leibeidet = category[:3] + ';' + category[:5] + ';' + category
         elif len(category) == 5:
@@ -140,7 +151,7 @@ def catagroy_select(description, titl):
             leibeidet = category
     except:
         leibeidetail = ''
-        leibeidet = ''
+        leibeidet = '003;00301'
     return leibeidet
 
 

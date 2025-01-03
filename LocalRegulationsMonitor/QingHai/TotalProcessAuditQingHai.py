@@ -1,5 +1,7 @@
 import random
 import time
+import logging
+from concurrent.futures import ThreadPoolExecutor
 from DepartmentTransportation import main as audit_calculate
 from query import PublicFunction as pf
 from ScienceDepartment import main as calculate_science
@@ -7,6 +9,8 @@ from ScienceDepartment import main as calculate_science
 """
 该脚本用于获取青海省交通运输厅,青海省科技厅的文件
 """
+# 设置日志
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class TotalProcessAudit:
@@ -46,61 +50,70 @@ class TotalProcessAudit:
         }
 
     def check_source_exists(self, data, new_value):
-        for item in data:
-            if item.get("来源") == new_value:
-                return True
-        return False
+        return any(item.get("来源") == new_value for item in data)
 
     def get_title_urls(self, base_url, bm):
         data_lt = []
-        soup = pf.fetch_url(base_url, self.headers)
-        title_soup = soup.find(["ul", "div"], attrs={"class": ["xxgkList", "gz", "list_ul","NewXXGK_Content_Right_Main NoPadding"]})
-        a_tags = title_soup.find_all('a', href=True, target="_blank")
-        for tag in a_tags:
-            title_text = tag.get_text()
-            url_text = tag.get('href').replace('./', '')
-            if "www." not in url_text:
-                url_text = self.center_url.get(bm) + url_text
-            data_dt = {
-                "标题": title_text,
-                "来源": url_text
-            }
-            if not self.check_source_exists(data_lt, url_text):
-                data_lt.append(data_dt)
+        try:
+            soup = pf.fetch_url(base_url, self.headers)
+            title_soup = soup.find(["ul", "div"], attrs={
+                "class": ["xxgkList", "gz", "list_ul", "NewXXGK_Content_Right_Main NoPadding"]})
+            if not title_soup:
+                logging.warning(f"未能找到标题列表: {base_url}")
+                return data_lt
+
+            a_tags = title_soup.find_all('a', href=True, target="_blank")
+            for tag in a_tags:
+                title_text = tag.get_text(strip=True)
+                url_text = tag.get('href').replace('./', '')
+                if "www." not in url_text:
+                    url_text = self.center_url.get(bm) + url_text
+
+                data_dt = {
+                    "标题": title_text,
+                    "来源": url_text
+                }
+                if not self.check_source_exists(data_lt, url_text):
+                    data_lt.append(data_dt)
+        except Exception as e:
+            logging.error(f"获取标题和URL时发生错误: {base_url}, 错误: {e}")
+
         return data_lt
 
     def process_category(self, category, base_url, bm):
-        print(f"正在收录 [{category}]")
-        print("====" * 20)
+        logging.info(f"正在收录 [{category}]")
+        logging.info("====" * 20)
         title_urls = self.get_title_urls(base_url, bm)
         data = {
             "start_url": base_url,
-            "lasy_department": bm,
-            "category": "",
+            "last_department": bm,
+            "category": category,
             "title_url_lt": title_urls
         }
-        if bm == "青海省交通运输厅":
-            audit_calculate(data)
-        elif bm == "青海省科学技术厅":
-            calculate_science(data)
-        elif bm == "青海省广播电视局":
-            calculate_science(data)
-        print("====" * 20)
+        try:
+            if bm == "青海省交通运输厅":
+                audit_calculate(data)
+            elif bm in ["青海省科学技术厅", "青海省广播电视局"]:
+                calculate_science(data)
+        except Exception as e:
+            logging.error(f"处理分类 [{category}] 时发生错误: {e}")
+
+        logging.info("====" * 20)
 
     def total_process(self):
-        for bm, urls in self.url_categories.items():
-            if bm == "青海省交通运输厅":
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = []
+            for bm, urls in self.url_categories.items():
                 for category, url in urls.items():
-                    self.process_category(category, url, bm)
-                    time.sleep(random.uniform(2, 2.5))
-            if bm == "青海省科学技术厅":
-                for category, url in urls.items():
-                    self.process_category(category, url, bm)
-                    time.sleep(random.uniform(2, 2.5))
-            if bm == "青海省广播电视局":
-                for category, url in urls.items():
-                    self.process_category(category, url, bm)
-                    time.sleep(random.uniform(2, 2.5))
+                    futures.append(executor.submit(self.process_category, category, url, bm))
+                    time.sleep(random.uniform(2, 2.5))  # 确保每个请求之间有足够的间隔
+
+            # 等待所有任务完成
+            for future in futures:
+                try:
+                    future.result()
+                except Exception as e:
+                    logging.error(f"任务执行时发生错误: {e}")
 
 
 if __name__ == '__main__':

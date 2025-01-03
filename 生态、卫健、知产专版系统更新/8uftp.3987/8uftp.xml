@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<8uftp>
+<Settings>
+<Item name="Tool Normal Start" type="numeric">0</Item>
+<Item name="Last Server Host" type="string">192.168.31.157</Item>
+<Item name="Last Server Port" type="numeric">22</Item>
+<Item name="Last Server User" type="string">lgc</Item>
+<Item name="Last Server dont save pass" type="numeric">0</Item>
+<Item name="Last server name" type="string">ÐÂ FTP Õ¾µã 5</Item>
+<Item name="Last Server Pass" type="string">034042073080002013012014022120026</Item>
+<Item name="Last Server Firewall Bypass" type="numeric">0</Item>
+<Item name="Last Server Path" type="string">256 0 </Item>
+<Item name="Last Server Type" type="numeric">256</Item>
+<Item name="Last Server transfer mode" type="numeric">1</Item>
+<Item name="Default Folder" type="string">D:\ÊÕÂ¼\datafolder\Öª²úÉÌ±ê×¨Àû·¨ÂÉ×ÊÔ´Ó¦ÓÃÖ§³ÖÏµÍ³\</Item>
+<Item name="Last Window Size" type="string">0 212 97 1472 878</Item>
+<Item name="Last Splitter Pos" type="string">337 294 941 292 497</Item>
+<Item name="No toolbar" type="numeric">0</Item>
+<Item name="No Quickconnbar" type="numeric">0</Item>
+<Item name="No Statusbar" type="numeric">0</Item>
+<Item name="No Messagelog" type="numeric">0</Item>
+<Item name="No Treeview" type="numeric">0</Item>
+<Item name="Show Remote Treeview" type="numeric">1</Item>
+<Item name="No Queue" type="numeric">0</Item>
+<Item name="Local List View Style" type="numeric">0</Item>
+<Item name="Hide Local Columns" type="numeric">0</Item>
+<Item name="Show Local Statusbar" type="numeric">1</Item>
+<Item name="Remote List View Style" type="numeric">0</Item>
+<Item name="Hide Remote Columns" type="numeric">32</Item>
+<Item name="Show Remote Statusbar" type="numeric">1</Item>
+<Item name="Logontype" type="numeric">0</Item>
+<Item name="FWHost" type="string"/>
+<Item name="FWPort" type="numeric">0</Item>
+<Item name="FWUser" type="string"/>
+<Item name="FWPass" type="string"/>
+<Item name="Timeout Length" type="numeric">90</Item>
+<Item name="Use Keep Alive" type="numeric">1</Item>
+<Item name="Interval Low" type="numeric">15</Item>
+<Item name="Interval High" type="numeric">30</Item>
+<Item name="Retry Delay" type="numeric">30</Item>
+<Item name="Num Retries" type="numeric">20</Item>
+<Item name="Proxy Type" type="numeric">0</Item>
+<Item name="Proxy Host" type="string"/>
+<Item name="Proxy Port" type="numeric">0</Item>
+<Item name="Proxy User" type="string"/>
+<Item name="Proxy Pass" type="string"/>
+<Item name="Proxy Use Logon" type="numeric">0</Item>
+<Item name="Default Folder Type" type="numeric">0</Item>
+<Item name="Sitemanager on startup" type="numeric">0</Item>
+<Item name="SiteManager Folders First" type="numeric">0</Item>
+<Item name="No Expand SiteManager Folders" type="numeric">0</Item>
+<Item name="Transfer Mode" type="numeric">0</Item>
+<Item name="ASCII files" type="string">ASP;BAT;C;CFM;CGI;CONF;CPP;CSS;DHTML;DIZ;H;HPP;HTM;HTML;INC;JS;MAK;NFO;PAS;PATCH;PHTML;PINERC;PL;QMAIL;SH;SHTML;SQL;TCL;TPL;TXT;VBS;</Item>
+<Item name="No view labels" type="numeric">0</Item>
+<Item name="Remember View settings" type="numeric">0</Item>
+<Item name="Remember Window Size" type="numeric">0</Item>
+<Item name="Minimize to Tray" type="numeric">0</Item>
+<Item name="Remember Local View" type="numeric">0</Item>
+<Item name="Remember Local column widths" type="numeric">0</Item>
+<Item name="Local Filesize format" type="numeric">0</Item>
+<Item name="Local doubleclick action" type="numeric">0</Item>
+<Item name="Remember Remote View" type="numeric">0</Item>
+<Item name="Remember Remote column widths" type="numeric">0</Item>
+<Item name="Remote Filesize format" type="numeric">1</Item>
+<Item name="Always Show Hidden Files" type="numeric">0</Item>
+<Item name="Remote doubleclick action" type="numeric">0</Item>
+<Item name="Use GSS" type="numeric">0</Item>
+<Item name="GSS enabled servers" type="string">mit.edu;</Item>
+<Item name="Debug Trace" type="numeric">0</Item>
+<Item name="Debug Show Listing" type="numeric">0</Item>
+<Item name="Enable debug menu" type="numeric">0</Item>
+<Item name="Limit Port Range" type="numeric">0</Item>
+<Item name="Port Range Low" type="numeric">1</Item>
+<Item name="Port Range High" type="numeric">65535</Item>
+<Item name="Transfer IP" type="string"/>
+<Item name="Use directory cache" type="numeric">1</Item>
+<Item name="Max Dir Cache Time" type="numeric">1800</Item>
+<Item name="Preserve DL file time" type="numeric">0</Item>
+<Item name="Primary TransferMax Size" type="numeric">1024</Item>
+<Item name="Transfer Api Count" type="numeric">2</Item>
+<Item name="Use multiple connections" type="numeric">1</Item>
+<Item name="File exists Action" type="numeric">0</Item>
+<Item name="Default View Edit Prog" type="string"/>
+<Item name="Custom View Edit Progs" type="string"/>
+<Item name="Use Ident server" type="numeric">0</Item>
+<Item name="Ident when connecting only" type="numeric">0</Item>
+<Item name="Ident reply same IP" type="numeric">0</Item>
+<Item name="Ident UserID" type="string"/>
+<Item name="Ident OS" type="string">UNIX</Item>
+<Item name="SpeedLimit Download Type" type="numeric">0</Item>
+<Item name="SpeedLimit Download Value" type="numeric">10</Item>
+<Item name="SpeedLimit Upload Type" type="numeric">0</Item>
+<Item name="SpeedLimit Upload Value" type="numeric">10</Item>
+<Item name="SpeedLimit Download Rules" type="string"/>
+<Item name="SpeedLimit Upload Rules" type="string"/>
+<Item name="Local treeview location" type="numeric">0</Item>
+<Item name="Remote treeview location" type="numeric">0</Item>
+<Item name="Debug Log To File" type="numeric">0</Item>
+<Item name="Debug Log File" type="string"/>
+<Item name="Use custom messaglog font" type="numeric">0</Item>
+<Item name="Messagelog font name" type="string"/>
+<Item name="Messagelog font size" type="numeric">0</Item>
+<Item name="Pasv" type="numeric">0</Item>
+</Settings>
+<Sites>
+<Site Name="47.97.3.24" Host="47.97.3.24" Port="22" User="cdxbftp" RemoteDir="" LocalDir="" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="²âÊÔ·þÎñÆ÷" Host="47.97.3.24" Port="21" User="cdxbftp" RemoteDir="" LocalDir="" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="ÐÂ FTP Õ¾µã" Host="www.cnlawdata.cn" Port="21" User="administrator" RemoteDir="" LocalDir="" Pass="087081078085092067001120123123117119117102008106" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="2" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="ÐÂ FTP Õ¾µã 2" Host="47.96.142.1" Port="8083" User="administrator" RemoteDir="/47.96.142.1/" LocalDir="" Pass="002042054035127008011011" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="ÐÂ FTP Õ¾µã 3" Host="47.96.142.1" Port="21" User="administrator" RemoteDir="" LocalDir="" Pass="002042054035127008011011" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="ÐÂ FTP Õ¾µã 4" Host="10.0.0.1" Port="22" User="ftpserver" RemoteDir="" LocalDir="" Pass="127003001066067080023119027023030111" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+<Site Name="ÐÂ FTP Õ¾µã 5" Host="192.168.31.157" Port="22" User="lgc" RemoteDir="" LocalDir="" Pass="034042073080002013012014022120026" Logontype="1" FWBypass="0" DontSavePass="0" ServerType="0" PasvMode="1" TimeZoneOffset="0" TimeZoneOffsetMinutes="0" Comments="" DefaultSite="0"/>
+</Sites>
+<RecentServers>
+<Server Host="47.97.3.24" Port="8010" User="cdxb" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="47.97.3.24" Port="21" User="cdxb" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="47.97.3.24" Port="21" User="cdxbftp" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="47.97.3.24" Port="22" User="cdxbftp" Pass="113112050017022029012063061050055018046037035027106015123106031031112004035114031019127123" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="192.168.31.157" Port="21" User="HHJ" Pass="127115125064069086021117021025" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="192.168.31.157" Port="21" User="lgc" Pass="034042073080002013012014022120026" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="192.168.31.124" Port="21" User="lgc" Pass="045085074081005012015015155152112098" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="192.168.31.157" Port="22" User="lgc" Pass="034042073080002013012014022120026" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="10.0.0.1" Port="21" User="ftpserver" Pass="127003001066067080023119027023030111" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+<Server Host="10.0.0.1" Port="22" User="ftpserver" Pass="127003001066067080023119027023030111" FirewallBypass="0" DontRememberPass="0" ServerType="256" Path="" PasvMode="0" TimeZoneOffset="0"/>
+</RecentServers>
+<TransferQueue/>
+</8uftp>

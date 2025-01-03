@@ -5,7 +5,6 @@ import time
 from GetTitleUrl import GetTitleUrl as gtu
 from ObtainingNewRegulations import main_test as get_new_data
 from ProcessingMethod.decorators import timer
-import logging
 from ProcessingMethod.LoggerSet import logger
 # 动态修改sys.path以包含包的根目录
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -22,7 +21,7 @@ def main():
         time.sleep(5)
         # 获取chl法律法规到数据库
         logger.info("[chl] 正在获取法律法规新内容到数据库!!!")
-        get_new_data(choose_t=True, types_regulations_t=True)
+        get_new_data(choose_t=True, types_regulations_t=True, access_plan="C")
     else:
         logger.error("[chl]法律法规新内容为空!!!")
 
@@ -34,7 +33,7 @@ def main():
         time.sleep(5)
         # 获取lar法律法规到数据库
         logger.info("[lar] 正在获取法律法规新内容到数据库!!!")
-        get_new_data(choose_t=True, types_regulations_t=False)
+        get_new_data(choose_t=True, types_regulations_t=False, access_plan="C")
     else:
         logger.error("[lar]法律法规新内容为空!!!")
 

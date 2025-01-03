@@ -223,13 +223,13 @@ class DataGetTab:
                     break
                 print(e)
                 continue
+        web.close()
         data_df = pd.DataFrame(self.data_lt)
         # 写入 Excel 文件
         output_file = 'tools/标准号1.xlsx'
         with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
             data_df.to_excel(writer, sheet_name='Sheet1', index=False)
         print(f"标准号数据写入到: [{output_file}]")
-        web.quit()
 
 
 if __name__ == '__main__':

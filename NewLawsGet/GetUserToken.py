@@ -67,6 +67,7 @@ def get_cookie(tab):
 
 
 def calculate():
+    print("现在的入口是'北大法宝 ZC'!")
     tab = logining()
     cookie = get_cookie(tab)
     x_vpn_token_str = ''

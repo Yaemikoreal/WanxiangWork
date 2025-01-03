@@ -7,7 +7,7 @@ import json
 from ProcessingMethod.LoggerSet import logger
 
 co = ChromiumOptions().set_paths()
-co.headless(False)
+co.headless(True)
 page = ChromiumPage(co).latest_tab
 
 

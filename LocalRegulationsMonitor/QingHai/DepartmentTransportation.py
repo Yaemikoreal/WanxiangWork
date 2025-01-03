@@ -38,7 +38,7 @@ class AuditOffice:
             "青海省交通运输厅": '8;827;82703;827030203'
         }
         self.category = kwargs.get("category")
-        self.department_name = kwargs.get("lasy_department")
+        self.department_name = kwargs.get("last_department")
         self.department = self.department_dt.get(self.department_name)
         self.title_url_lt = kwargs.get("title_url_lt")
 

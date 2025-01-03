@@ -11,12 +11,18 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from selenium import webdriver
+from DrissionPage import ChromiumPage, ChromiumOptions
 
 from ProcessPictures import process_file
 
-web = webdriver.Firefox()
+# 创建浏览器对象并设置选项
+options = ChromiumOptions()
+options.headless = False  # 设置无头模式
 
+
+"""
+该脚本用于获取对应标准的附件，并对其进行拼接。
+"""
 
 class DataGet:
     def __init__(self):
@@ -25,20 +31,22 @@ class DataGet:
             'Cookie': 'Hm_lvt_50758913e6f0dfc9deacbfebce3637e4=1717379125; Hm_lpvt_50758913e6f0dfc9deacbfebce3637e4=1717558686; JSESSIONID=12C7E253ECC5428DA27CC601E5DD0C62'
         }
         self.session = None
+        self.url_info = None
+        self.brower = ChromiumPage(options)
 
     def can_be_download(self, openstd_id):
         urla = 'https://openstd.samr.gov.cn/bzgk/gb/std_list?p.p1=0&p.p90=circulation_date&p.p91=desc&p.p2='
         print(f"正在访问: [{urla + openstd_id}]")
         try:
-            web.get(url=urla + openstd_id)
-            resp = web.page_source
+            self.brower.get(url=urla + openstd_id)
+            resp = self.brower.html
             soup = BeautifulSoup(resp, 'html.parser')
             td = soup.find('td', style="text-align: left;")
             result = re.findall("onclick=.*?showInfo.*?'(?P<a>.*?)'", str(td))
-            # print(result[0])
-            url_info = 'https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=' + result[0]
-            web.get(url_info)
-            resp = web.page_source
+            print(result[0])
+            self.url_info = 'https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=' + result[0]
+            self.brower.get( self.url_info)
+            resp = self.brower.html
             soup = BeautifulSoup(resp, 'html.parser')
             if_down_load = str(soup.find('td', style="padding-top:20px;").get_text())
             # print(if_down_load)
@@ -110,6 +118,66 @@ class DataGet:
                 else:
                     print("所有重试均失败。")
                     return None
+
+    def code_yz(self):
+        # 验证码识别
+        with open('tools/pic.jpg', 'rb') as read_pic:
+            img_bytes = read_pic.read()
+            code = ocr.classification(img_bytes)
+            print(f"验证码识别: {code}")
+            return code
+
+    def get_qr_code_new(self, src):
+        new_url = rf"http://c.gb688.cn/bzgk/gb/{src}"
+        header = {
+            "Cookie": "JSESSIONID=" + self.session
+        }
+        max_retries = 3
+        while max_retries > 0:
+            try:
+                resp = requests.get(new_url, headers=header, timeout=15)
+                resp.raise_for_status()  # 检查响应状态码
+
+                # 保存验证码图片
+                with open('tools/code_t.jpg', 'wb') as save_code:
+                    save_code.write(resp.content)
+
+                # 初始化OCR对象
+                ocr = ddddocr.DdddOcr()
+
+                # 验证码识别
+                with open('tools/code_t.jpg', 'rb') as read_pic:
+                    img_bytes = read_pic.read()
+                    code = ocr.classification(img_bytes)
+                    print(f"验证码识别: {code}")
+                    return code
+            except requests.exceptions.RequestException as e:
+                print(f"请求失败，剩余重试次数: [{max_retries - 1}], 错误信息: {e}")
+                max_retries -= 1
+                if max_retries > 0:
+                    # 等待后重试
+                    time.sleep(random.uniform(2, 4))
+                else:
+                    print("所有重试均失败。")
+    def check_code_new(self,download_url, title, number):
+        button = self.brower.ele('@text():下载标准')
+        button.click()
+        self.brower.wait(random.uniform(0.5, 1))
+        self.brower=self.brower.latest_tab
+        button_download = self.brower.ele('css:img[src][onclick]')
+        button_download.click()
+        time.sleep(2)
+        soup = BeautifulSoup(self.brower.html,"html.parser")
+        tag = soup.find('img',attrs={"class":"verifyCode"})
+        src = tag.get('src')
+        # code_new = self.get_qr_code_new(src)
+        # 对整页截图并保存
+        bytes_str =  tag.get_screenshot(path='tools', name='pic.jpg', full_page=True)
+        input_button = self.brower.ele('css:input[id="verifyCode"]')
+        input_button.input(code_new)
+        button_yz = self.brower.ele("css:button[class='btn btn-primary']")
+        button_yz.click()
+        pass
 
     def check_code(self, code, download_url):
         """
@@ -203,7 +271,8 @@ class DataGet:
                 time.sleep(random.uniform(1, 4))
 
         page = process_file(str(viewer_div))
-        pdf_file_path = f"处理完成的pdf/{title}.pdf"
+        # 下载结果储存路径
+        pdf_file_path = rf"E:/JXdata/处理完成的pdf/{title}.pdf"
         # self.create_pdf(pdf_file_path, page)
         self.images_to_pdf(images_folder="单页/", output_pdf=pdf_file_path)
         # 删除文件
@@ -287,35 +356,40 @@ class DataGet:
         c.save()
 
     def calculate(self):
-        standard_df = pd.read_excel('tools/标准号1.xlsx')
-        existing_files = set(os.listdir("处理完成的pdf/"))
-        for index, row in standard_df.iterrows():
-            title = row['Name']
-            number = row['Code']
-            print(f'标题 {title}  标准号为 {number}')
-            filename = number + ".pdf"
-            if filename in existing_files:
-                print("该标准文件已经存在!!!")
-                continue
-            # 返回是否可以下载的状态以及网站相应的名字
-            file_can_download, file_name = self.can_be_download(number)
+        print("开始读取标准号")
+        standard_df = pd.read_excel('tools/标准号.xlsx')
+        existing_files = set(os.listdir(r"E:/JXdata/处理完成的pdf/"))
+        try:
+            for index, row in standard_df.iterrows():
+                title = row['Name']
+                number = row['Code']
+                print(f'标题 {title}  标准号为 {number}')
+                filename = number + ".pdf"
+                # if filename in existing_files:
+                #     print("该标准文件已经存在!!!")
+                #     continue
+                # 返回是否可以下载的状态以及网站相应的名字
+                file_can_download, file_name = self.can_be_download(number)
 
-            if file_can_download and file_name:
-                time.sleep(random.uniform(2, 5))
-                # 如果可以下载，则根据file_name构造对应的URL
-                url = f'http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno={file_name}'
-                # 尝试最多五次获取验证码并验证
-                for retry in range(5):
-                    # 获取session会话
-                    self.get_session(url)
-                    download_status = self.check_code(self.get_qr_code(), url)
-                    # 如果验证码正确则退出循环
-                    if download_status:
+                if file_can_download and file_name:
+                    time.sleep(random.uniform(2, 5))
+                    # 如果可以下载，则根据file_name构造对应的URL
+                    url = f'http://c.gb688.cn/bzgk/gb/showGb?type=online&hcno={file_name}'
+                    # 尝试最多五次获取验证码并验证
+                    for retry in range(5):
+                        # 获取session会话
+                        self.get_session(url)
+                        # download_status = self.check_code(self.get_qr_code(), url)
+                        download_status = self.check_code_new(url, title, number)
+                        # 如果验证码正确则退出循环
+                        if download_status:
+                            print("=====" * 30)
+                            break
+                        print(f"sleep 然后进行下一次尝试 [{retry + 1}]")
                         print("=====" * 30)
-                        break
-                    print(f"sleep 然后进行下一次尝试 [{retry + 1}]")
-                    print("=====" * 30)
-                    time.sleep(random.uniform(3, 5))
+                        time.sleep(random.uniform(3, 5))
+        finally:
+            self.brower.quit()
 
 
 if __name__ == '__main__':
